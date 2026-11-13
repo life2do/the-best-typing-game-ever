@@ -18,7 +18,7 @@ import { breakScreen, crossroadsScreen, introScreen, nagScreen, pauseScreen, sta
 import { KeyboardInput } from '@/input/keyboard';
 import { AudioEngine, Voice } from '@/audio/audio';
 import {
-  freshSeed, loadProfile, loadSegment, newProfile, saveProfile, saveSegment, segmentKey, segmentsFor, weakKeys,
+  DEFAULT_SETTINGS, freshSeed, loadProfile, loadSegment, newProfile, saveProfile, saveSegment, segmentKey, segmentsFor, weakKeys,
   type Profile, type Segment, type Settings,
 } from '@/storage/profile';
 import { levelTargetWpmP, tierAcc } from '@/typing/tiers';
@@ -49,6 +49,7 @@ export class Game {
   private stuckShown = false;
   private screen: 'start' | 'level' | 'victory' = 'start';
   private showIntro: () => void = () => {};
+  private lastCollect = -2;
 
   constructor(canvas: HTMLCanvasElement, ui: HTMLElement) {
     this.ui = ui;
@@ -87,6 +88,7 @@ export class Game {
         this.audio.unlock();
         if (c.action === 'continue' && stored) {
           this.profile = stored;
+          this.profile.settings = { ...DEFAULT_SETTINGS, ...stored.settings };
           if (c.name) this.profile.name = c.name;
         } else {
           this.profile = newProfile(c.name, c.scale, c.tier, freshSeed());
@@ -137,6 +139,7 @@ export class Game {
     for (const e of this.seg.log) sim.feed(e); // exact resume (deterministic replay of the saved log)
     sim.on((e) => this.onSimEvent(e));
     this.sim = sim;
+    this.lastCollect = -2;
     const lastT = this.seg.log.length ? this.seg.log[this.seg.log.length - 1].t : 0;
     this.segStart = performance.now() - lastT - 1;
     this.paused = false;
@@ -147,7 +150,7 @@ export class Game {
       this.hud = new Hud(lang, this.profile.settings);
       this.ui.prepend(this.hud.el);
     }
-    this.hud.keyboard.setKnown(this.plan.letters, this.plan.newKeys);
+    this.hud.keyboard.setKnown(this.plan.letters); // in play only the next key is highlighted
     const palette = palettes.find((p) => p.id === this.plan.paletteId) ?? palettes[0];
     const look = { templateId: this.plan.templateId, view: this.plan.view, styleId: this.plan.styleId, palette, havocIds: this.plan.havocIds, havocMaxP: this.plan.havocMaxP };
     this.host.setLevel(look, this.avatar(), sim, performance.now(), transition);
@@ -392,7 +395,17 @@ export class Game {
     }
     const alpha = sim && !this.paused ? (((now - this.segStart) * 3) / 50) % 1 : 0;
     this.host.render(this.screen === 'level' ? sim : null, alpha, now);
-    if (sim && this.hud && this.screen === 'level') this.hud.update(sim, this.host.canvas);
+    if (sim && this.hud && this.screen === 'level') {
+      this.hud.update(sim);
+      const q = this.host.quality;
+      this.hud.setFps(this.profile.settings.showFps !== false ? `${q.fps.toFixed(0)} fps · ${q.frameMs.toFixed(1)} ms · ${q.pixelRatio.toFixed(2)}×${this.host.webgl ? '' : ' · no WebGL'}` : null);
+      // Templates that collect things expose a `lastCollect` frame stamp in their state.
+      const lc = (sim.state.tpl as { lastCollect?: number } | null)?.lastCollect ?? -1;
+      if (lc !== this.lastCollect) {
+        if (lc >= 0 && this.lastCollect !== -2) this.audio.collect();
+        this.lastCollect = lc;
+      }
+    }
   }
 
   private showStuckNag(): void {

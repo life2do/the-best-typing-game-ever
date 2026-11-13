@@ -11,6 +11,9 @@ export class Hud {
   readonly el: HTMLDivElement;
   readonly keyboard: KeyboardOverlay;
   private vignette = h('div', { class: 'vignette' });
+  private dim = h('div', { class: 'dim' });
+  private fps = h('div', { class: 'fps hidden', 'aria-hidden': 'true' });
+  private cache: Record<string, string> = {};
   private glow = h('div', { class: 'rhythm-glow' });
   private pulse = h('div', { class: 'rhythm-pulse' });
   private prompt = h('div', { class: 'prompt', 'aria-live': 'off' });
@@ -24,7 +27,7 @@ export class Hud {
   constructor(lang: LanguagePack, private settings: Settings) {
     this.keyboard = new KeyboardOverlay(lang);
     const top = h('div', { class: 'topbar' }, h('div', {}, this.stages, this.stats), this.stars, this.powerups);
-    this.el = h('div', { class: 'hud' }, this.vignette, this.glow, this.pulse, top, this.prompt, this.keyboard.el);
+    this.el = h('div', { class: 'hud' }, this.dim, this.vignette, this.glow, this.pulse, top, this.prompt, this.keyboard.el, this.fps);
   }
 
   flash(ok: boolean): void {
@@ -34,34 +37,53 @@ export class Hud {
     p.classList.add(ok ? 'ok' : 'bad');
   }
 
-  update(sim: LevelSim, canvas: HTMLCanvasElement): void {
+  /** Write a value only when it changed (avoids layout/paint work every frame). */
+  private set(key: string, value: string, apply: (v: string) => void): void {
+    if (this.cache[key] === value) return;
+    this.cache[key] = value;
+    apply(value);
+  }
+
+  setFps(text: string | null): void {
+    this.set('fps', text ?? '', (v) => {
+      this.fps.textContent = v;
+      this.fps.classList.toggle('hidden', !v);
+    });
+  }
+
+  update(sim: LevelSim, _canvas?: HTMLCanvasElement): void {
     const s = sim.state;
     const vis = sim.visibility() / 1000;
-    this.vignette.style.opacity = String(Math.max(0, 1 - vis) * 0.95);
-    canvas.style.filter = `saturate(${0.15 + vis * 0.85}) brightness(${0.55 + vis * 0.45})`;
+    // Opacity changes are composited cheaply; a CSS filter on the WebGL canvas re-filters every frame.
+    this.set('vig', (Math.max(0, 1 - vis) * 0.95).toFixed(2), (v) => (this.vignette.style.opacity = v));
+    this.set('dim', (Math.max(0, 1 - vis) * 0.45).toFixed(2), (v) => (this.dim.style.opacity = v));
     const st = sim.steadinessP();
     const reduced = this.settings.reducedMotion;
     const size = Math.round((st / 1000) * 22);
-    this.glow.style.setProperty('--glow-size', `${size}px`);
-    this.glow.style.setProperty('--glow-blur', `${size * 2}px`);
-    this.glow.classList.toggle('max', st >= 950 && !reduced);
+    this.set('glow', String(size), () => {
+      this.glow.style.setProperty('--glow-size', `${size}px`);
+      this.glow.style.setProperty('--glow-blur', `${size * 2}px`);
+    });
+    this.set('glowmax', String(st >= 950 && !reduced), (v) => this.glow.classList.toggle('max', v === 'true'));
     // stage dots + stars
     const n = sim.setup.stageLengths.length;
-    this.stages.replaceChildren(...Array.from({ length: n }, (_, i) => h('span', { class: i < Math.min(s.stage, n - 1) || (s.phase !== 'play' && s.phase !== 'intro') ? 'done' : i === Math.min(s.stage, n - 1) ? 'now' : '' })));
-    this.stars.textContent = '★'.repeat(s.bestStars) + '☆'.repeat(Math.max(0, 3 - s.bestStars));
+    this.set('stages', `${s.stage}|${s.phase}`, () =>
+      this.stages.replaceChildren(...Array.from({ length: n }, (_, i) => h('span', { class: i < Math.min(s.stage, n - 1) || (s.phase !== 'play' && s.phase !== 'intro') ? 'done' : i === Math.min(s.stage, n - 1) ? 'now' : '' }))),
+    );
+    this.set('stars', '★'.repeat(s.bestStars) + '☆'.repeat(Math.max(0, 3 - s.bestStars)), (v) => (this.stars.textContent = v));
     const f = s.frame;
     const pu: string[] = [];
     if (f < s.slowUntil) pu.push(PU_ICON['powerup.slow-mo']);
     if (f < s.shieldUntil && s.shieldCharges > 0) pu.push(`${PU_ICON['powerup.shield']}×${s.shieldCharges}`);
     if (f < s.revealUntil) pu.push(PU_ICON['powerup.reveal']);
-    this.powerups.textContent = pu.join('  ');
+    this.set('pu', pu.join('  '), (v) => (this.powerups.textContent = v));
     const sm = s.sm;
     const acc = sm.correct + sm.errors ? Math.floor((sm.correct * 100) / (sm.correct + sm.errors)) : 100;
-    this.stats.textContent = `${(sim.liveWpmP() / 1000).toFixed(0)} wpm · ${acc}% · goal ${(sim.targetWpmP / 1000).toFixed(0)} wpm`;
+    this.set('stats', `${(sim.liveWpmP() / 1000).toFixed(0)} wpm · ${acc}% · goal ${(sim.targetWpmP / 1000).toFixed(0)} wpm`, (v) => (this.stats.textContent = v));
     // keyboard
     const mode = this.settings.keyboard;
-    this.keyboard.el.classList.toggle('hidden', mode === 'off');
-    this.keyboard.setOpacity(mode === 'always' ? 1 : sim.keyboardOpacity() / 1000);
+    this.set('kbmode', mode, (v) => this.keyboard.el.classList.toggle('hidden', v === 'off'));
+    this.set('kbop', (mode === 'always' ? 1 : sim.keyboardOpacity() / 1000).toFixed(2), (v) => this.keyboard.setOpacity(Number(v)));
     const exp = s.phase === 'play' ? sim.expectedChars() : [];
     this.keyboard.setNext(exp[0], sim.idleHint());
     // prompt

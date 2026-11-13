@@ -71,9 +71,11 @@ A single perspective camera. Settings: `{ fov, distance, yaw, pitch, target, rol
 
 ## Quality scaler
 
-An automatic quality level with **no upper limit**: render resolution scale, MSAA, effect intensity, particle budget, shadow
-resolution and draw distance. It steps up while frame time stays below budget and steps down on spikes.
-The player can override it. It never affects the simulation.
+Automatic quality level: render resolution scale, MSAA, effect intensity, particle budget, shadow
+resolution and draw distance. It steps down on slow frames and back up toward the display's **native**
+pixel density. On a vsync-locked screen frame time can't reveal spare GPU capacity, so automatic
+scaling never supersamples beyond native; going higher (no upper limit) is a manual setting. An
+optional FPS counter (fps · frame ms · pixel ratio) is shown in-game. It never affects the simulation.
 
 ## Storage
 

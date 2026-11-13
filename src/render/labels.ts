@@ -39,7 +39,8 @@ export function labelTexture(text: string, color = '#ffffff', bg = 'rgba(0,0,0,0
 
 export function makeLabel(text: string, height = 0.6, color?: string, bg?: string): THREE.Sprite {
   const tex = labelTexture(text, color, bg);
-  const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false });
+  // Slightly below white so text stays under the bloom threshold and never smears.
+  const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, color: 0xd9d9d9 });
   const s = new THREE.Sprite(mat);
   const img = tex.image as HTMLCanvasElement;
   s.scale.set((height * img.width) / img.height, height, 1);

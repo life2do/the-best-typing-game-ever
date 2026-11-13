@@ -149,6 +149,7 @@ export function pauseScreen(settings: Settings, onChange: (s: Settings) => void,
       row('Dyslexia-friendly font', check('dyslexicFont')),
       row('High contrast', check('highContrast')),
       row('Colour-blind key patterns', check('colorBlindPatterns')),
+      row('Show FPS counter', check('showFps')),
       h('div', { class: 'row-btns' }, h('button', { onclick: onResume }, 'Resume (Esc)'), h('button', { class: 'secondary', onclick: onExport }, 'Save my run'), h('button', { class: 'secondary', onclick: onQuit }, 'Main menu')),
     ),
   );

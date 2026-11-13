@@ -14,7 +14,7 @@ export class QualityScaler {
   private blockUpUntil = 0;
 
   constructor(private readonly renderer: THREE.WebGLRenderer) {
-    this.pixelRatio = Math.min(devicePixelRatio || 1, 1.5);
+    this.pixelRatio = Math.min(devicePixelRatio || 1, 1);
     renderer.setPixelRatio(this.pixelRatio);
   }
 
@@ -42,12 +42,17 @@ export class QualityScaler {
       this.apply(Math.max(0.5, this.pixelRatio - 0.25));
       this.sinceChange = 0;
       this.blockUpUntil = now + 10_000;
-    } else if (this.ema < 17.5 && now > this.blockUpUntil && this.pixelRatio < dpr * 3) {
-      // No hard ceiling: keep supersampling while the machine has headroom.
+    } else if (this.ema < 17.5 && now > this.blockUpUntil && this.pixelRatio < dpr) {
+      // Automatic scaling stops at the display's native density: on a 60 Hz screen frame time
+      // can't show GPU headroom, so supersampling beyond native is a manual setting (no upper limit).
       this.apply(this.pixelRatio + 0.25);
       this.sinceChange = 0;
     }
     this.lite = this.pixelRatio <= 0.75;
+  }
+
+  get fps(): number {
+    return 1000 / Math.max(1, this.ema);
   }
 
   get frameMs(): number {
