@@ -3,14 +3,16 @@ import * as THREE from 'three';
 import type { TemplateView } from '@/render/types';
 import { presetPose } from '@/render/rig';
 import { fromQ, Pool } from '@/render/util';
-import { makeLabel, setLabel } from '@/render/labels';
+import { GlyphTrail } from '@/render/glyphTrail';
 import type { PulseState } from './sim';
 import { LANTERN_SPACING } from './sim';
+
+const RIGHT = new THREE.Vector3(1, 0, 0);
 
 const view: TemplateView = {
   id: 'template.pulse-runner',
   rules: [
-    { icon: '💓', text: 'Every correct key is a heartbeat that moves you forward.' },
+    { icon: '💓', text: 'Type the letter in front of you — each one is a heartbeat that carries you forward.' },
     { icon: '🏮', text: 'Run past lanterns to light up the dark.' },
     { icon: '🎵', text: 'Keep a steady beat to run faster.' },
   ],
@@ -41,9 +43,9 @@ const view: TemplateView = {
       g.position.x = fromQ(i * LANTERN_SPACING) + 1.5;
       return g;
     });
-    const text = makeLabel(' ', 0.9);
-    text.position.set(0, 3.2, 0.5);
-    root.add(text);
+    // Letters stand on the path ahead of the runner; each heartbeat carries the runner to the next one.
+    const trail = new GlyphTrail({ mode: 'upright', start: 1.6, gap: 1.15, size: 0.95 });
+    root.add(trail.group);
     let lastBeat = -1;
     return {
       pose: (sim) => {
@@ -73,11 +75,12 @@ const view: TemplateView = {
         ring.scale.setScalar(s.lastBeat < 0 ? 0.01 : 0.5 + beatAge * 2.5);
         (ring.material as THREE.Material).opacity = Math.max(0, 0.7 - beatAge * 0.7);
         const p = sim.state.prompt;
-        setLabel(text, p.text.slice(p.pos, p.pos + 14).replace(/ /g, '·') || ' ', 0.9);
-        text.position.x = x + 3;
+        trail.update(p.text, p.pos, new THREE.Vector3(x, 0.65, 0.6), RIGHT, now);
         avatar.update(now, Math.min(1, sim.state.motion.v / 4000), false);
       },
-      dispose() {},
+      dispose() {
+        trail.dispose();
+      },
     };
   },
 };

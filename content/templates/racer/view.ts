@@ -3,11 +3,12 @@ import * as THREE from 'three';
 import type { TemplateView } from '@/render/types';
 import { presetPose } from '@/render/rig';
 import { fromQ, Pool } from '@/render/util';
-import { labelTexture } from '@/render/labels';
+import { GlyphTrail } from '@/render/glyphTrail';
 import { SUPER_SPEED_WPM_P } from '@/typing/tiers';
 import type { RacerState } from './sim';
 
 const LANE_W = 2.2;
+const FORWARD = new THREE.Vector3(0, 0, -1);
 
 const view: TemplateView = {
   id: 'template.racer',
@@ -46,23 +47,9 @@ const view: TemplateView = {
     avatar.root.scale.setScalar(0.75);
     rider.add(board, avatar.root);
     root.add(rider);
-    // Upcoming letters painted flat on the road in the rider's lane. They slide toward the rider
-    // as you type, so you "drive over" each letter you hit.
-    const ROAD_GLYPHS = 12;
-    const GLYPH_GAP = 2.1;
-    const GLYPH_START = 4.2;
-    const glyphs: THREE.Mesh[] = [];
-    for (let i = 0; i < ROAD_GLYPHS; i++) {
-      const m = new THREE.Mesh(
-        new THREE.PlaneGeometry(1, 1),
-        new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, color: 0xdddddd, polygonOffset: true, polygonOffsetFactor: -2 }),
-      );
-      m.rotation.x = -Math.PI / 2;
-      m.renderOrder = 5;
-      root.add(m);
-      glyphs.push(m);
-    }
-    let shownPos = 0;
+    // Upcoming letters painted flat on the road in the rider's lane; you drive over each one you type.
+    const trail = new GlyphTrail({ mode: 'ground', start: 4.2, gap: 2.1, size: 1.6 });
+    root.add(trail.group);
     const lines = new THREE.Group();
     root.add(lines);
     const lineMat = style.material('glow');
@@ -96,31 +83,7 @@ const view: TemplateView = {
         rider.position.set(laneX, 0, -z);
         rider.rotation.z = (s.lane * LANE_W - laneX) * -0.15;
         const p = sim.state.prompt;
-        if (Math.abs(p.pos - shownPos) > 6) shownPos = p.pos; // new stage text: jump
-        shownPos += (p.pos - shownPos) * 0.25;
-        for (let k = 0; k < glyphs.length; k++) {
-          const i = Math.floor(shownPos) - 1 + k; // one already-typed letter fades out under the rider
-          const m = glyphs[k];
-          const ch = p.text[i];
-          if (ch === undefined || i < 0) {
-            m.visible = false;
-            continue;
-          }
-          const current = i === p.pos;
-          const tex = labelTexture(ch === ' ' ? '␣' : ch, current ? '#1a1a1a' : '#ffffff', current ? 'rgba(255,209,102,0.97)' : 'rgba(0,0,0,0.6)', '700 80px ui-monospace, Menlo, Consolas, monospace');
-          const mat = m.material as THREE.MeshBasicMaterial;
-          if (mat.map !== tex) {
-            mat.map = tex;
-            mat.needsUpdate = true;
-          }
-          const img = tex.image as HTMLCanvasElement;
-          const size = current ? 2 : 1.6;
-          m.scale.set((size * img.width) / img.height, size, 1);
-          const ahead = GLYPH_START + (i - shownPos) * GLYPH_GAP;
-          mat.opacity = i < p.pos ? Math.max(0, 0.6 + (ahead - GLYPH_START) / GLYPH_GAP) : 1;
-          m.visible = mat.opacity > 0.02;
-          m.position.set(laneX, 0.12, -z - ahead);
-        }
+        trail.update(p.text, p.pos, new THREE.Vector3(laneX, 0.12, -z), FORWARD, now);
         const wpm = sim.liveWpmP();
         const sp = Math.min(1, sim.state.motion.v / 9000);
         const superSpeed = wpm >= SUPER_SPEED_WPM_P;
@@ -132,7 +95,9 @@ const view: TemplateView = {
         }
         avatar.update(now, sp);
       },
-      dispose() {},
+      dispose() {
+        trail.dispose();
+      },
     };
   },
 };

@@ -4,9 +4,11 @@ import type { TemplateView } from '@/render/types';
 import { presetPose } from '@/render/rig';
 import { fromQ, Pool } from '@/render/util';
 import { makeLabel, setLabel } from '@/render/labels';
+import { GlyphTrail } from '@/render/glyphTrail';
 import { HOP_MARGIN, Q1, type PlatformerState } from './sim';
 
 const HOP_HEIGHT = 1.3;
+const RIGHT = new THREE.Vector3(1, 0, 0);
 
 /** Height of the runner at world x: an arc over any gap it is crossing, 0 on solid ground. */
 export function hopHeight(x: number, gaps: readonly number[]): number {
@@ -23,7 +25,7 @@ export function hopHeight(x: number, gaps: readonly number[]): number {
 const view: TemplateView = {
   id: 'template.platformer',
   rules: [
-    { icon: '🏃', text: 'Type to run.' },
+    { icon: '🏃', text: 'Type the letters in front of you to run over them.' },
     { icon: '⬆️', text: 'Every Space opens a gap ahead — you hop over it.' },
     { icon: '🎶', text: 'Hop through the notes to collect them.' },
   ],
@@ -44,9 +46,9 @@ const view: TemplateView = {
     root.add(sparkle);
     const counter = makeLabel('♪ 0', 0.6);
     root.add(counter);
-    // Upcoming text floating over the path ahead (the typing hint in the world).
-    const text = makeLabel(' ', 0.9);
-    root.add(text);
+    // Letters stand on the ground ahead of the runner; Space (␣) marks each hop.
+    const trail = new GlyphTrail({ mode: 'upright', start: 1.6, gap: 1.15, size: 0.95 });
+    root.add(trail.group);
     let lastCollect = -1;
     return {
       pose: (sim) => presetPose('2d', 10, new THREE.Vector3(fromQ((sim.state.tpl as PlatformerState).x) + 3, -0.6, 0)),
@@ -79,13 +81,14 @@ const view: TemplateView = {
           (sparkle.material as THREE.Material).opacity = 1 - age;
         }
         setLabel(counter, `♪ ${s.collected}`, 0.6);
-        counter.position.set(x + 4.5, 2.25, 0.5);
+        counter.position.set(x + 4.5, 3.4, 0.5);
         const p = sim.state.prompt;
-        setLabel(text, p.text.slice(p.pos, p.pos + 14).replace(/ /g, '·') || ' ', 0.9);
-        text.position.set(x + 4.5, 3.2, 0.5);
+        trail.update(p.text, p.pos, new THREE.Vector3(x, 0.65, 0.6), RIGHT, now);
         avatar.update(now, y > 0 ? 0 : Math.min(1, sim.state.motion.v / 4000));
       },
-      dispose() {},
+      dispose() {
+        trail.dispose();
+      },
     };
   },
 };
