@@ -59,7 +59,8 @@ const view: TemplateView = {
     return {
       pose: (sim) => {
         const s = sim.state.tpl as RacerState;
-        const p = presetPose('3d', 6, new THREE.Vector3(laneX * 0.5, 1.2, -fromQ(s.z) - 4));
+        const p = presetPose('3d', 6, new THREE.Vector3(laneX * 0.5, 0.2, -fromQ(s.z) - 7));
+        p.pitch = 20;
         const sp = Math.min(1, sim.state.motion.v / 9000);
         p.fov = 60 + sp * 12;
         return p;

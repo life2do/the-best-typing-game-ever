@@ -357,8 +357,8 @@ export class LevelSim {
     if (stars > s.bestStars) s.bestStars = stars;
     if (s.bestStars >= this.setup.targetStars) {
       s.phase = 'crossroads';
-      this.emit({ type: 'crossroads', frame: s.frame });
       this.snapshot('stage');
+      this.emit({ type: 'crossroads', frame: s.frame });
       return;
     }
     s.attempt++;
@@ -377,8 +377,9 @@ export class LevelSim {
   private chooseAdvance(): void {
     const s = this.state;
     s.phase = 'done';
-    this.emit({ type: 'done', frame: s.frame, choice: 'advance' });
+    // Snapshot before emitting, so listeners that persist on 'done' see the complete chain.
     this.snapshot('level');
+    this.emit({ type: 'done', frame: s.frame, choice: 'advance' });
   }
 
   // ---------------------------------------------------------------- derived (never stored)

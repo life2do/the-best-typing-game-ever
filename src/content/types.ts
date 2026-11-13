@@ -104,7 +104,7 @@ export interface PowerupManifest extends ItemBase {
 export interface ComplexityScaleManifest extends ItemBase {
   kind: 'complexity-scale';
   icon?: string;
-  steps: { tier: number; name: Record<string, string>; tts?: Record<string, string>; model: string }[];
+  steps: { tier: number; name: Record<string, string>; tts?: Record<string, string>; model: string; icon?: string }[];
   rigHooks: Record<string, string>;
   customization: { slot: string; kind: string; unlocks: { range: [number, number]; values?: string[]; stars: number }[] }[];
 }

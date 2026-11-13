@@ -30,7 +30,7 @@ const view: TemplateView = {
     root.add(text);
     let lastJump = -1;
     return {
-      pose: (sim) => presetPose('2d', 9, new THREE.Vector3(fromQ((sim.state.tpl as PlatformerState).x) + 3, 2, 0)),
+      pose: (sim) => presetPose('2d', 10, new THREE.Vector3(fromQ((sim.state.tpl as PlatformerState).x) + 3, -0.6, 0)),
       update(sim, alpha, now) {
         const s = sim.state.tpl as PlatformerState;
         const x = fromQ(s.x + sim.state.motion.v * alpha);

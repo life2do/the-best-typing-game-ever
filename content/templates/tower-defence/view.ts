@@ -23,6 +23,7 @@ const view: TemplateView = {
     root.add(board);
     const path = new THREE.Mesh(new THREE.TubeGeometry(curve, 80, 0.55, 8, false), style.material('prop'));
     path.scale.y = 0.15;
+    path.position.y = 0.06;
     root.add(path);
     const tower = new THREE.Group();
     const crystal = new THREE.Mesh(new THREE.OctahedronGeometry(1), style.material('accent'));
@@ -52,7 +53,7 @@ const view: TemplateView = {
     let lastFrozen = 0;
     let lastBonk = -1;
     return {
-      pose: () => presetPose('iso', 16, new THREE.Vector3(0, 0, 0)),
+      pose: () => presetPose('iso', 19, new THREE.Vector3(0, -3.5, 0)),
       update(sim, _alpha, now) {
         const s = sim.state.tpl as TowerState;
         const targets = sim.state.targets;

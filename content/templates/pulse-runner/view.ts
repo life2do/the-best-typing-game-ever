@@ -48,7 +48,7 @@ const view: TemplateView = {
     return {
       pose: (sim) => {
         const s = sim.state.tpl as PulseState;
-        return presetPose('2d', 9, new THREE.Vector3(fromQ(s.x) + 3, 2, 0));
+        return presetPose('2d', 10, new THREE.Vector3(fromQ(s.x) + 3, -0.6, 0));
       },
       update(sim, alpha, now) {
         const s = sim.state.tpl as PulseState;

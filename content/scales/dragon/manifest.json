@@ -18,7 +18,8 @@
       "tts": {
         "en": "You are a egg!"
       },
-      "model": "procedural:dragon-1"
+      "model": "procedural:dragon-1",
+      "icon": "🥚"
     },
     {
       "tier": 2,
@@ -28,7 +29,8 @@
       "tts": {
         "en": "You are a hatchling!"
       },
-      "model": "procedural:dragon-2"
+      "model": "procedural:dragon-2",
+      "icon": "🐣"
     },
     {
       "tier": 3,
@@ -38,7 +40,8 @@
       "tts": {
         "en": "You are a whelp!"
       },
-      "model": "procedural:dragon-3"
+      "model": "procedural:dragon-3",
+      "icon": "🦎"
     },
     {
       "tier": 4,
@@ -48,7 +51,8 @@
       "tts": {
         "en": "You are a drake!"
       },
-      "model": "procedural:dragon-4"
+      "model": "procedural:dragon-4",
+      "icon": "🐊"
     },
     {
       "tier": 5,
@@ -58,7 +62,8 @@
       "tts": {
         "en": "You are a wyvern!"
       },
-      "model": "procedural:dragon-5"
+      "model": "procedural:dragon-5",
+      "icon": "🐲"
     },
     {
       "tier": 6,
@@ -68,7 +73,8 @@
       "tts": {
         "en": "You are a elder dragon!"
       },
-      "model": "procedural:dragon-6"
+      "model": "procedural:dragon-6",
+      "icon": "🐉"
     },
     {
       "tier": 7,
@@ -78,7 +84,8 @@
       "tts": {
         "en": "You are a cosmic dragon!"
       },
-      "model": "procedural:dragon-7"
+      "model": "procedural:dragon-7",
+      "icon": "🌠"
     }
   ],
   "rigHooks": {

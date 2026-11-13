@@ -18,7 +18,8 @@
       "tts": {
         "en": "You are a toddler!"
       },
-      "model": "procedural:human-1"
+      "model": "procedural:human-1",
+      "icon": "👶"
     },
     {
       "tier": 2,
@@ -28,7 +29,8 @@
       "tts": {
         "en": "You are a kid!"
       },
-      "model": "procedural:human-2"
+      "model": "procedural:human-2",
+      "icon": "🧒"
     },
     {
       "tier": 3,
@@ -38,7 +40,8 @@
       "tts": {
         "en": "You are a teen!"
       },
-      "model": "procedural:human-3"
+      "model": "procedural:human-3",
+      "icon": "🧑"
     },
     {
       "tier": 4,
@@ -48,7 +51,8 @@
       "tts": {
         "en": "You are a athlete!"
       },
-      "model": "procedural:human-4"
+      "model": "procedural:human-4",
+      "icon": "🏃"
     },
     {
       "tier": 5,
@@ -58,7 +62,8 @@
       "tts": {
         "en": "You are a ninja!"
       },
-      "model": "procedural:human-5"
+      "model": "procedural:human-5",
+      "icon": "🥷"
     },
     {
       "tier": 6,
@@ -68,7 +73,8 @@
       "tts": {
         "en": "You are a master!"
       },
-      "model": "procedural:human-6"
+      "model": "procedural:human-6",
+      "icon": "🧘"
     },
     {
       "tier": 7,
@@ -78,7 +84,8 @@
       "tts": {
         "en": "You are a wise kung-fu master!"
       },
-      "model": "procedural:human-7"
+      "model": "procedural:human-7",
+      "icon": "🧙"
     }
   ],
   "rigHooks": {

@@ -22,7 +22,7 @@ const style: RenderStyle = {
       background: new THREE.Color(c.bg).multiplyScalar(0.6),
       material(role, color) {
         const col = new THREE.Color(color ?? roles[role]);
-        const emissive = role === 'ground' ? 0.25 : role === 'sky' ? 0.1 : 0.9;
+        const emissive = role === 'ground' ? 0.2 : role === 'sky' ? 0.08 : role === 'prop' ? 0.35 : 0.8;
         const m = new THREE.MeshStandardMaterial({
           color: col.clone().multiplyScalar(0.4), emissive: col, emissiveIntensity: emissive, roughness: 0.4, metalness: 0.2,
           transparent: role === 'ice' || role === 'glow', opacity: role === 'ice' ? 0.55 : role === 'glow' ? 0.6 : 1,
@@ -36,7 +36,7 @@ const style: RenderStyle = {
           composer?.dispose();
           composer = new EffectComposer(renderer);
           composer.addPass(new RenderPass(scene, camera));
-          composer.addPass(new UnrealBloomPass(new THREE.Vector2(size.w, size.h), 0.9, 0.5, 0.15));
+          composer.addPass(new UnrealBloomPass(new THREE.Vector2(size.w, size.h), 0.55, 0.4, 0.55));
           composer.addPass(new OutputPass());
           composer.setPixelRatio(size.pr);
           composer.setSize(size.w, size.h);
