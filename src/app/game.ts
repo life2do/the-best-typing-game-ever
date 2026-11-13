@@ -52,6 +52,7 @@ export class Game {
   private screen: 'start' | 'level' | 'victory' = 'start';
   private showIntro: () => void = () => {};
   private lastCollect = -2;
+  private lastKeyAt = 0;
   private wordArt: WordArt;
   private breakUi: StretchBreak | null = null;
 
@@ -223,6 +224,7 @@ export class Game {
 
   private onKey(code: string, shift: boolean): void {
     this.audio.unlock();
+    this.lastKeyAt = performance.now();
     if (this.screen !== 'level' || !this.sim || this.paused || this.host.transitioning) return;
     const e: LogEvent = shift ? { k: 'key', t: this.logT(), code, shift: 1 } : { k: 'key', t: this.logT(), code };
     const before = this.sim.state.phase;
@@ -450,6 +452,7 @@ export class Game {
         }
       }
     }
+    this.audio.tick(!!sim && this.screen === 'level' && !this.paused && sim.state.phase === 'play', now - this.lastKeyAt);
     const alpha = sim && !this.paused ? (((now - this.segStart) * 3) / 50) % 1 : 0;
     this.host.render(this.screen === 'level' ? sim : null, alpha, now);
     if (sim && this.screen === 'level' && !this.paused) this.wordArt.update(sim, now);

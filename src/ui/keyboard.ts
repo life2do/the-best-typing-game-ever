@@ -18,7 +18,8 @@ export class KeyboardOverlay {
         .filter(([code, k]) => k.row === row && !['Backspace', 'Enter', 'Tab', 'Backquote', 'Backslash', 'BracketLeft', 'BracketRight', 'Equal', 'Minus', 'Quote'].includes(code))
         .sort((a, b) => a[1].col - b[1].col);
       for (const [code, k] of codes) {
-        const el = h('div', { class: `key f-${k.finger}${k.homeBump ? ' bump' : ''}${code === 'Space' ? ' space' : ''}` }, code === 'Space' ? '' : k.char.toUpperCase());
+        // Space shows the same space-bar sign used for Space in the game world and prompt.
+        const el = h('div', { class: `key f-${k.finger}${k.homeBump ? ' bump' : ''}${code === 'Space' ? ' space' : ''}` }, code === 'Space' ? h('span', { class: 'spacebar' }) : k.char.toUpperCase());
         if (opts.fingers && row === 'home' && ['KeyA', 'KeyS', 'KeyD', 'KeyF', 'KeyJ', 'KeyK', 'KeyL', 'Semicolon'].includes(code)) {
           el.append(h('div', { class: 'finger', style: { background: `var(--f-${k.finger})` } }));
         }
@@ -27,6 +28,11 @@ export class KeyboardOverlay {
       }
       this.el.append(r);
     }
+  }
+
+  /** The element for a physical key code (for overlays such as the intro hands). */
+  keyEl(code: string): HTMLDivElement | undefined {
+    return this.keys[code];
   }
 
   setKnown(chars: string[], newKeys: string[] = []): void {

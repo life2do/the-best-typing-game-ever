@@ -50,6 +50,7 @@ test('pause menu logs pause and resume events', async ({ page }) => {
   await page.goto('/');
   await page.locator('.scale button').nth(6).click();
   await page.locator('button', { hasText: 'Start' }).click();
+  await expect(page.locator('.intro')).toBeVisible(); // the level loads asynchronously (save lookup)
   await page.keyboard.down('KeyF');
   await page.keyboard.down('KeyJ');
   await page.keyboard.up('KeyF');

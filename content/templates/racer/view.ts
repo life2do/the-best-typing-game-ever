@@ -48,7 +48,8 @@ const view: TemplateView = {
     rider.add(board, avatar.root);
     root.add(rider);
     // Upcoming letters painted flat on the road in the rider's lane; you drive over each one you type.
-    const trail = new GlyphTrail({ mode: 'ground', start: 4.2, gap: 2.1, size: 1.6 });
+    // Starts far enough ahead that the rider never covers the current letter.
+    const trail = new GlyphTrail({ mode: 'ground', start: 5.6, gap: 2.4, size: 2.1 });
     root.add(trail.group);
     const lines = new THREE.Group();
     root.add(lines);
@@ -64,7 +65,7 @@ const view: TemplateView = {
         const s = sim.state.tpl as RacerState;
         // Chase camera: the target is a little ahead of the rider, the camera sits behind it.
         const p = presetPose('3d', 9, new THREE.Vector3(laneX * 0.5, 0.6, -fromQ(s.z) - 0.5));
-        p.pitch = 26; // high enough to see the letters on the road over the rider
+        p.pitch = 34; // steep enough that the letters on the road face the player and clear the rider
         const sp = Math.min(1, sim.state.motion.v / 9000);
         p.fov = 60 + sp * 12;
         return p;
@@ -83,7 +84,18 @@ const view: TemplateView = {
         rider.position.set(laneX, 0, -z);
         rider.rotation.z = (s.lane * LANE_W - laneX) * -0.15;
         const p = sim.state.prompt;
-        trail.update(p.text, p.pos, new THREE.Vector3(laneX, 0.12, -z), FORWARD, now);
+        // The letter route bends around cones: a letter that would sit on (or right next to) a cone
+        // slides sideways toward the free side, with a smooth falloff so the route curves.
+        const coneXZ = s.cones.map((c) => [c[1] * LANE_W, -fromQ(c[0])] as const);
+        trail.update(p.text, p.pos, new THREE.Vector3(laneX, 0.12, -z), FORWARD, now, (pt) => {
+          for (const [cx, cz] of coneXZ) {
+            const dz = Math.abs(pt.z - cz);
+            if (dz > 2.4 || Math.abs(pt.x - cx) > LANE_W * 0.8) continue;
+            const side = cx >= LANE_W * 0.9 ? -1 : cx <= -LANE_W * 0.9 ? 1 : pt.x >= cx ? 1 : -1;
+            const k = 1 - dz / 2.4;
+            pt.x = cx + side * LANE_W * (0.55 + 0.25 * k);
+          }
+        });
         const wpm = sim.liveWpmP();
         const sp = Math.min(1, sim.state.motion.v / 9000);
         const superSpeed = wpm >= SUPER_SPEED_WPM_P;

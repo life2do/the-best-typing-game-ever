@@ -200,3 +200,19 @@ body.reduced-motion .sparkle { display: none; }
 .shake { animation: shake-x 0.45s ease; }
 @keyframes shake-x { 20% { transform: translateX(-8px) rotate(-2deg); } 40% { transform: translateX(8px) rotate(2deg); } 60% { transform: translateX(-5px); } 80% { transform: translateX(5px); } }
 body.reduced-motion .shake, body.reduced-motion .break-emoji, body.reduced-motion .break-count.tick { animation: none; }
+
+/* intro hands over the keyboard */
+.hands-wrap { position: relative; display: inline-block; margin: 10px auto 0; padding-bottom: 92px; }
+.hands { position: absolute; left: 0; top: 0; pointer-events: none; overflow: visible; }
+.hands .palm { fill: rgba(241, 194, 125, 0.28); stroke: rgba(255, 255, 255, 0.55); stroke-width: 2; }
+.hands .finger { stroke-linecap: round; opacity: 0.62; }
+.hands .finger-outline { stroke: rgba(255, 255, 255, 0.6); stroke-linecap: round; }
+.hands .finger.active { opacity: 0.95; animation: finger-glow 1s ease-in-out infinite; }
+.hands .finger-outline.active { stroke: #fff; }
+@keyframes finger-glow { 50% { filter: drop-shadow(0 0 6px #fff); } }
+.hands .nail { fill: rgba(255, 255, 255, 0.55); }
+.hands .reach { stroke: #fff; stroke-width: 3; stroke-dasharray: 6 5; animation: reach 0.8s linear infinite; }
+.hands .reach-target { fill: none; stroke: #fff; stroke-width: 3; animation: finger-glow 1s ease-in-out infinite; }
+@keyframes reach { to { stroke-dashoffset: -22; } }
+body.reduced-motion .hands * { animation: none !important; }
+.spacebar { display: inline-block; width: 1.3em; height: 0.36em; margin: 0 0.12em; border: 0.09em solid currentColor; border-radius: 0.2em; vertical-align: middle; }

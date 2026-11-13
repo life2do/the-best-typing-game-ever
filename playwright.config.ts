@@ -6,6 +6,8 @@ const gl = ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swifts
 export default defineConfig({
   testDir: 'e2e',
   timeout: 180_000,
+  // Software WebGL on shared CI machines can render slowly; give UI assertions more room.
+  expect: { timeout: 15_000 },
   fullyParallel: true,
   reporter: process.env.CI ? 'github' : 'list',
   use: { baseURL: 'http://localhost:4173', trace: 'off', viewport: { width: 1280, height: 800 } },
