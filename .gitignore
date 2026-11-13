@@ -6,3 +6,4 @@ playwright-report/
 .vite/
 src/generated/
 *.log
+e2e/fixtures/

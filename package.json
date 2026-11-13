@@ -13,7 +13,7 @@
     "validate": "vite-node tools/validate.ts",
     "sim": "vite-node tools/sim.ts --",
     "test": "vitest run",
-    "e2e": "playwright test",
+    "e2e": "vite-node tools/gen-e2e-fixtures.ts && playwright test",
     "check": "npm run lint && npm run typecheck && npm run validate && npm test"
   },
   "dependencies": {

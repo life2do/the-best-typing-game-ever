@@ -82,7 +82,11 @@ IndexedDB database `tbtge` (namespaced, because every GitHub Pages site under `l
 ## Builds & deploy
 
 - CI: lint → typecheck → validate content → unit tests → simulation tests (bot typist at each tier for each template) → build → compute hashes → deploy by **appending** to the `gh-pages` branch under `/v/<buildHash>/`, and assets under `/a/<hash>`. Update `/` and `/versions.json` (see Hosting constraints).
-- `build-info.json`: build hash, git commit, content item hashes.
+- `build-info.json` (generated, `src/generated/`): build hash, git commit, content item hashes.
+- **Build id** = the first 16 base64url characters of the build hash; builds are served from `/v/<buildId>/`.
+- The build hash covers **engine sources** (`src/**`, HTML entry points, `package-lock.json`, `vite.config.ts`) plus content item hashes — not the bundle bytes, because the bundle embeds its own `/v/<buildId>/` base path.
+- Milestone 1 copies each build whole into `/v/<buildId>/` (about 0.7 MB per build). Sharing unchanged assets under `/a/<hash>` is deferred until asset files grow.
+- Deploy script: `tools/publish-pages.mjs` (never overwrites or deletes an existing `/v/` folder; updates `/`, `/verify/`, `404.html`, `versions.json`, `.nojekyll`; fails above 800 MB).
 
 ## Hosting constraints (GitHub Pages)
 

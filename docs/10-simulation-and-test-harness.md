@@ -12,6 +12,8 @@ browsers, and the milestone 1 acceptance tests all depend on it.
 
 - The **only** time source for the simulation is the **input log**. Each event carries `t`: an integer number of milliseconds since the segment started.
 - Live play: the input layer stamps `keydown` with `Math.round(performance.now() - segmentStart)`, **appends the event to the log first**, and then the simulation consumes it from the log. Live play and replay are therefore the same code path.
+- `state.simT` changes **only when a logged event is fed**, never in `advanceTo`, so the state does not depend on how often the live loop advanced time between keys.
+- When the simulation takes a stage/level snapshot and emits an event at the same moment, it **snapshots first**, so listeners that save on that event see the complete chain.
 - Simulation time is counted in **frames** at a fixed 60 Hz: `frameOf(t) = floor(t * 3 / 50)` (exact integer maths, as 60/1000 = 3/50).
 - Rendering runs at any rate. It reads the simulation state at frames `f` and `f+1`, interpolates by wall-clock time, and **never writes** simulation state.
 
@@ -141,7 +143,7 @@ There is no Backspace and an error never advances, so **every error is effective
 
 ### 4.3 Speed and accuracy
 
-- **Active time** `T` (ms) = the sum of intervals between consecutive logged keys within the measured window, **each capped at 2000 ms**, plus 0 for the first key. Pauses and handovers aren't included. Long reading or idle gaps therefore don't reduce speed, and steady typing is measured accurately.
+- **Active time** `T` (ms) = the sum of intervals between consecutive logged keys within the measured window, **each capped at `cap = max(2000 ms, 3 × the level's target interval)`** (target interval = 12000 ÷ target WPM), plus 0 for the first key. A fixed 2 s cap would inflate speed for tier-1 beginners, whose normal gap (≈ 2.4–4 s) is longer than 2 s. Pauses and handovers aren't included. Long reading or idle gaps therefore don't reduce speed, and steady typing is measured accurately.
 - **Gross speed** `WPM = floorDiv(correct * 12000, T)`. That is (correct ÷ 5) ÷ (T ÷ 60000), and it's the same as net WPM in this game.
 - **Net WPM = gross WPM.** The classic formula subtracts *uncorrected* errors, and with forced correction there are none. Errors already cost speed, because the time spent on wrong keys is in `T`. Doc 01's "net WPM" refers to this definition.
 - **Accuracy** `accPermille = floorDiv(correct * 1000, correct + errors)`. Accuracy is a **separate** star requirement, so errors are penalised twice: through time (speed) and directly (accuracy).
@@ -149,7 +151,7 @@ There is no Backspace and an error never advances, so **every error is effective
 
 ### 4.4 Rhythm steadiness
 
-Over the last 12 intervals between **correct** keys (intervals capped at 2000 ms; fewer than 4 intervals → steadiness 500):
+Over the last 12 intervals between **correct** keys (intervals capped with the same `cap` as §4.3; fewer than 4 intervals → steadiness 500):
 
 ```
 m   = median(intervals)                                        // integer; lower median for even counts
@@ -244,3 +246,12 @@ Output: a JSON summary (stars, WPM, accuracy, steadiness, simulated duration, sn
 | No false completion | Node | `struggle` at tiers 1, 4, 7 never completes; stuck flow fires |
 | Robustness | Node | `masher` at all 4 levels: no exceptions; minimum visibility respected |
 | Lint | CI | No forbidden globals in simulation paths |
+
+---
+
+## 7. Implementation notes (milestone 1)
+
+- **Replay seeking** re-simulates the current level from its start up to the target time (a whole level simulates in milliseconds). Snapshot-based seeking (restore the nearest stored state) is kept for longer runs.
+- **Timing plausibility** uses the *median absolute deviation* of intervals between keys (robust against intro/crossroads pauses): suspicious if it is under 2% of the median interval over ≥ 50 keys, or if the median interval is under 35 ms.
+- **Cross-browser**: `npm run e2e` generates `pass` bot logs in Node (`tools/gen-e2e-fixtures.ts`) and replays them in each Playwright browser. CI runs Chromium, Firefox and WebKit.
+

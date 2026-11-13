@@ -17,6 +17,7 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     target: 'es2022',
+    chunkSizeWarningLimit: 900,
     rollupOptions: {
       input: {
         main: resolve(import.meta.dirname, 'index.html'),
@@ -27,6 +28,7 @@ export default defineConfig({
   },
   test: {
     include: ['tests/**/*.test.ts', 'content/**/*.test.ts', 'src/**/*.test.ts'],
+    exclude: ['e2e/**', 'node_modules/**'],
     environment: 'node',
     testTimeout: 120_000,
   },
