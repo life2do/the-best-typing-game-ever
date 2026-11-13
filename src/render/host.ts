@@ -180,11 +180,12 @@ export class RenderHost {
       if (cur.root.visible) cur.inst.update(sim, alpha, now);
       if (!this.rig.transitioning) {
         const p = cur.inst.pose(sim);
-        this.rig.pose.fov = p.fov;
+        // Ease field of view and framing so speed changes never jolt the view.
+        this.rig.pose.fov += (p.fov - this.rig.pose.fov) * 0.08;
         this.rig.pose.frameHeight += (p.frameHeight - this.rig.pose.frameHeight) * 0.05;
         this.rig.pose.yaw = p.yaw;
         this.rig.pose.pitch = p.pitch;
-        this.rig.follow(p.target, 0.12);
+        this.rig.follow(p.target, p.follow ?? 0.12);
       } else this.rig.follow(cur.inst.pose(sim).target);
       const stageFrac = sim.setup.stageLengths.length > 1 ? Math.min(sim.state.stage, sim.setup.stageLengths.length - 1) / (sim.setup.stageLengths.length - 1) : 1;
       const intensityP = Math.round(cur.look.havocMaxP * stageFrac);

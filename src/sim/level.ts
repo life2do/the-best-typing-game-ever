@@ -102,7 +102,10 @@ export class LevelSim {
       }
       return;
     }
-    if (s.pauseAt >= 0) throw new Error('key event while paused');
+    // Keys logged while paused are ignored. Older builds could record keys after continuing a level
+    // that was saved while paused (the resume event was missing); the live game ignored those keys
+    // too, so ignoring them here keeps replays identical to what was played.
+    if (s.pauseAt >= 0) return;
     this.advanceTo(e.t);
     // simT changes only on logged events, so state never depends on how often advanceTo was called.
     s.simT = e.t - s.pausedMs;

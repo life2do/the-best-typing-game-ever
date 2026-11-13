@@ -1,7 +1,8 @@
 /**
  * Upcoming letters placed in the world in front of the character (on the road or standing on the
  * path). They slide toward the character as the player types, so each typed letter is "reached":
- * the current letter is larger and gold, typed letters pop and fade behind. Space shows as ␣.
+ * the current letter is larger and gold, typed letters pop and fade behind. Space shows as a
+ * space-bar shape (labels.ts draws "␣" that way; the glyph itself looks too much like "u").
  * Purely visual: reads the simulation's prompt, never writes state.
  */
 import * as THREE from 'three';
@@ -47,7 +48,7 @@ export class GlyphTrail {
    * @param at    the character's position; letters are laid out from here along `forward`
    * @param forward unit direction in which "ahead" lies (e.g. +X for side views, -Z for the racer)
    */
-  update(text: string, pos: number, at: THREE.Vector3, forward: THREE.Vector3, now: number): void {
+  update(text: string, pos: number, at: THREE.Vector3, forward: THREE.Vector3, now: number, adjust?: (p: THREE.Vector3) => void): void {
     if (Math.abs(pos - this.shown) > 6) this.shown = pos; // new stage text: jump
     if (pos !== this.lastPos) {
       if (pos > this.lastPos && this.lastPos >= 0) this.popAt = now;
@@ -80,6 +81,7 @@ export class GlyphTrail {
       mat.opacity = typed ? (just ? 1 - pop : 0) : Math.min(1, 1.2 - k * 0.05);
       m.visible = mat.opacity > 0.02;
       m.position.copy(at).addScaledVector(forward, ahead);
+      adjust?.(m.position); // e.g. steer the trail around obstacles
     }
   }
 

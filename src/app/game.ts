@@ -52,6 +52,7 @@ export class Game {
   private screen: 'start' | 'level' | 'victory' = 'start';
   private showIntro: () => void = () => {};
   private lastCollect = -2;
+  private lastKeyAt = 0;
   private wordArt: WordArt;
   private breakUi: StretchBreak | null = null;
 
@@ -162,6 +163,13 @@ export class Game {
     const lastT = this.seg.log.length ? this.seg.log[this.seg.log.length - 1].t : 0;
     this.segStart = performance.now() - lastT - 1;
     this.paused = false;
+    // A level saved while paused (pause menu → main menu, reload, hidden tab) continues here, so log
+    // the matching resume; otherwise every later key would be recorded as typed while paused.
+    if (sim.state.pauseAt >= 0) {
+      const e: LogEvent = { k: 'resume', t: lastT };
+      this.seg.log.push(e);
+      sim.feed(e);
+    }
     this.stuckShown = false;
     this.hintSpoken = -1;
     const lang = language(this.camp.language);
@@ -223,6 +231,7 @@ export class Game {
 
   private onKey(code: string, shift: boolean): void {
     this.audio.unlock();
+    this.lastKeyAt = performance.now();
     if (this.screen !== 'level' || !this.sim || this.paused || this.host.transitioning) return;
     const e: LogEvent = shift ? { k: 'key', t: this.logT(), code, shift: 1 } : { k: 'key', t: this.logT(), code };
     const before = this.sim.state.phase;
@@ -450,6 +459,7 @@ export class Game {
         }
       }
     }
+    this.audio.tick(!!sim && this.screen === 'level' && !this.paused && sim.state.phase === 'play', now - this.lastKeyAt);
     const alpha = sim && !this.paused ? (((now - this.segStart) * 3) / 50) % 1 : 0;
     this.host.render(this.screen === 'level' ? sim : null, alpha, now);
     if (sim && this.screen === 'level' && !this.paused) this.wordArt.update(sim, now);

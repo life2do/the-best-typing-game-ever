@@ -3,6 +3,7 @@ import type { ComplexityScaleManifest, LanguagePack } from '@/content/types';
 import type { LevelPlan } from '@/campaign/campaign';
 import { h, FINGER_NAMES } from './dom';
 import { KeyboardOverlay } from './keyboard';
+import { keyboardWithHands } from './hands';
 import { TIER_WPM } from '@/typing/tiers';
 import type { Profile, Settings } from '@/storage/profile';
 import { versionBadge } from '@/app/build-info';
@@ -65,11 +66,11 @@ export function startScreen(scale: ComplexityScaleManifest, profile: Profile | u
 
 /** Level intro: keyboard with finger colours, new key, hand position, rules (docs/03 Level structure). */
 export function introScreen(lang: LanguagePack, plan: LevelPlan, rules: { icon: string; text: string }[], tierName: string): HTMLElement {
-  const kb = new KeyboardOverlay(lang, { fingers: true });
+  const kb = new KeyboardOverlay(lang);
   kb.setKnown(plan.letters, plan.newKeys);
   kb.el.style.position = 'static';
   kb.el.style.transform = 'none';
-  kb.el.style.margin = '14px auto';
+  kb.el.style.margin = '0';
   kb.el.style.display = 'inline-flex';
   const newKeys = plan.newKeys.filter((k) => k !== ' ');
   const keyBadges = newKeys.map((k) => {
@@ -91,7 +92,7 @@ export function introScreen(lang: LanguagePack, plan: LevelPlan, rules: { icon: 
       { class: 'card' },
       h('h2', {}, `Level ${plan.index}: new ${newKeys.length > 1 ? 'keys' : 'key'}`, ...keyBadges),
       h('p', {}, fingerText, plan.newKeys.includes(' ') ? ' · Space — thumbs' : ''),
-      kb.el,
+      keyboardWithHands(kb, lang, plan.newKeys),
       h('p', {}, 'Rest your fingers on the home row. Feel the little bumps on F and J. Keep your eyes on the screen.'),
       h('div', { class: 'rules' }, ...rules.map((r) => h('div', {}, h('span', { class: 'ic' }, r.icon), r.text))),
       h('div', { class: 'press' }, 'Put your fingers on F and J — then press them together'),

@@ -106,8 +106,9 @@ export class Hud {
     if (sim.setup.inputMode === 'targeting') {
       const parts = s.targets.map((t) => {
         const locked = sim.suggestedTargetId() === t.id;
-        const vis = (x: string) => x.replace(/ /g, '␣');
-        return h('span', { class: `target${locked ? ' locked' : ''}` }, h('span', { class: 'typed' }, vis(t.text.slice(0, t.progress))), vis(t.text.slice(t.progress)));
+        // Space shows as a little space-bar shape (a "␣" glyph looks too much like "u").
+        const vis = (x: string) => x.split(/( )/).filter(Boolean).map((c) => (c === ' ' ? h('span', { class: 'spacebar' }) : c));
+        return h('span', { class: `target${locked ? ' locked' : ''}` }, h('span', { class: 'typed' }, ...vis(t.text.slice(0, t.progress))), ...vis(t.text.slice(t.progress)));
       });
       this.prompt.replaceChildren(...parts);
       return;

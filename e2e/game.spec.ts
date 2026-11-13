@@ -50,6 +50,7 @@ test('pause menu logs pause and resume events', async ({ page }) => {
   await page.goto('/');
   await page.locator('.scale button').nth(6).click();
   await page.locator('button', { hasText: 'Start' }).click();
+  await expect(page.locator('.intro')).toBeVisible(); // the level loads asynchronously (save lookup)
   await page.keyboard.down('KeyF');
   await page.keyboard.down('KeyJ');
   await page.keyboard.up('KeyF');
@@ -64,3 +65,37 @@ test('pause menu logs pause and resume events', async ({ page }) => {
   expect(kinds).toContain('pause');
   expect(kinds).toContain('resume');
 });
+
+test('pause → main menu → continue keeps typing working and the run verifies', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.goto('/');
+  await page.locator('.scale button').nth(6).click();
+  await page.locator('button', { hasText: 'Start' }).click();
+  await expect(page.locator('.intro')).toBeVisible();
+  await page.keyboard.down('KeyF');
+  await page.keyboard.down('KeyJ');
+  await page.keyboard.up('KeyF');
+  await page.keyboard.up('KeyJ');
+  await typeUntilCount(page, 8);
+  await page.keyboard.press('Escape');
+  await page.locator('button', { hasText: 'Main menu' }).click();
+  await page.locator('button', { hasText: 'Continue' }).click();
+  await expect(page.locator('.prompt')).toBeVisible();
+  const before = await page.evaluate(() => (window as any).__game.sim.state.correctTotal);
+  await typeUntilCount(page, 8);
+  const after = await page.evaluate(() => (window as any).__game.sim.state.correctTotal);
+  expect(after).toBeGreaterThan(before); // keys after continuing are counted
+  await page.goto('/verify/');
+  await page.locator('.runs button').first().click();
+  await expect(page.locator('.verdict.ok')).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+async function typeUntilCount(page: Page, n: number): Promise<void> {
+  for (let i = 0; i < n; i++) {
+    const ch = await page.evaluate(() => (window as any).__game.sim.expectedChars()[0]);
+    await page.keyboard.press(CODE[ch] ?? 'KeyF');
+    await page.waitForTimeout(90);
+  }
+}

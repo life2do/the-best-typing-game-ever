@@ -7,6 +7,7 @@ test('stretch break blocks early exit with nudges and resumes after the countdow
   await page.goto('/');
   await page.locator('.scale button').nth(3).click();
   await page.locator('button', { hasText: 'Start' }).click();
+  await expect(page.locator('.intro')).toBeVisible(); // the level loads asynchronously (save lookup)
   await page.keyboard.down('KeyF');
   await page.keyboard.down('KeyJ');
   await page.keyboard.up('KeyF');

@@ -13,6 +13,8 @@ const PROGRESSION = [
 ];
 const ARP = [0, 1, 2, 3, 2, 1, 2, 3];
 const KEYS_PER_CHORD = 8;
+/** The pad fades out after this long without a keypress. */
+export const IDLE_SILENCE_MS = 1200;
 
 export class AudioEngine {
   private ctx: AudioContext | null = null;
@@ -24,6 +26,8 @@ export class AudioEngine {
   private padGain!: GainNode;
   private pad: OscillatorNode[] = [];
   private step = 0;
+  silent = true;
+  private idleTimer: ReturnType<typeof setTimeout> | undefined;
   musicVolume = 0.35;
   sfxVolume = 0.6;
   private root = 60; // C4
@@ -132,8 +136,26 @@ export class AudioEngine {
       const now = ctx.currentTime;
       this.pad.forEach((o, i) => o.frequency.setTargetAtTime(this.freq(this.root - 12 + chord[i] + shift), now, 0.15));
     }
+    this.silent = false;
     this.padGain.gain.setTargetAtTime(steadinessP > 600 ? 0.06 : 0, ctx.currentTime, 0.6);
+    // Fade out after a pause in typing even if animation frames are slow or the tab is throttled.
+    clearTimeout(this.idleTimer);
+    this.idleTimer = setTimeout(() => this.tick(false, IDLE_SILENCE_MS + 1), IDLE_SILENCE_MS);
     this.step++;
+  }
+
+  /**
+   * Called every frame: the sustained chord pad is only held while the player keeps typing. When no
+   * key has been pressed for a moment (or the game is paused / in a break) it fades to silence, so the
+   * music never hangs on one held chord.
+   */
+  tick(active: boolean, idleMs: number): void {
+    const ctx = this.ctx;
+    if (!ctx) return;
+    const silent = !active || idleMs > IDLE_SILENCE_MS;
+    if (silent === this.silent) return;
+    this.silent = silent;
+    if (silent) this.padGain.gain.setTargetAtTime(0, ctx.currentTime, 0.25);
   }
 
   /** Gentle "bonk": low, short, no harsh square wave. */

@@ -17,16 +17,17 @@ const view: TemplateView = {
     { icon: '🎵', text: 'Keep a steady beat to run faster.' },
   ],
   create({ root, style, avatar }) {
-    const ground = new THREE.Mesh(new THREE.BoxGeometry(400, 0.4, 1), style.material('ground'));
-    ground.position.set(180, -0.2, 0);
+    // Ground and hills follow the runner, so long levels never run off the end of the world.
+    const ground = new THREE.Mesh(new THREE.BoxGeometry(60, 0.4, 1), style.material('ground'));
+    ground.position.set(0, -0.2, 0);
     root.add(ground);
     const hills = new THREE.Group();
-    for (let i = 0; i < 40; i++) {
-      const h = new THREE.Mesh(new THREE.CircleGeometry(3 + (i % 3), 24, 0, Math.PI), style.material('sky'));
-      h.position.set(i * 9 - 10, 0, -6);
-      hills.add(h);
-    }
     root.add(hills);
+    const hillPool = new Pool<number, THREE.Mesh>(hills, (i) => {
+      const h = new THREE.Mesh(new THREE.CircleGeometry(3 + (((i % 3) + 3) % 3), 24, 0, Math.PI), style.material('sky'));
+      h.position.set(i * 9, 0, -6);
+      return h;
+    });
     root.add(avatar.root);
     const ring = new THREE.Mesh(new THREE.RingGeometry(0.9, 1, 48), style.material('glow'));
     root.add(ring);
@@ -56,6 +57,9 @@ const view: TemplateView = {
         const s = sim.state.tpl as PulseState;
         const x = fromQ(s.x + sim.state.motion.v * alpha);
         avatar.root.position.set(x, 0, 0.3);
+        ground.position.x = x + 5;
+        const h0 = Math.floor(x / 9) - 3;
+        hillPool.sync(Array.from({ length: 8 }, (_, i) => h0 + i));
         const first = Math.max(0, Math.floor(x / fromQ(LANTERN_SPACING)) - 3);
         const ids = Array.from({ length: 10 }, (_, i) => first + i);
         const map = pool.sync(ids);
