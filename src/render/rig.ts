@@ -14,6 +14,8 @@ export interface CameraPose {
   pitch: number; // degrees, positive = looking down
   roll: number; // degrees
   target: THREE.Vector3;
+  /** How quickly the camera follows the target each frame (0..1); default 0.12. 1 = locked on. */
+  follow?: number;
 }
 
 export function presetPose(view: View, frameHeight = 10, target = new THREE.Vector3()): CameraPose {

@@ -60,3 +60,4 @@ Decisions agreed during spec discussion (2026-11-13).
 | D54 | Level intro draws two see-through hands over the keyboard: fingertips on their home keys in matching finger colours, thumbs on Space; the finger for the new key glows, with a dashed reach arrow to it. |
 | D55 | Space is drawn as a small space-bar shape (wide rounded bar) everywhere — world letters, labels, prompt chips and the on-screen keyboard — because "␣" reads like "u". |
 | D56 | Racer: road letters start further ahead (the rider never covers them), are centred on their measured ink bounds with generous padding, and the letter route bends around cones. |
+| D57 | Racer chase camera is locked to the rider's drawn position (follow = 1), and its field of view follows a ~1 s smoothed speed, eased by the host, so keystroke speed bursts no longer shake or pulse the view. |
