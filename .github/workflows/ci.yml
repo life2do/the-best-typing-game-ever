@@ -48,11 +48,11 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci
-      - name: Build into /v/<buildId>/
+      - name: Build (relative asset URLs; published into /v/<buildId>/)
         run: |
           ID=$(npx vite-node tools/build-content.ts --print)
           echo "BUILD_ID=$ID" >> "$GITHUB_ENV"
-          TBTGE_BASE="/${GITHUB_REPOSITORY#*/}/v/$ID/" npm run build
+          npm run build
       - name: Append to gh-pages
         run: |
           git fetch origin gh-pages:gh-pages || true

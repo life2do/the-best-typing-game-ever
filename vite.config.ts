@@ -2,12 +2,10 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'node:path';
 
-// Each deploy is served from its own immutable folder: /<repo>/v/<buildHash>/ (docs/08 Hosting constraints).
-// CI sets TBTGE_BASE; local dev and tests use '/'.
-const base = process.env.TBTGE_BASE ?? '/';
-
-export default defineConfig({
-  base,
+// Builds use relative asset URLs so the same build works wherever it is served:
+// <user>.github.io/<repo>/v/<id>/, a custom domain's /v/<id>/, or a local folder (docs/08 Hosting constraints).
+export default defineConfig(({ command }) => ({
+  base: process.env.TBTGE_BASE ?? (command === 'build' ? './' : '/'),
   resolve: {
     alias: {
       '@': resolve(import.meta.dirname, 'src'),
@@ -32,4 +30,4 @@ export default defineConfig({
     environment: 'node',
     testTimeout: 120_000,
   },
-});
+}));

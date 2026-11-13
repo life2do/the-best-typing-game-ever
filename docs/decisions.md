@@ -48,3 +48,5 @@ Decisions agreed during spec discussion (2026-11-13).
 | D42 | Automatic quality scaling stops at native pixel density; supersampling beyond native is manual. FPS counter in the HUD (setting, default on). |
 | D43 | During play the keyboard overlay highlights only the next key; the new-key outline is shown in the level intro only. |
 | D44 | Platformer: gaps snap to the block grid and the hop is derived from the runner's position, so ground is always under it; notes hang over gaps and are collected when passed. |
+| D45 | Builds use relative asset URLs (Vite `base: './'`) so they work on github.io and on a custom domain. Builds published before this (`DuWNSrtz…`, `vPN3mLJ8…`) contain absolute `/the-best-typing-game-ever/` asset paths and do not load on the custom domain (github.io now redirects there). |
+| D46 | The start screen, in-game top bar and verify page show `commit <sha7> · build <id>`, linking to the commit on GitHub. |

@@ -5,6 +5,7 @@ import { h, FINGER_NAMES } from './dom';
 import { KeyboardOverlay } from './keyboard';
 import { TIER_WPM } from '@/typing/tiers';
 import type { Profile, Settings } from '@/storage/profile';
+import { versionBadge } from '@/app/build-info';
 
 export interface StartChoice {
   action: 'new' | 'continue';
@@ -50,6 +51,7 @@ export function startScreen(scale: ComplexityScaleManifest, profile: Profile | u
       'div',
       { class: 'card' },
       h('h1', {}, 'The Best Typing Game Ever'),
+      versionBadge(),
       h('p', {}, 'Learn to type without looking. Every new key opens a new world.'),
       h('h2', {}, `How fast do you type? ${scale.icon ?? ''}`),
       steps,

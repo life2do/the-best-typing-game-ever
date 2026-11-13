@@ -13,7 +13,7 @@ import { AvatarRig } from '@/avatar/procedural';
 import { Hud } from '@/ui/hud';
 import { language } from '@/campaign/setup';
 import { DEFAULT_SETTINGS } from '@/storage/profile';
-import { BUILD } from './build-info';
+import { BUILD, versionBadge } from './build-info';
 import type { LevelSim } from '@/sim/level';
 import type { Campaign } from '@/campaign/campaign';
 
@@ -43,6 +43,7 @@ function chooser(runs: RunFile[]): void {
   ui.replaceChildren(
     h('div', { class: 'overlay' }, h('div', { class: 'card' },
       h('h1', {}, 'Verify & Re-play'),
+      versionBadge(),
       h('p', {}, 'Pick a run saved on this device, or open a run file someone shared with you.'),
       h('div', { class: 'runs' }, ...(runs.length ? runs.map((r) => h('button', { class: 'secondary', onclick: () => open(r) }, `Run ${r.campaign.seed.slice(0, 8)} — ${r.segments.length} level(s), up to level ${Math.max(...r.segments.map((s) => s.level))}`)) : [h('p', {}, 'No runs on this device yet.')])),
       h('p', {}, 'Open a run file: ', file),
