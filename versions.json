@@ -1,10 +1,15 @@
 {
-  "latest": "DuWNSrtzFmWjQmAS",
+  "latest": "vPN3mLJ8bWFlS-6u",
   "builds": [
     {
       "id": "DuWNSrtzFmWjQmAS",
       "commit": "87a3eee4dcba11480e0f119c20e29eb339e2e34f",
       "publishedAt": "2026-11-13T20:19:32.501Z"
+    },
+    {
+      "id": "vPN3mLJ8bWFlS-6u",
+      "commit": "0c7974a822082d9291503d048e5b18d97971cf51",
+      "publishedAt": "2026-11-13T20:45:11.601Z"
     }
   ]
 }
