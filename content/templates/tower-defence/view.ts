@@ -104,8 +104,10 @@ const view: TemplateView = {
             blob.scale.set(1 + Math.sin(now / 200 + c.id) * 0.06, 1 - Math.sin(now / 200 + c.id) * 0.06, 1);
             label.visible = !!t;
             if (t) {
+              // Highlight the target to type next: the aimed-at one, or before any letter is typed the
+              // one the keyboard overlay points at. The rest stay plain (and dim once one is aimed at).
               const anyLocked = sim.state.lockedTarget >= 0;
-              const locked = sim.state.lockedTarget === t.id;
+              const locked = sim.suggestedTargetId() === t.id;
               // Typed letters disappear; the trailing Space shows as ␣ (it confirms the freeze).
               const rest = t.text.slice(t.progress).replace(/ /g, '␣');
               if (locked) setLabel(label, rest, LABEL_H * 1.4, '#1a1a1a', 'rgba(255,209,102,0.97)');

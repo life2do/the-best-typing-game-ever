@@ -105,7 +105,7 @@ export class Hud {
     this.prompt.classList.toggle('hidden', s.phase !== 'play');
     if (sim.setup.inputMode === 'targeting') {
       const parts = s.targets.map((t) => {
-        const locked = s.lockedTarget === t.id;
+        const locked = sim.suggestedTargetId() === t.id;
         const vis = (x: string) => x.replace(/ /g, '␣');
         return h('span', { class: `target${locked ? ' locked' : ''}` }, h('span', { class: 'typed' }, vis(t.text.slice(0, t.progress))), vis(t.text.slice(t.progress)));
       });

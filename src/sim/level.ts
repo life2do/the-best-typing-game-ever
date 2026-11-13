@@ -177,6 +177,17 @@ export class LevelSim {
     }
   }
 
+  /**
+   * The target the player should type next: the aimed-at one, or else the one whose first letter the
+   * keyboard overlay highlights (expectedChars()[0]). Derived, never stored.
+   */
+  suggestedTargetId(): number {
+    const s = this.state;
+    if (s.lockedTarget >= 0) return s.lockedTarget;
+    const first = this.expectedChars()[0];
+    return s.targets.find((t) => t.text[0] === first)?.id ?? -1;
+  }
+
   /** Characters that would be judged correct right now. */
   expectedChars(): string[] {
     const s = this.state;

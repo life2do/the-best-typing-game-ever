@@ -24,4 +24,21 @@ describe('targeting confirmation with Space', () => {
     expect(sim.state.targets.some((x) => x.id === target.id)).toBe(false);
     expect(sim.state.lockedTarget).toBe(-1);
   });
+
+  it('suggests a target before any letter is typed, matching the keyboard highlight', () => {
+    const setup = adHocSetup('tgt2', 'template.tower-defence', 'fjdk'.split(''), { tier: 4 });
+    const sim = new LevelSim(setup, templateSim(setup.templateId));
+    let t = 1000;
+    const key = (code: string) => sim.feed({ k: 'key', t: (t += 300), code });
+    key('KeyF');
+    key('KeyJ');
+    expect(sim.state.lockedTarget).toBe(-1);
+    const id = sim.suggestedTargetId();
+    const suggested = sim.state.targets.find((x) => x.id === id)!;
+    expect(suggested.text[0]).toBe(sim.expectedChars()[0]);
+    // Aiming at a target makes it the suggestion.
+    const other = sim.state.targets.find((x) => x.text[0] !== suggested.text[0]) ?? suggested;
+    key(setup.language.codeOf[other.text[0]]);
+    expect(sim.suggestedTargetId()).toBe(other.id);
+  });
 });
