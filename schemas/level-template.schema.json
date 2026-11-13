@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://life2do.github.io/the-best-typing-game-ever/schemas/level-template.schema.json",
+  "title": "Level template",
+  "allOf": [
+    {
+      "$ref": "common.schema.json#/$defs/itemBase"
+    }
+  ],
+  "type": "object",
+  "properties": {
+    "kind": {
+      "const": "level-template"
+    },
+    "genre": {
+      "type": "string"
+    },
+    "minLetters": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "maxLetters": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "inputMode": {
+      "$ref": "common.schema.json#/$defs/inputMode"
+    },
+    "views": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/view"
+      },
+      "minItems": 1
+    },
+    "stages": {
+      "type": "object",
+      "properties": {
+        "min": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max": {
+          "type": "integer",
+          "maximum": 8
+        }
+      }
+    },
+    "supportsHavocs": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/id"
+      }
+    },
+    "supportsAbilities": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/id"
+      }
+    },
+    "multiplayer": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "coop",
+          "side-by-side",
+          "companions"
+        ]
+      }
+    },
+    "entry": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "genre",
+    "minLetters",
+    "inputMode",
+    "views",
+    "entry"
+  ]
+}

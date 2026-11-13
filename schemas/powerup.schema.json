@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://life2do.github.io/the-best-typing-game-ever/schemas/powerup.schema.json",
+  "title": "Power-up",
+  "allOf": [
+    {
+      "$ref": "common.schema.json#/$defs/itemBase"
+    }
+  ],
+  "type": "object",
+  "properties": {
+    "kind": {
+      "const": "powerup"
+    },
+    "effect": {
+      "enum": [
+        "slow-mo",
+        "shield",
+        "reveal",
+        "magnet",
+        "custom"
+      ]
+    },
+    "durationMs": {
+      "type": "integer"
+    },
+    "charges": {
+      "type": "integer"
+    },
+    "params": {
+      "type": "object"
+    },
+    "earnedBy": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source"
+        ],
+        "properties": {
+          "source": {
+            "enum": [
+              "word",
+              "accuracy-streak",
+              "rhythm-streak",
+              "random-drop"
+            ]
+          },
+          "threshold": {
+            "type": "number"
+          },
+          "weight": {
+            "type": "number"
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "entry": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "effect",
+    "earnedBy"
+  ]
+}

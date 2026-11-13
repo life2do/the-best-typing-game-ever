@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://life2do.github.io/the-best-typing-game-ever/schemas/voice-effect.schema.json",
+  "title": "Voice effect (TTS)",
+  "allOf": [
+    {
+      "$ref": "common.schema.json#/$defs/itemBase"
+    }
+  ],
+  "type": "object",
+  "properties": {
+    "kind": {
+      "const": "voice-effect"
+    },
+    "name": {
+      "$ref": "common.schema.json#/$defs/localized"
+    },
+    "pitch": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 2
+    },
+    "rate": {
+      "type": "number",
+      "minimum": 0.1,
+      "maximum": 10
+    },
+    "voiceHint": {
+      "type": "string"
+    },
+    "audioGraph": {
+      "type": "object",
+      "description": "Future: WASM TTS effect chain"
+    }
+  },
+  "required": [
+    "pitch",
+    "rate"
+  ]
+}

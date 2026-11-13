@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://life2do.github.io/the-best-typing-game-ever/schemas/proof.schema.json",
+  "title": "Proof bundle",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "tbtge-proof/1"
+    },
+    "campaign": {
+      "type": "object",
+      "required": [
+        "language",
+        "seed"
+      ],
+      "properties": {
+        "language": {
+          "type": "string"
+        },
+        "seed": {
+          "type": "string"
+        },
+        "orderVariant": {
+          "type": "integer"
+        },
+        "partyMode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "players": {
+          "type": "integer"
+        }
+      }
+    },
+    "segments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "build",
+          "level",
+          "log",
+          "snapshots"
+        ],
+        "properties": {
+          "build": {
+            "$ref": "common.schema.json#/$defs/hash"
+          },
+          "level": {
+            "type": "integer"
+          },
+          "log": {
+            "type": "string",
+            "contentEncoding": "base64"
+          },
+          "snapshots": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/hash"
+            }
+          },
+          "partyId": {
+            "type": "string"
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "summary": {
+      "type": "object"
+    },
+    "identity": {
+      "type": "object",
+      "required": [
+        "mode"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "none",
+            "hashed",
+            "plain"
+          ]
+        },
+        "salt": {
+          "type": "string"
+        },
+        "nameHash": {
+          "$ref": "common.schema.json#/$defs/hash"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "devicePublicKey": {
+      "type": "string"
+    },
+    "signature": {
+      "type": "string"
+    },
+    "run": {
+      "$ref": "common.schema.json#/$defs/hash"
+    }
+  },
+  "required": [
+    "format",
+    "campaign",
+    "segments",
+    "summary",
+    "identity",
+    "run"
+  ]
+}

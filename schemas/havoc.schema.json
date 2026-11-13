@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://life2do.github.io/the-best-typing-game-ever/schemas/havoc.schema.json",
+  "title": "Havoc",
+  "allOf": [
+    {
+      "$ref": "common.schema.json#/$defs/itemBase"
+    }
+  ],
+  "type": "object",
+  "properties": {
+    "kind": {
+      "const": "havoc"
+    },
+    "entry": {
+      "type": "string"
+    },
+    "intensity": {
+      "$ref": "common.schema.json#/$defs/range"
+    },
+    "compatibleViews": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/view"
+      }
+    },
+    "reducedMotion": {
+      "type": "string",
+      "description": "ref or 'calm-builtin'"
+    },
+    "affectsInput": {
+      "const": false
+    }
+  },
+  "required": [
+    "entry",
+    "reducedMotion",
+    "affectsInput"
+  ]
+}

@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://life2do.github.io/the-best-typing-game-ever/schemas/language-pack.schema.json",
+  "title": "Language pack",
+  "allOf": [
+    {
+      "$ref": "common.schema.json#/$defs/itemBase"
+    }
+  ],
+  "type": "object",
+  "properties": {
+    "kind": {
+      "const": "language-pack"
+    },
+    "name": {
+      "$ref": "common.schema.json#/$defs/localized"
+    },
+    "script": {
+      "enum": [
+        "latin",
+        "cyrillic",
+        "other"
+      ]
+    },
+    "alphabet": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "layout": {
+      "type": "object",
+      "description": "KeyboardEvent.code -> key info",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "char",
+          "finger",
+          "row"
+        ],
+        "properties": {
+          "char": {
+            "type": "string"
+          },
+          "shift": {
+            "type": "string"
+          },
+          "finger": {
+            "enum": [
+              "lp",
+              "lr",
+              "lm",
+              "li",
+              "lt",
+              "rt",
+              "ri",
+              "rm",
+              "rr",
+              "rp"
+            ]
+          },
+          "row": {
+            "enum": [
+              "number",
+              "top",
+              "home",
+              "bottom",
+              "space"
+            ]
+          },
+          "homeBump": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "order": {
+      "type": "array",
+      "description": "Levels: each entry lists keys introduced",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "minItems": 1
+      },
+      "minItems": 1
+    },
+    "orderVariants": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "keyGroups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "keys"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "keys": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "name": {
+            "$ref": "common.schema.json#/$defs/localized"
+          }
+        }
+      }
+    },
+    "words": {
+      "type": "object",
+      "description": "tag -> relative path of word list",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "blocklist": {
+      "type": "string"
+    },
+    "ui": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "tts": {
+      "type": "object",
+      "properties": {
+        "lang": {
+          "type": "string"
+        },
+        "preferredVoices": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "alphabet",
+    "layout",
+    "order",
+    "keyGroups",
+    "words",
+    "blocklist"
+  ]
+}

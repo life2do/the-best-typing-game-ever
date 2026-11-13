@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://life2do.github.io/the-best-typing-game-ever/schemas/asset-manifest.schema.json",
+  "title": "Asset manifest",
+  "allOf": [
+    {
+      "$ref": "common.schema.json#/$defs/itemBase"
+    }
+  ],
+  "type": "object",
+  "properties": {
+    "kind": {
+      "enum": [
+        "static-image",
+        "vector",
+        "video",
+        "procedural",
+        "shader",
+        "audio",
+        "font",
+        "mesh"
+      ]
+    },
+    "source": {
+      "type": "string"
+    },
+    "fallback": {
+      "type": "string",
+      "description": "procedural:<generator> or a ref; must always resolve"
+    },
+    "metadata": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "source",
+    "fallback"
+  ]
+}

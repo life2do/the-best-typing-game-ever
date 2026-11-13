@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://life2do.github.io/the-best-typing-game-ever/schemas/complexity-scale.schema.json",
+  "title": "Complexity scale (start-screen theme + avatar)",
+  "allOf": [
+    {
+      "$ref": "common.schema.json#/$defs/itemBase"
+    }
+  ],
+  "type": "object",
+  "properties": {
+    "kind": {
+      "const": "complexity-scale"
+    },
+    "icon": {
+      "type": "string"
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "tier",
+          "name",
+          "model"
+        ],
+        "properties": {
+          "tier": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 7
+          },
+          "name": {
+            "$ref": "common.schema.json#/$defs/localized"
+          },
+          "tts": {
+            "$ref": "common.schema.json#/$defs/localized"
+          },
+          "model": {
+            "$ref": "common.schema.json#/$defs/ref"
+          }
+        }
+      },
+      "minItems": 7,
+      "maxItems": 7
+    },
+    "rigHooks": {
+      "type": "object",
+      "required": [
+        "idle",
+        "move",
+        "jump",
+        "land",
+        "stumble",
+        "celebrate",
+        "powerup"
+      ],
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Core hooks are required. Optional 'ability:<ability-id>' hooks override an ability's default (core) hook for this theme.",
+      "propertyNames": {
+        "pattern": "^(idle|move|jump|land|stumble|celebrate|powerup|ability:[a-z0-9]+([.-][a-z0-9]+)*)$"
+      }
+    },
+    "customization": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "slot",
+          "kind",
+          "unlocks"
+        ],
+        "properties": {
+          "slot": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "color",
+              "pattern",
+              "size",
+              "accessory",
+              "trail",
+              "aura",
+              "idle-style",
+              "other"
+            ]
+          },
+          "unlocks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "range",
+                "stars"
+              ],
+              "properties": {
+                "range": {
+                  "$ref": "common.schema.json#/$defs/range"
+                },
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "stars": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            },
+            "minItems": 1
+          }
+        }
+      },
+      "minItems": 8
+    }
+  },
+  "required": [
+    "steps",
+    "rigHooks",
+    "customization"
+  ]
+}

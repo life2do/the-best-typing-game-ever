@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://life2do.github.io/the-best-typing-game-ever/schemas/ability.schema.json",
+  "title": "Ability (word-triggered)",
+  "allOf": [
+    {
+      "$ref": "common.schema.json#/$defs/itemBase"
+    }
+  ],
+  "type": "object",
+  "properties": {
+    "kind": {
+      "const": "ability"
+    },
+    "type": {
+      "enum": [
+        "permanent",
+        "level-mechanic",
+        "boost",
+        "collectible",
+        "easter-egg"
+      ]
+    },
+    "triggerWords": {
+      "type": "object",
+      "description": "language id -> words",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "minItems": 1
+      }
+    },
+    "quickTypeBudgetMs": {
+      "type": "object",
+      "description": "tier (1-7) -> ms",
+      "additionalProperties": {
+        "type": "integer"
+      }
+    },
+    "rigHook": {
+      "enum": [
+        "idle",
+        "move",
+        "jump",
+        "land",
+        "stumble",
+        "celebrate",
+        "powerup"
+      ],
+      "description": "Core hook used when the avatar's scale has no 'ability:<id>' override."
+    },
+    "powerup": {
+      "$ref": "common.schema.json#/$defs/ref"
+    },
+    "entry": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "type",
+    "triggerWords"
+  ]
+}

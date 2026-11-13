@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://life2do.github.io/the-best-typing-game-ever/schemas/campaign-rules.schema.json",
+  "title": "Campaign rules",
+  "allOf": [
+    {
+      "$ref": "common.schema.json#/$defs/itemBase"
+    }
+  ],
+  "type": "object",
+  "properties": {
+    "kind": {
+      "const": "campaign-rules"
+    },
+    "language": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "slots": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "level",
+          "viewBand"
+        ],
+        "properties": {
+          "level": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "viewBand": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/view"
+            },
+            "minItems": 1
+          },
+          "fixedTemplate": {
+            "$ref": "common.schema.json#/$defs/ref"
+          },
+          "inputMode": {
+            "$ref": "common.schema.json#/$defs/inputMode"
+          },
+          "havocIntensity": {
+            "$ref": "common.schema.json#/$defs/range"
+          },
+          "boss": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "constraints": {
+      "type": "object",
+      "properties": {
+        "noTemplateRepeatWithin": {
+          "type": "integer"
+        },
+        "noStyleTwice": {
+          "type": "boolean"
+        },
+        "dictatedShare": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "dropTable": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "item",
+          "weight"
+        ],
+        "properties": {
+          "item": {
+            "$ref": "common.schema.json#/$defs/ref"
+          },
+          "weight": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "pityAfterTicks": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "language",
+    "slots"
+  ]
+}
