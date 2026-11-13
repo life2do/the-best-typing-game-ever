@@ -1,0 +1,9 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Rng > pins the first outputs (golden values guard against accidental algorithm changes) 1`] = `
+[
+  3256848319,
+  543371994,
+  4162296529,
+]
+`;

@@ -1,0 +1,17 @@
+{
+  "input": [
+    [],
+    [
+      []
+    ],
+    [
+      0,
+      -1,
+      "0",
+      null,
+      false
+    ]
+  ],
+  "canonical": "[[],[[]],[0,-1,\"0\",null,false]]",
+  "hash": "sha256-hRwhs9EZNAU7HaciLfhKP76EoOeVznrHmhd-cZIyBGk"
+}
