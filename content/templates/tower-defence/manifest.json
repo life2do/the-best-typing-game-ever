@@ -1,0 +1,30 @@
+{
+  "id": "template.tower-defence",
+  "kind": "level-template",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "PROMPT.md",
+  "description": "Isometric tower defence (non-violent): friendly blobs carrying letters wander toward a crystal tower; typing their letters freezes them into ice cubes.",
+  "tags": [
+    "iso",
+    "targeting"
+  ],
+  "genre": "tower-defence",
+  "minLetters": 4,
+  "inputMode": "targeting",
+  "views": [
+    "iso"
+  ],
+  "stages": {
+    "min": 3,
+    "max": 3
+  },
+  "supportsHavocs": [
+    "havoc.map-rotate"
+  ],
+  "multiplayer": [],
+  "entry": "sim.ts"
+}

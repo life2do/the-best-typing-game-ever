@@ -37,7 +37,7 @@
             "$ref": "common.schema.json#/$defs/localized"
           },
           "model": {
-            "$ref": "common.schema.json#/$defs/ref"
+            "$ref": "common.schema.json#/$defs/assetRef"
           }
         }
       },

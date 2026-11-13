@@ -114,6 +114,11 @@
           "description": "Computed by the build. Never hand-written."
         }
       }
+    },
+    "assetRef": {
+      "description": "An asset reference: id@version (resolved to a content hash) or procedural:<generator>",
+      "type": "string",
+      "pattern": "^([a-z0-9.-]+@[0-9]+|procedural:[a-z0-9.-]+)$"
     }
   }
 }

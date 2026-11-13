@@ -1,0 +1,28 @@
+# Words and substrings that must never appear in generated text (CC0-1.0).
+# Checked at build time against every word list and at runtime against generated pseudo-words.
+# Matching is case-insensitive substring matching for entries prefixed with "~", whole-word otherwise.
+~fuck
+~shit
+~cunt
+~dick
+~cock
+~piss
+~slut
+~whore
+~fag
+~nigg
+~rape
+~kkk
+~nazi
+ass
+asses
+damn
+hell
+sex
+kill
+kills
+dead
+die
+dies
+gun
+guns

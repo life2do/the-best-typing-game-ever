@@ -1,0 +1,585 @@
+{
+  "id": "lang.en",
+  "kind": "language-pack",
+  "version": 1,
+  "description": "English, US QWERTY. Classic home-row-first order adjusted so useful words appear early (E and Space early).",
+  "prompt": "PROMPT.md",
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "name": {
+    "en": "English",
+    "ru": "Английский"
+  },
+  "script": "latin",
+  "alphabet": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k",
+    "l",
+    "m",
+    "n",
+    "o",
+    "p",
+    "q",
+    "r",
+    "s",
+    "t",
+    "u",
+    "v",
+    "w",
+    "x",
+    "y",
+    "z"
+  ],
+  "layout": {
+    "Backquote": {
+      "char": "`",
+      "shift": "~",
+      "finger": "lp",
+      "row": "number",
+      "col": 0
+    },
+    "Digit1": {
+      "char": "1",
+      "shift": "!",
+      "finger": "lp",
+      "row": "number",
+      "col": 1
+    },
+    "Digit2": {
+      "char": "2",
+      "shift": "@",
+      "finger": "lr",
+      "row": "number",
+      "col": 2
+    },
+    "Digit3": {
+      "char": "3",
+      "shift": "#",
+      "finger": "lm",
+      "row": "number",
+      "col": 3
+    },
+    "Digit4": {
+      "char": "4",
+      "shift": "$",
+      "finger": "li",
+      "row": "number",
+      "col": 4
+    },
+    "Digit5": {
+      "char": "5",
+      "shift": "%",
+      "finger": "li",
+      "row": "number",
+      "col": 5
+    },
+    "Digit6": {
+      "char": "6",
+      "shift": "^",
+      "finger": "ri",
+      "row": "number",
+      "col": 6
+    },
+    "Digit7": {
+      "char": "7",
+      "shift": "&",
+      "finger": "ri",
+      "row": "number",
+      "col": 7
+    },
+    "Digit8": {
+      "char": "8",
+      "shift": "*",
+      "finger": "rm",
+      "row": "number",
+      "col": 8
+    },
+    "Digit9": {
+      "char": "9",
+      "shift": "(",
+      "finger": "rr",
+      "row": "number",
+      "col": 9
+    },
+    "Digit0": {
+      "char": "0",
+      "shift": ")",
+      "finger": "rp",
+      "row": "number",
+      "col": 10
+    },
+    "Minus": {
+      "char": "-",
+      "shift": "_",
+      "finger": "rp",
+      "row": "number",
+      "col": 11
+    },
+    "Equal": {
+      "char": "=",
+      "shift": "+",
+      "finger": "rp",
+      "row": "number",
+      "col": 12
+    },
+    "KeyQ": {
+      "char": "q",
+      "shift": "Q",
+      "finger": "lp",
+      "row": "top",
+      "col": 0
+    },
+    "KeyW": {
+      "char": "w",
+      "shift": "W",
+      "finger": "lr",
+      "row": "top",
+      "col": 1
+    },
+    "KeyE": {
+      "char": "e",
+      "shift": "E",
+      "finger": "lm",
+      "row": "top",
+      "col": 2
+    },
+    "KeyR": {
+      "char": "r",
+      "shift": "R",
+      "finger": "li",
+      "row": "top",
+      "col": 3
+    },
+    "KeyT": {
+      "char": "t",
+      "shift": "T",
+      "finger": "li",
+      "row": "top",
+      "col": 4
+    },
+    "KeyY": {
+      "char": "y",
+      "shift": "Y",
+      "finger": "ri",
+      "row": "top",
+      "col": 5
+    },
+    "KeyU": {
+      "char": "u",
+      "shift": "U",
+      "finger": "ri",
+      "row": "top",
+      "col": 6
+    },
+    "KeyI": {
+      "char": "i",
+      "shift": "I",
+      "finger": "rm",
+      "row": "top",
+      "col": 7
+    },
+    "KeyO": {
+      "char": "o",
+      "shift": "O",
+      "finger": "rr",
+      "row": "top",
+      "col": 8
+    },
+    "KeyP": {
+      "char": "p",
+      "shift": "P",
+      "finger": "rp",
+      "row": "top",
+      "col": 9
+    },
+    "BracketLeft": {
+      "char": "[",
+      "shift": "{",
+      "finger": "rp",
+      "row": "top",
+      "col": 10
+    },
+    "BracketRight": {
+      "char": "]",
+      "shift": "}",
+      "finger": "rp",
+      "row": "top",
+      "col": 11
+    },
+    "Backslash": {
+      "char": "\\",
+      "shift": "|",
+      "finger": "rp",
+      "row": "top",
+      "col": 12
+    },
+    "KeyA": {
+      "char": "a",
+      "shift": "A",
+      "finger": "lp",
+      "row": "home",
+      "col": 0
+    },
+    "KeyS": {
+      "char": "s",
+      "shift": "S",
+      "finger": "lr",
+      "row": "home",
+      "col": 1
+    },
+    "KeyD": {
+      "char": "d",
+      "shift": "D",
+      "finger": "lm",
+      "row": "home",
+      "col": 2
+    },
+    "KeyF": {
+      "char": "f",
+      "shift": "F",
+      "finger": "li",
+      "row": "home",
+      "col": 3,
+      "homeBump": true
+    },
+    "KeyG": {
+      "char": "g",
+      "shift": "G",
+      "finger": "li",
+      "row": "home",
+      "col": 4
+    },
+    "KeyH": {
+      "char": "h",
+      "shift": "H",
+      "finger": "ri",
+      "row": "home",
+      "col": 5
+    },
+    "KeyJ": {
+      "char": "j",
+      "shift": "J",
+      "finger": "ri",
+      "row": "home",
+      "col": 6,
+      "homeBump": true
+    },
+    "KeyK": {
+      "char": "k",
+      "shift": "K",
+      "finger": "rm",
+      "row": "home",
+      "col": 7
+    },
+    "KeyL": {
+      "char": "l",
+      "shift": "L",
+      "finger": "rr",
+      "row": "home",
+      "col": 8
+    },
+    "Semicolon": {
+      "char": ";",
+      "shift": ":",
+      "finger": "rp",
+      "row": "home",
+      "col": 9
+    },
+    "Quote": {
+      "char": "'",
+      "shift": "\"",
+      "finger": "rp",
+      "row": "home",
+      "col": 10
+    },
+    "KeyZ": {
+      "char": "z",
+      "shift": "Z",
+      "finger": "lp",
+      "row": "bottom",
+      "col": 0
+    },
+    "KeyX": {
+      "char": "x",
+      "shift": "X",
+      "finger": "lr",
+      "row": "bottom",
+      "col": 1
+    },
+    "KeyC": {
+      "char": "c",
+      "shift": "C",
+      "finger": "lm",
+      "row": "bottom",
+      "col": 2
+    },
+    "KeyV": {
+      "char": "v",
+      "shift": "V",
+      "finger": "li",
+      "row": "bottom",
+      "col": 3
+    },
+    "KeyB": {
+      "char": "b",
+      "shift": "B",
+      "finger": "li",
+      "row": "bottom",
+      "col": 4
+    },
+    "KeyN": {
+      "char": "n",
+      "shift": "N",
+      "finger": "ri",
+      "row": "bottom",
+      "col": 5
+    },
+    "KeyM": {
+      "char": "m",
+      "shift": "M",
+      "finger": "ri",
+      "row": "bottom",
+      "col": 6
+    },
+    "Comma": {
+      "char": ",",
+      "shift": "<",
+      "finger": "rm",
+      "row": "bottom",
+      "col": 7
+    },
+    "Period": {
+      "char": ".",
+      "shift": ">",
+      "finger": "rr",
+      "row": "bottom",
+      "col": 8
+    },
+    "Slash": {
+      "char": "/",
+      "shift": "?",
+      "finger": "rp",
+      "row": "bottom",
+      "col": 9
+    },
+    "Space": {
+      "char": " ",
+      "finger": "rt",
+      "row": "space",
+      "col": 0
+    },
+    "Backspace": {
+      "char": "\b",
+      "finger": "rp",
+      "row": "number",
+      "col": 99
+    },
+    "Enter": {
+      "char": "\n",
+      "finger": "rp",
+      "row": "home",
+      "col": 99
+    },
+    "Tab": {
+      "char": "\t",
+      "finger": "lp",
+      "row": "top",
+      "col": 99
+    }
+  },
+  "order": [
+    [
+      "f",
+      "j",
+      " "
+    ],
+    [
+      "d"
+    ],
+    [
+      "k"
+    ],
+    [
+      "s"
+    ],
+    [
+      "l"
+    ],
+    [
+      "a"
+    ],
+    [
+      ";"
+    ],
+    [
+      "e"
+    ],
+    [
+      "i"
+    ],
+    [
+      "r"
+    ],
+    [
+      "u"
+    ],
+    [
+      "g"
+    ],
+    [
+      "h"
+    ],
+    [
+      "t"
+    ],
+    [
+      "o"
+    ],
+    [
+      "n"
+    ],
+    [
+      "w"
+    ],
+    [
+      "y"
+    ],
+    [
+      "p"
+    ],
+    [
+      "m"
+    ],
+    [
+      "c"
+    ],
+    [
+      "v"
+    ],
+    [
+      "b"
+    ],
+    [
+      "x"
+    ],
+    [
+      "q"
+    ],
+    [
+      "z"
+    ]
+  ],
+  "orderVariants": [],
+  "keyGroups": [
+    {
+      "id": "shift",
+      "keys": [
+        "Shift"
+      ],
+      "name": {
+        "en": "Capitals"
+      }
+    },
+    {
+      "id": "punct-1",
+      "keys": [
+        ".",
+        ","
+      ],
+      "name": {
+        "en": "Dot and comma"
+      }
+    },
+    {
+      "id": "punct-2",
+      "keys": [
+        "'",
+        "/",
+        "?",
+        "!"
+      ],
+      "name": {
+        "en": "Quote, slash, question, exclamation"
+      }
+    },
+    {
+      "id": "digits-1",
+      "keys": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "name": {
+        "en": "Digits 1–5"
+      }
+    },
+    {
+      "id": "digits-2",
+      "keys": [
+        "6",
+        "7",
+        "8",
+        "9",
+        "0"
+      ],
+      "name": {
+        "en": "Digits 6–0"
+      }
+    },
+    {
+      "id": "symbols",
+      "keys": [
+        "-",
+        "=",
+        "(",
+        ")",
+        ":",
+        "\""
+      ],
+      "name": {
+        "en": "Symbols"
+      }
+    },
+    {
+      "id": "editing",
+      "keys": [
+        "Backspace",
+        "Enter",
+        "Tab"
+      ],
+      "name": {
+        "en": "Editing keys"
+      }
+    }
+  ],
+  "words": {
+    "common": "words/common.txt",
+    "easter-egg": "words/easter-egg.txt"
+  },
+  "blocklist": "words/blocklist.txt",
+  "ui": {
+    "pressFJ": "Put your fingers on F and J, then press them together",
+    "yourTurn": "Your turn"
+  },
+  "tts": {
+    "lang": "en-US",
+    "preferredVoices": [
+      "Google US English",
+      "Samantha",
+      "Microsoft Aria"
+    ]
+  }
+}

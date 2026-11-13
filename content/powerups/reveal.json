@@ -1,0 +1,19 @@
+{
+  "id": "powerup.reveal",
+  "kind": "powerup",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "Reveal: full visibility for 20 s. A rare random drop.",
+  "description": "Reveal: full visibility for 20 s.",
+  "effect": "reveal",
+  "durationMs": 20000,
+  "earnedBy": [
+    {
+      "source": "random-drop",
+      "weight": 2
+    }
+  ]
+}

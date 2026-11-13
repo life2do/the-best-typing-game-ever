@@ -1,0 +1,21 @@
+{
+  "id": "style.neon",
+  "kind": "render-style",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "PROMPT.md",
+  "description": "Neon glow: emissive materials with bloom post-processing on dark backgrounds.",
+  "family": "neon",
+  "views": [
+    "2d",
+    "2.5d",
+    "iso",
+    "3d"
+  ],
+  "entry": "style.ts",
+  "costTier": 3,
+  "lite": "style.flat@1"
+}

@@ -1,0 +1,30 @@
+{
+  "id": "template.platformer",
+  "kind": "level-template",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "PROMPT.md",
+  "description": "Side platformer: typing runs forward, every Space is a jump over a gap that opens just ahead; notes to collect float above the path.",
+  "tags": [
+    "2d",
+    "dictated"
+  ],
+  "genre": "platformer",
+  "minLetters": 3,
+  "inputMode": "dictated",
+  "views": [
+    "2d"
+  ],
+  "stages": {
+    "min": 3,
+    "max": 3
+  },
+  "supportsHavocs": [
+    "havoc.gravity-tilt"
+  ],
+  "multiplayer": [],
+  "entry": "sim.ts"
+}

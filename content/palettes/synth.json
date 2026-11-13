@@ -1,0 +1,22 @@
+{
+  "id": "palette.synth",
+  "kind": "palette",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "Create a palette named synth: Synth: purple and cyan neon on near-black. Provide bg, fg, accent, positive, negative, ground, sky as hex colours with readable contrast between fg and bg.",
+  "description": "Synth: purple and cyan neon on near-black.",
+  "colors": {
+    "bg": "#10002b",
+    "fg": "#e0aaff",
+    "accent": "#00f5d4",
+    "positive": "#9bf6ff",
+    "negative": "#ff4d6d",
+    "ground": "#240046",
+    "sky": "#3c096c"
+  },
+  "colorBlindSafe": true,
+  "mood": "energetic"
+}

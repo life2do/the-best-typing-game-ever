@@ -1,0 +1,23 @@
+{
+  "id": "havoc.map-rotate",
+  "kind": "havoc",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "PROMPT.md",
+  "description": "Map rotation: the board turns around its centre in quarter turns as stages advance.",
+  "entry": "havoc.ts",
+  "intensity": [
+    0,
+    1
+  ],
+  "compatibleViews": [
+    "2d",
+    "iso",
+    "3d"
+  ],
+  "reducedMotion": "calm-builtin",
+  "affectsInput": false
+}

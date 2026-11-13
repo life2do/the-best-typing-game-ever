@@ -1,0 +1,22 @@
+{
+  "id": "palette.dusk",
+  "kind": "palette",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "Create a palette named dusk: Dusk: deep blue night with warm lantern accents. Provide bg, fg, accent, positive, negative, ground, sky as hex colours with readable contrast between fg and bg.",
+  "description": "Dusk: deep blue night with warm lantern accents.",
+  "colors": {
+    "bg": "#0d1b2a",
+    "fg": "#e0e1dd",
+    "accent": "#ffb703",
+    "positive": "#8ecae6",
+    "negative": "#e76f51",
+    "ground": "#1b263b",
+    "sky": "#415a77"
+  },
+  "colorBlindSafe": true,
+  "mood": "calm"
+}

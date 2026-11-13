@@ -1,0 +1,27 @@
+{
+  "id": "powerup.shield",
+  "kind": "powerup",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "A bubble shield: the next 3 mistakes cause no fog or stumble. Earned by 25 correct keys in a row or by the word 'shield'.",
+  "description": "Shield: the next 3 mistakes cause no fog and no stumble (30 s).",
+  "effect": "shield",
+  "durationMs": 30000,
+  "charges": 3,
+  "earnedBy": [
+    {
+      "source": "accuracy-streak",
+      "threshold": 25
+    },
+    {
+      "source": "word"
+    },
+    {
+      "source": "random-drop",
+      "weight": 2
+    }
+  ]
+}

@@ -1,0 +1,312 @@
+{
+  "id": "scale.flowers",
+  "kind": "complexity-scale",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "PROMPT.md",
+  "description": "Flowers scale: from a seed to a complex bouquet.",
+  "icon": "🌸",
+  "steps": [
+    {
+      "tier": 1,
+      "name": {
+        "en": "seed"
+      },
+      "tts": {
+        "en": "You are a seed!"
+      },
+      "model": "procedural:flowers-1"
+    },
+    {
+      "tier": 2,
+      "name": {
+        "en": "sprout"
+      },
+      "tts": {
+        "en": "You are a sprout!"
+      },
+      "model": "procedural:flowers-2"
+    },
+    {
+      "tier": 3,
+      "name": {
+        "en": "bud"
+      },
+      "tts": {
+        "en": "You are a bud!"
+      },
+      "model": "procedural:flowers-3"
+    },
+    {
+      "tier": 4,
+      "name": {
+        "en": "flower"
+      },
+      "tts": {
+        "en": "You are a flower!"
+      },
+      "model": "procedural:flowers-4"
+    },
+    {
+      "tier": 5,
+      "name": {
+        "en": "bush"
+      },
+      "tts": {
+        "en": "You are a bush!"
+      },
+      "model": "procedural:flowers-5"
+    },
+    {
+      "tier": 6,
+      "name": {
+        "en": "garden"
+      },
+      "tts": {
+        "en": "You are a garden!"
+      },
+      "model": "procedural:flowers-6"
+    },
+    {
+      "tier": 7,
+      "name": {
+        "en": "bouquet"
+      },
+      "tts": {
+        "en": "You are a bouquet!"
+      },
+      "model": "procedural:flowers-7"
+    }
+  ],
+  "rigHooks": {
+    "idle": "procedural:idle-sway",
+    "move": "procedural:move-sway",
+    "jump": "procedural:jump-sway",
+    "land": "procedural:land-sway",
+    "stumble": "procedural:stumble-sway",
+    "celebrate": "procedural:celebrate-sway",
+    "powerup": "procedural:powerup-sway",
+    "ability:ability.jump": "procedural:petal-spring-jump"
+  },
+  "customization": [
+    {
+      "slot": "primary-color",
+      "kind": "color",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "secondary-color",
+      "kind": "color",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "pattern",
+      "kind": "pattern",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "size",
+      "kind": "size",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "accessory",
+      "kind": "accessory",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "trail",
+      "kind": "trail",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "aura",
+      "kind": "aura",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "idle-style",
+      "kind": "idle-style",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    }
+  ]
+}

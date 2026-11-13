@@ -1,0 +1,20 @@
+{
+  "id": "style.flat",
+  "kind": "render-style",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "PROMPT.md",
+  "description": "Flat unlit shapes with soft vignette; cheapest style and the lite fallback for others.",
+  "family": "flat",
+  "views": [
+    "2d",
+    "2.5d",
+    "iso",
+    "3d"
+  ],
+  "entry": "style.ts",
+  "costTier": 1
+}
