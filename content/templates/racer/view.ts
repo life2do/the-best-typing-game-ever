@@ -1,9 +1,9 @@
-/** Racer view (3D chase cam): road, lanes, cones, overhead text signs, speed lines, super-speed trails. */
+/** Racer view (3D chase cam): road, lanes, cones, upcoming letters painted on the road, speed lines, super-speed trails. */
 import * as THREE from 'three';
 import type { TemplateView } from '@/render/types';
 import { presetPose } from '@/render/rig';
 import { fromQ, Pool } from '@/render/util';
-import { makeLabel, setLabel } from '@/render/labels';
+import { labelTexture } from '@/render/labels';
 import { SUPER_SPEED_WPM_P } from '@/typing/tiers';
 import type { RacerState } from './sim';
 
@@ -12,9 +12,9 @@ const LANE_W = 2.2;
 const view: TemplateView = {
   id: 'template.racer',
   rules: [
-    { icon: '🏎️', text: 'Type to drive. A steady rhythm is faster than rushing.' },
+    { icon: '🏎️', text: 'Type the letters painted on the road to drive over them.' },
+    { icon: '🎵', text: 'A steady rhythm is faster than rushing.' },
     { icon: '↔️', text: 'Space switches lanes.' },
-    { icon: '✨', text: 'Type really fast for super-speed!' },
   ],
   create({ root, style, avatar }) {
     const road = new THREE.Group();
@@ -43,10 +43,26 @@ const view: TemplateView = {
     const rider = new THREE.Group();
     board.position.y = 0.3;
     avatar.root.position.y = 0.38;
+    avatar.root.scale.setScalar(0.75);
     rider.add(board, avatar.root);
     root.add(rider);
-    const sign = makeLabel(' ', 1.4);
-    root.add(sign);
+    // Upcoming letters painted flat on the road in the rider's lane. They slide toward the rider
+    // as you type, so you "drive over" each letter you hit.
+    const ROAD_GLYPHS = 12;
+    const GLYPH_GAP = 2.1;
+    const GLYPH_START = 4.2;
+    const glyphs: THREE.Mesh[] = [];
+    for (let i = 0; i < ROAD_GLYPHS; i++) {
+      const m = new THREE.Mesh(
+        new THREE.PlaneGeometry(1, 1),
+        new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, color: 0xdddddd, polygonOffset: true, polygonOffsetFactor: -2 }),
+      );
+      m.rotation.x = -Math.PI / 2;
+      m.renderOrder = 5;
+      root.add(m);
+      glyphs.push(m);
+    }
+    let shownPos = 0;
     const lines = new THREE.Group();
     root.add(lines);
     const lineMat = style.material('glow');
@@ -60,8 +76,8 @@ const view: TemplateView = {
       pose: (sim) => {
         const s = sim.state.tpl as RacerState;
         // Chase camera: the target is a little ahead of the rider, the camera sits behind it.
-        const p = presetPose('3d', 8, new THREE.Vector3(laneX * 0.5, 0.2, -fromQ(s.z) - 1.5));
-        p.pitch = 16;
+        const p = presetPose('3d', 9, new THREE.Vector3(laneX * 0.5, 0.6, -fromQ(s.z) - 0.5));
+        p.pitch = 26; // high enough to see the letters on the road over the rider
         const sp = Math.min(1, sim.state.motion.v / 9000);
         p.fov = 60 + sp * 12;
         return p;
@@ -80,8 +96,31 @@ const view: TemplateView = {
         rider.position.set(laneX, 0, -z);
         rider.rotation.z = (s.lane * LANE_W - laneX) * -0.15;
         const p = sim.state.prompt;
-        setLabel(sign, p.text.slice(p.pos, p.pos + 12).replace(/ /g, '·') || ' ', 1.4);
-        sign.position.set(0, 4.2, -z - 14);
+        if (Math.abs(p.pos - shownPos) > 6) shownPos = p.pos; // new stage text: jump
+        shownPos += (p.pos - shownPos) * 0.25;
+        for (let k = 0; k < glyphs.length; k++) {
+          const i = Math.floor(shownPos) - 1 + k; // one already-typed letter fades out under the rider
+          const m = glyphs[k];
+          const ch = p.text[i];
+          if (ch === undefined || i < 0) {
+            m.visible = false;
+            continue;
+          }
+          const current = i === p.pos;
+          const tex = labelTexture(ch === ' ' ? '␣' : ch, current ? '#1a1a1a' : '#ffffff', current ? 'rgba(255,209,102,0.97)' : 'rgba(0,0,0,0.6)', '700 80px ui-monospace, Menlo, Consolas, monospace');
+          const mat = m.material as THREE.MeshBasicMaterial;
+          if (mat.map !== tex) {
+            mat.map = tex;
+            mat.needsUpdate = true;
+          }
+          const img = tex.image as HTMLCanvasElement;
+          const size = current ? 2 : 1.6;
+          m.scale.set((size * img.width) / img.height, size, 1);
+          const ahead = GLYPH_START + (i - shownPos) * GLYPH_GAP;
+          mat.opacity = i < p.pos ? Math.max(0, 0.6 + (ahead - GLYPH_START) / GLYPH_GAP) : 1;
+          m.visible = mat.opacity > 0.02;
+          m.position.set(laneX, 0.12, -z - ahead);
+        }
         const wpm = sim.liveWpmP();
         const sp = Math.min(1, sim.state.motion.v / 9000);
         const superSpeed = wpm >= SUPER_SPEED_WPM_P;
