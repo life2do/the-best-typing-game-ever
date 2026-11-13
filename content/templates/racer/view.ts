@@ -60,6 +60,7 @@ const view: TemplateView = {
       lines.add(l);
     }
     let laneX = 0;
+    let dodgeX = 0;
     let renderZ = 0;
     let smoothSpeed = 0;
     return {
@@ -86,21 +87,25 @@ const view: TemplateView = {
           if (m) m.position.set(c[1] * LANE_W, 0.5, -fromQ(c[0]));
         }
         laneX += (s.lane * LANE_W - laneX) * 0.12;
-        rider.position.set(laneX, 0, -z);
-        rider.rotation.z = (s.lane * LANE_W - laneX) * -0.15;
         const p = sim.state.prompt;
-        // The letter route bends around cones: a letter that would sit on (or right next to) a cone
-        // slides sideways toward the free side, with a smooth falloff so the route curves.
+        // Cones are obstacles: both the rider and the letter route steer around any cone near their
+        // path, sliding toward the free side with a smooth falloff so the path curves.
         const coneXZ = s.cones.map((c) => [c[1] * LANE_W, -fromQ(c[0])] as const);
-        trail.update(p.text, p.pos, new THREE.Vector3(laneX, 0.12, -z), FORWARD, now, (pt) => {
+        const avoid = (pt: THREE.Vector3, reach = 2.4) => {
           for (const [cx, cz] of coneXZ) {
             const dz = Math.abs(pt.z - cz);
-            if (dz > 2.4 || Math.abs(pt.x - cx) > LANE_W * 0.8) continue;
+            if (dz > reach || Math.abs(pt.x - cx) > LANE_W * 0.8) continue;
             const side = cx >= LANE_W * 0.9 ? -1 : cx <= -LANE_W * 0.9 ? 1 : pt.x >= cx ? 1 : -1;
-            const k = 1 - dz / 2.4;
+            const k = 1 - dz / reach;
             pt.x = cx + side * LANE_W * (0.55 + 0.25 * k);
           }
-        });
+        };
+        const want = new THREE.Vector3(laneX, 0, -z);
+        avoid(want, 3);
+        dodgeX += (want.x - dodgeX) * 0.2; // ease into the swerve
+        rider.position.set(dodgeX, 0, -z);
+        rider.rotation.z = (want.x - dodgeX) * -0.25 + (s.lane * LANE_W - laneX) * -0.15;
+        trail.update(p.text, p.pos, new THREE.Vector3(laneX, 0.12, -z), FORWARD, now, (pt) => avoid(pt));
         const wpm = sim.liveWpmP();
         const sp = Math.min(1, sim.state.motion.v / 9000);
         const superSpeed = wpm >= SUPER_SPEED_WPM_P;
