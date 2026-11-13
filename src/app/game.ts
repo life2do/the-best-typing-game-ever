@@ -8,13 +8,15 @@ import type { LogEvent, SimEvent } from '@/sim/types';
 import { campaignFor, language, levelSetup } from '@/campaign/setup';
 import type { Campaign, LevelPlan } from '@/campaign/campaign';
 import { templateSim } from '@/sim/templates';
-import { palettes, scales, abilities } from '@/content/registry';
+import { palettes, scales, abilities, illustrations } from '@/content/registry';
 import { RenderHost, TRANSITION_MS } from '@/render/host';
 import { templateViews } from '@/render/registry';
 import { AvatarRig } from '@/avatar/procedural';
 import { Hud } from '@/ui/hud';
 import { h, toast } from '@/ui/dom';
-import { breakScreen, crossroadsScreen, introScreen, nagScreen, pauseScreen, startScreen } from '@/ui/screens';
+import { crossroadsScreen, introScreen, nagScreen, pauseScreen, startScreen, wordBookScreen } from '@/ui/screens';
+import { WordArt } from '@/ui/wordArt';
+import { StretchBreak } from '@/ui/stretchBreak';
 import { KeyboardInput } from '@/input/keyboard';
 import { AudioEngine, Voice } from '@/audio/audio';
 import {
@@ -50,10 +52,16 @@ export class Game {
   private screen: 'start' | 'level' | 'victory' = 'start';
   private showIntro: () => void = () => {};
   private lastCollect = -2;
+  private wordArt: WordArt;
+  private breakUi: StretchBreak | null = null;
 
   constructor(canvas: HTMLCanvasElement, ui: HTMLElement) {
     this.ui = ui;
     this.host = new RenderHost(canvas);
+    // Word illustrations live behind the world canvas, whose sky is transparent.
+    this.wordArt = new WordArt(language('en'), () => !!this.profile?.settings.reducedMotion);
+    canvas.before(this.wordArt.el);
+    this.wordArt.onComplete = (c) => this.onWordRevealed(c.word, c.golden);
     this.input.onPress((k) => this.onKey(k.code, k.shift));
     this.input.onEscape(() => this.togglePause());
     this.input.onLayoutMismatch(() => toast(this.ui, '⌨️ Your keyboard is set to another language. That is OK — we use key positions — but the letters may look different.'));
@@ -73,6 +81,10 @@ export class Game {
 
   // ------------------------------------------------------------------ screens
   private setOverlay(el: HTMLElement | null): void {
+    if (this.breakUi && el !== this.breakUi.el) {
+      this.breakUi.destroy();
+      this.breakUi = null;
+    }
     this.overlay?.remove();
     this.overlay = el;
     if (el) this.ui.append(el);
@@ -80,9 +92,16 @@ export class Game {
 
   private showStart(stored?: Profile): void {
     this.screen = 'start';
+    this.wordArt?.clear();
     this.hud?.el.remove();
     this.hud = null;
     const scale = scales[Math.floor(Math.random() * scales.length)]; // cosmetic: a different theme every load
+    const showBook = stored
+      ? () =>
+          this.setOverlay(
+            wordBookScreen(stored.wordBook ?? {}, illustrations.map((i) => ({ word: i.words.en?.[0] ?? i.id, svg: i.svg })), language('en').wordEmoji ?? {}, () => this.showStart(stored)),
+          )
+      : undefined;
     this.setOverlay(
       startScreen(scale, stored, async (c) => {
         this.audio.unlock();
@@ -100,7 +119,7 @@ export class Game {
         this.camp = campaignFor(this.profile.campaign.seed, this.profile.campaign.language);
         if (this.profile.name) this.voice.speak(`Hi ${this.profile.name}! Let's type.`);
         await this.startLevel(this.profile.campaign.level, false);
-      }),
+      }, showBook),
     );
   }
 
@@ -154,6 +173,9 @@ export class Game {
     const palette = palettes.find((p) => p.id === this.plan.paletteId) ?? palettes[0];
     const look = { templateId: this.plan.templateId, view: this.plan.view, styleId: this.plan.styleId, palette, havocIds: this.plan.havocIds, havocMaxP: this.plan.havocMaxP };
     this.host.setLevel(look, this.avatar(), sim, performance.now(), transition);
+    this.wordArt.clear();
+    this.wordArt.setLanguage(lang);
+    this.wordArt.setPalette(palette);
     if (transition) this.audio.whoosh();
     const showIntro = (this.showIntro = () => {
       if (this.sim !== sim) return;
@@ -215,7 +237,8 @@ export class Game {
 
   private togglePause(): void {
     if (this.screen !== 'level' || !this.sim) return;
-    if (this.paused) this.resume();
+    if (this.pauseReason === 'break') this.breakUi?.tryFinish(); // Escape can't skip the stretch break
+    else if (this.paused) this.resume();
     else this.pause('menu');
   }
 
@@ -225,7 +248,22 @@ export class Game {
     this.pauseReason = reason;
     this.record({ k: 'pause', t: this.logT() });
     void this.persist();
-    if (reason === 'break') this.setOverlay(breakScreen(() => this.resume()));
+    if (reason === 'break') {
+      const lang = language(this.camp.language);
+      const s = this.profile.settings;
+      this.breakUi = new StretchBreak({
+        seconds: s.breakSeconds ?? 120,
+        lang,
+        avatar: this.avatar(),
+        voice: s.voice ? this.voice : undefined,
+        reducedMotion: s.reducedMotion,
+        onDone: () => {
+          this.breakUi = null;
+          this.resume();
+        },
+      });
+      this.setOverlay(this.breakUi.el);
+    }
     else
       this.setOverlay(
         pauseScreen(
@@ -243,6 +281,13 @@ export class Game {
           () => void this.exportRun(),
         ),
       );
+  }
+
+  /** Start a stretch break now (also used by e2e tests with a short duration). */
+  breakNow(seconds?: number): void {
+    if (seconds !== undefined) this.profile.settings.breakSeconds = seconds;
+    this.playMs = 0;
+    this.pause('break');
   }
 
   private resume(): void {
@@ -268,6 +313,7 @@ export class Game {
         break;
       }
       case 'error':
+        this.wordArt.noteError();
         this.hud?.flash(false);
         this.hud?.markError(e.frame);
         this.audio.error();
@@ -330,6 +376,17 @@ export class Game {
     p.campaign.level = this.plan.index + 1;
     await saveProfile(p);
     await this.startLevel(this.plan.index + 1, true);
+  }
+
+  /** A word's picture was fully revealed: add it to the word book. */
+  private onWordRevealed(word: string, golden: boolean): void {
+    const p = this.profile;
+    const book = (p.wordBook ??= {});
+    const prev = book[word];
+    book[word] = { golden: golden || !!prev?.golden, count: (prev?.count ?? 0) + 1, first: prev?.first ?? Date.now() };
+    if (!prev) toast(this.ui, golden ? `✨ Golden new word: ${word}!` : `📖 New word for your book: ${word}`);
+    else if (golden && !prev.golden) toast(this.ui, `✨ ${word} is golden now!`);
+    if (!prev || (golden && !prev.golden)) void saveProfile(p);
   }
 
   /** Automatic promotion: >= 2 stars at the next tier's 1-star target for 2 levels in a row (docs/01). */
@@ -395,6 +452,7 @@ export class Game {
     }
     const alpha = sim && !this.paused ? (((now - this.segStart) * 3) / 50) % 1 : 0;
     this.host.render(this.screen === 'level' ? sim : null, alpha, now);
+    if (sim && this.screen === 'level' && !this.paused) this.wordArt.update(sim, now);
     if (sim && this.hud && this.screen === 'level') {
       this.hud.update(sim);
       const q = this.host.quality;

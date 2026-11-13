@@ -1,0 +1,22 @@
+{
+  "id": "illustration.rocket",
+  "kind": "illustration",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "description": "A rocket blasting off (line art, 100×100).",
+  "prompt": "Draw 'rocket' as simple, friendly line art for children in a 100×100 SVG viewBox: a rocket blasting off. Use only basic shapes (circle, ellipse, rect, line, polygon, path) with no inline styles, so the game can stroke and animate them. Give fillable shapes class f1 (main colour), f2 (green/nature), f3 (warm accent) or f4 (light/skin/gold). 6–12 elements, readable at a glance, no text.",
+  "words": {
+    "en": [
+      "rocket"
+    ]
+  },
+  "entry": "art.svg",
+  "animation": "fly",
+  "fallbackEmoji": "🚀",
+  "tags": [
+    "word-art"
+  ]
+}

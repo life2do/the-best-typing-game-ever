@@ -17,13 +17,15 @@ export interface Settings {
   highContrast: boolean;
   colorBlindPatterns: boolean;
   breakMinutes: number;
+  /** length of the stretch break */
+  breakSeconds: number;
   showFps: boolean;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
   reducedMotion: typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches,
   musicVolume: 0.35, sfxVolume: 0.6, voice: true, keyboard: 'auto', quality: 'auto', textScale: 1,
-  dyslexicFont: false, highContrast: false, colorBlindPatterns: false, breakMinutes: 20, showFps: true,
+  dyslexicFont: false, highContrast: false, colorBlindPatterns: false, breakMinutes: 20, breakSeconds: 120, showFps: true,
 };
 
 export interface LevelResult {
@@ -46,6 +48,8 @@ export interface Profile {
   results: LevelResult[];
   campaign: { language: string; seed: string; level: number };
   collected: string[];
+  /** Word book: words whose pictures were revealed (docs/07 Word art). */
+  wordBook?: Record<string, { golden: boolean; count: number; first: number }>;
   perKey: Record<string, [number, number, number]>;
   settings: Settings;
   createdAt: number;

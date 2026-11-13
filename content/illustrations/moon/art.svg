@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <path class="f4" d="M58 14 Q24 20 26 52 Q30 84 64 86 Q40 74 40 50 Q40 26 58 14 Z"/>
+  <polygon class="f4" points="74,30 77,37 84,37 78,42 80,49 74,45 68,49 70,42 64,37 71,37"/>
+  <circle cx="80" cy="66" r="2"/>
+</svg>

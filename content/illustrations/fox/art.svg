@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <path class="f3" d="M20 22 L36 44 L50 40 L64 44 L80 22 L78 52 Q66 80 50 84 Q34 80 22 52 Z"/>
+  <path class="f4" d="M36 60 Q50 70 64 60 Q60 80 50 84 Q40 80 36 60 Z"/>
+  <circle cx="40" cy="52" r="2.5"/>
+  <circle cx="60" cy="52" r="2.5"/>
+  <circle cx="50" cy="72" r="3"/>
+</svg>

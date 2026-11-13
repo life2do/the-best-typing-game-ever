@@ -47,13 +47,17 @@ export class RenderHost {
   private tStart = -1;
   private bgFrom = new THREE.Color('#000');
   private bgTo = new THREE.Color('#000');
+  /** World background colour. Painted by the page (CSS `--world-bg`) behind a transparent canvas, so
+   *  word illustrations can sit between the background and the world (docs/07 Word art). */
+  private bg = new THREE.Color('#000');
   private lastNow = 0;
 
   constructor(readonly canvas: HTMLCanvasElement) {
     let renderer: THREE.WebGLRenderer;
     let webgl = true;
     try {
-      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: true, logarithmicDepthBuffer: true });
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, premultipliedAlpha: false, powerPreference: 'high-performance', preserveDrawingBuffer: true, logarithmicDepthBuffer: true });
+      renderer.setClearColor(0x000000, 0);
       renderer.outputColorSpace = THREE.SRGBColorSpace;
     } catch (e) {
       // No WebGL (disabled, blocklisted GPU, headless browser): keep the game playable without 3D graphics.
@@ -69,9 +73,14 @@ export class RenderHost {
     const sun = new THREE.DirectionalLight(0xffffff, 1.6);
     sun.position.set(4, 10, 6);
     this.scene.add(sun);
-    this.scene.background = new THREE.Color('#000');
+    this.scene.background = null;
+    this.applyBg();
     this.resize();
     addEventListener('resize', () => this.resize());
+  }
+
+  private applyBg(): void {
+    document.documentElement.style.setProperty('--world-bg', `#${this.bg.getHexString(THREE.SRGBColorSpace)}`);
   }
 
   resize(): void {
@@ -120,14 +129,15 @@ export class RenderHost {
       this.tStart = -1;
       this.current = this.mount(look, avatar, sim);
       this.rig.setPose(this.current.inst.pose(sim));
-      this.scene.background = this.current.kit.background.clone();
+      this.bg.copy(this.current.kit.background);
+      this.applyBg();
       return;
     }
     this.outgoing = this.current;
     this.current = null;
     this.pending = { look, avatar };
     this.tStart = now;
-    this.bgFrom = (this.scene.background as THREE.Color).clone();
+    this.bgFrom = this.bg.clone();
     // Build the new level now (hidden) so its camera pose is known for the dolly zoom.
     const next = this.mount(look, avatar, sim);
     next.root.visible = false;
@@ -143,7 +153,8 @@ export class RenderHost {
     const cur = this.current;
     if (this.tStart >= 0) {
       const k = Math.min(1, (now - this.tStart) / TRANSITION_MS);
-      (this.scene.background as THREE.Color).copy(this.bgFrom).lerp(this.bgTo, ease(k));
+      this.bg.copy(this.bgFrom).lerp(this.bgTo, ease(k));
+      this.applyBg();
       if (this.outgoing) {
         // Flatten the outgoing world into a sheet.
         const f = Math.min(1, k / SWAP_AT);

@@ -15,7 +15,7 @@ export interface StartChoice {
 }
 
 /** Start screen. The complexity-scale theme is random on every page load (docs/03). */
-export function startScreen(scale: ComplexityScaleManifest, profile: Profile | undefined, onChoose: (c: StartChoice) => void): HTMLElement {
+export function startScreen(scale: ComplexityScaleManifest, profile: Profile | undefined, onChoose: (c: StartChoice) => void, onWordBook?: () => void): HTMLElement {
   let tier = profile?.tier ?? 2;
   const name = h('input', { type: 'text', placeholder: 'Your name (optional)', maxlength: 24, value: profile?.name ?? '', 'aria-label': 'Your name' });
   const steps = h('div', { class: 'scale', role: 'radiogroup', 'aria-label': 'Choose how fast you type' });
@@ -43,6 +43,7 @@ export function startScreen(scale: ComplexityScaleManifest, profile: Profile | u
       h('button', { class: 'secondary', onclick: () => onChoose({ action: 'new', name: name.value.trim(), tier, scale: scale.id }) }, '✨ New run'),
     );
   } else btns.append(h('button', { onclick: () => onChoose({ action: 'new', name: name.value.trim(), tier, scale: scale.id }) }, '▶ Start'));
+  if (profile && onWordBook) btns.append(h('button', { class: 'secondary', onclick: onWordBook }, `📖 Word book (${Object.keys(profile.wordBook ?? {}).length})`));
   btns.append(h('a', { href: './verify/', style: { color: 'white', alignSelf: 'center' } }, 'Replays'));
   return h(
     'div',
@@ -161,6 +162,42 @@ export function nagScreen(text: string, actionLabel: string, onAction: () => voi
   return h('div', { class: 'card nag' }, h('p', {}, text), h('div', { class: 'row-btns' }, h('button', { onclick: onAction }, actionLabel), h('button', { class: 'secondary', onclick: onClose }, 'Keep going')));
 }
 
-export function breakScreen(onDone: () => void): HTMLElement {
-  return h('div', { class: 'overlay' }, h('div', { class: 'card' }, h('h2', {}, '🙆 Stretch break!'), h('p', {}, 'Shake out your hands, roll your shoulders and look far away for a moment.'), h('div', { class: 'row-btns' }, h('button', { onclick: onDone }, 'Ready'))));
+/** Word book: every illustrated word, revealed ones in colour (golden frame if typed golden), others locked. */
+export function wordBookScreen(
+  book: Record<string, { golden: boolean; count: number }>,
+  all: { word: string; svg: string }[],
+  emoji: Record<string, string>,
+  onClose: () => void,
+): HTMLElement {
+  const drawn = new Set(all.map((a) => a.word));
+  const found = all.filter((a) => book[a.word]).length;
+  const golden = Object.values(book).filter((b) => b.golden).length;
+  const entry = (word: string, art: Node | string, cls: string) => {
+    const e = h('div', { class: `entry ${cls}` });
+    const box = h('div', {});
+    if (typeof art === 'string') box.innerHTML = art;
+    else box.append(art);
+    e.append(box, h('div', {}, cls.includes('locked') ? '?' : word));
+    return e;
+  };
+  const cells = all
+    .slice()
+    .sort((a, b) => (a.word < b.word ? -1 : 1))
+    .map((a) => entry(a.word, a.svg, book[a.word] ? (book[a.word].golden ? 'golden' : '') : 'locked'));
+  const extra = Object.keys(book)
+    .filter((w) => !drawn.has(w) && emoji[w])
+    .sort()
+    .map((w) => entry(w, h('div', { class: 'em' }, emoji[w]), book[w].golden ? 'golden' : ''));
+  return h(
+    'div',
+    { class: 'overlay word-book' },
+    h(
+      'div',
+      { class: 'card' },
+      h('h2', {}, '📖 Word book'),
+      h('p', {}, `Pictures found: ${found} / ${all.length} · golden: ${golden}. Type a word quickly with no mistakes to make it golden!`),
+      h('div', { class: 'grid' }, ...cells, ...extra),
+      h('div', { class: 'row-btns' }, h('button', { onclick: onClose }, 'Back')),
+    ),
+  );
 }

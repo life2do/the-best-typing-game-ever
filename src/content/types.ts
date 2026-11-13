@@ -36,7 +36,13 @@ export interface LanguagePackManifest extends ItemBase {
   blocklist: string;
   ui?: Record<string, string>;
   tts?: { lang: string; preferredVoices?: string[] };
+  /** word -> emoji shown when a word has no illustration */
+  wordEmoji?: Record<string, string>;
+  breakNudges?: string[];
+  stretchSteps?: { move: StretchMove; icon?: string; text: string }[];
 }
+
+export type StretchMove = 'shake' | 'roll' | 'reach' | 'look' | 'wiggle' | 'breathe';
 
 /** Language pack with word lists loaded. */
 export interface LanguagePack extends LanguagePackManifest {
@@ -125,4 +131,19 @@ export interface CampaignRulesManifest extends ItemBase {
   constraints?: { noTemplateRepeatWithin?: number; noStyleTwice?: boolean; dictatedShare?: number };
   dropTable?: { item: string; weight: number }[];
   pityAfterTicks?: number;
+}
+
+export type IllustrationAnimation = 'bounce' | 'wiggle' | 'float' | 'spin' | 'pulse' | 'swim' | 'fly' | 'wave' | 'drive';
+
+export interface IllustrationManifest extends ItemBase {
+  kind: 'illustration';
+  words: Record<string, string[]>;
+  entry: string;
+  animation: IllustrationAnimation;
+  fallbackEmoji?: string;
+}
+
+/** Illustration with its SVG source loaded. */
+export interface Illustration extends IllustrationManifest {
+  svg: string;
 }

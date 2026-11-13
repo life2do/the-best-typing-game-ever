@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <path class="f1" d="M42 15 L42 40 L22 78 Q20 86 30 86 L70 86 Q80 86 78 78 L58 40 L58 15"/>
+  <line x1="38" y1="15" x2="62" y2="15"/>
+  <path class="f2" d="M28 68 L72 68"/>
+  <circle cx="46" cy="58" r="3"/>
+  <circle cx="54" cy="50" r="2"/>
+</svg>

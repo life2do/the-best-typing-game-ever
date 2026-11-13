@@ -25,6 +25,14 @@
 - **Keyboard overlay** at the bottom: finger colours, next key highlighted, opacity linked to accuracy. A setting allows "always on" / "auto" / "off (expert)".
 - Minimal corner info: stage dots, stars for this level, active power-up timers.
 
+## Word art and word book
+
+- While a **real word** (from the curated lists) is typed, its picture is revealed **behind the game world**: the world's sky is transparent and the page paints the background colour, so the picture sits between them.
+- Each word uses a **random reveal effect**: line drawing (strokes draw as letters are typed), fog (blur clears), puzzle (one tile per letter) or iris (a growing circle). On the last letter it fills with the level palette's colours, the word appears and the picture animates (bounce, wiggle, swim, fly…).
+- **Golden version**: typed with no mistakes and at least at the level's target speed → golden glow and sparkles.
+- Pictures are hand-drawn CC0 SVG line art (`content/illustrations/`, one item per word, with a regeneration prompt). Words without a drawing fall back to an emoji (`wordEmoji` in the language pack); abstract words show nothing.
+- Every revealed word goes into the **word book** (start screen): found pictures in colour, golden ones framed, not-yet-found ones as dotted outlines.
+
 ## Voice (TTS)
 
 - The browser's built-in speech synthesis (`speechSynthesis`). Used for intro rules, hints, the player's name, and words when they're collected.
@@ -39,7 +47,7 @@
 - **Dyslexia-friendly font** (OpenDyslexic) / high-legibility font (Atkinson Hyperlegible).
 - **Text size** scale; **high contrast** mode.
 - **Volume** sliders (music / effects / voice); voice on or off.
-- **Break reminder** (default every 20 min; "stretch your fingers" scene); parent settings behind an adult check (e.g. "type the word shown backwards"). The parent area holds the break interval, maximum session length and profile management.
+- **Break reminder** (default every 20 min): a 2-minute stretch break (setting `breakSeconds`) with a countdown number and a ring filling around the player's avatar, which demonstrates a stretch for each part (shake hands, roll shoulders, reach up, look far away, wiggle fingers, breathe). It can't be skipped: early clicks, keys or Escape show one of the language pack's supportive `breakNudges` phrases. Parent settings sit behind an adult check (e.g. "type the word shown backwards"). The parent area holds the break interval, maximum session length and profile management.
 
 ## Local analytics screen (per player)
 

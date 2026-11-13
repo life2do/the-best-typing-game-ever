@@ -15,7 +15,7 @@ Every level template declares its input style:
 | Style | How it works | Trains |
 |---|---|---|
 | **Dictated** | The game shows a stream of text (on the road, on clouds, on bricks). Type it in order. | Rhythm, flow |
-| **Targeting** | Things in the world carry letters or words. Type one to aim at it, then press **Space** to act (zap, build, freeze, command). Space confirms every target, the same way it ends every word in dictated levels. The aimed-at target's label is highlighted (bigger, gold); the others dim. | Finding keys, reading ahead |
+| **Targeting** | Things in the world carry letters or words. Type one to aim at it, then press **Space** to act (zap, build, freeze, command). Space confirms every target, the same way it ends every word in dictated levels. The first letter picks the target, so **targets on screen always start with different letters**. Before any letter is typed, the target the keyboard points at is highlighted; once one is aimed at, its label is bigger and gold and the others dim. | Finding keys, reading ahead |
 
 Campaign mix target: about 60% dictated, 40% targeting.
 

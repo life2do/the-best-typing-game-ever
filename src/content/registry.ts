@@ -4,6 +4,7 @@
  * This module is Node-safe (no Three.js); renderer modules are discovered in src/render/registry.ts.
  */
 import type {
+  Illustration, IllustrationManifest,
   AbilityManifest, CampaignRulesManifest, ComplexityScaleManifest, HavocManifest, LanguagePack, LanguagePackManifest,
   LevelTemplateManifest, PaletteManifest, PowerupManifest, RenderStyleManifest,
 } from './types';
@@ -20,6 +21,18 @@ export const havocs = json<HavocManifest>(import.meta.glob('../../content/havocs
 export const abilities = json<AbilityManifest>(import.meta.glob('../../content/abilities/*.json', { eager: true, import: 'default' }));
 export const powerups = json<PowerupManifest>(import.meta.glob('../../content/powerups/*.json', { eager: true, import: 'default' }));
 export const scales = json<ComplexityScaleManifest>(import.meta.glob('../../content/scales/*/manifest.json', { eager: true, import: 'default' }));
+const illustrationManifests = import.meta.glob('../../content/illustrations/*/manifest.json', { eager: true, import: 'default' }) as Record<string, IllustrationManifest>;
+const illustrationSvgs = import.meta.glob('../../content/illustrations/*/*.svg', { eager: true, query: '?raw', import: 'default' }) as Record<string, string>;
+export const illustrations: Illustration[] = Object.entries(illustrationManifests).map(([path, m]) => ({
+  ...m,
+  svg: illustrationSvgs[path.replace('manifest.json', m.entry)] ?? '',
+}));
+
+/** Illustration for a word in a language, if one is drawn. */
+export function illustrationFor(word: string, lang: string): Illustration | undefined {
+  return illustrations.find((i) => i.words[lang]?.includes(word));
+}
+
 export const campaignRules = json<CampaignRulesManifest>(import.meta.glob('../../content/campaign/*.json', { eager: true, import: 'default' }));
 
 export function parseWordList(text: string): string[] {

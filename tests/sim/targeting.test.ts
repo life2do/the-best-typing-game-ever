@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { LevelSim } from '@/sim/level';
 import { adHocSetup } from '@/campaign/setup';
 import { templateSim } from '@/sim/templates';
+import { runTemplate } from '../helpers/bot';
 
 describe('targeting confirmation with Space', () => {
   it('a target completes only after Space', () => {
@@ -24,4 +25,37 @@ describe('targeting confirmation with Space', () => {
     expect(sim.state.targets.some((x) => x.id === target.id)).toBe(false);
     expect(sim.state.lockedTarget).toBe(-1);
   });
+
+  it('suggests a target before any letter is typed, matching the keyboard highlight', () => {
+    const setup = adHocSetup('tgt2', 'template.tower-defence', 'fjdk'.split(''), { tier: 4 });
+    const sim = new LevelSim(setup, templateSim(setup.templateId));
+    let t = 1000;
+    const key = (code: string) => sim.feed({ k: 'key', t: (t += 300), code });
+    key('KeyF');
+    key('KeyJ');
+    expect(sim.state.lockedTarget).toBe(-1);
+    const id = sim.suggestedTargetId();
+    const suggested = sim.state.targets.find((x) => x.id === id)!;
+    expect(suggested.text[0]).toBe(sim.expectedChars()[0]);
+    // Aiming at a target makes it the suggestion.
+    const other = sim.state.targets.find((x) => x.text[0] !== suggested.text[0]) ?? suggested;
+    key(setup.language.codeOf[other.text[0]]);
+    expect(sim.suggestedTargetId()).toBe(other.id);
+  });
+
+  for (const letters of ['fjdk', 'fjdksla', 'fjdkslaeiru'])
+    it(`active targets always start with different letters (${letters})`, () => {
+      const { setup, run } = runTemplate('template.tower-defence', letters, 4, 'pass');
+      expect(run.completed).toBe(true);
+      const sim = new LevelSim(setup, templateSim(setup.templateId));
+      let checked = 0;
+      for (const e of run.log) {
+        sim.feed(e);
+        const firsts = sim.state.targets.map((t) => t.text[0]);
+        expect(new Set(firsts).size).toBe(firsts.length);
+        if (firsts.length > 1) checked++;
+      }
+      expect(checked).toBeGreaterThan(20);
+    });
 });
+

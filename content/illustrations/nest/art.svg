@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <ellipse class="f1" cx="38" cy="52" rx="8" ry="10"/>
+  <ellipse class="f1" cx="50" cy="48" rx="8" ry="10"/>
+  <ellipse class="f1" cx="62" cy="52" rx="8" ry="10"/>
+  <path class="f3" d="M14 56 Q50 92 86 56 Z"/>
+  <path d="M20 62 L80 62 M24 70 L76 70"/>
+</svg>

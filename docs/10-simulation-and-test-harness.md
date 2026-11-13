@@ -139,7 +139,7 @@ There is no Backspace and an error never advances, so **every error is effective
 - `correct` = keystrokes judged correct (each one advances exactly one character; Space counts as a character)
 - `errors` = keystrokes judged error. **Each wrong keystroke counts**: three wrong presses before the right key = 3 errors.
 - `missedPositions` = prompt positions with ≥ 1 error before the correct key. Used for per-key weakness and the stage report, **not** for accuracy.
-- Targeting mode: each target's text is its chunk plus a trailing Space. A keystroke is correct if it extends the prefix of any active target (choosing a target counts as its first correct character; Space can never start a target). Once a target is aimed at, only its next character is correct; the final Space completes it. Otherwise it's an error.
+- Targeting mode: each target's text is its chunk plus a trailing Space. A keystroke is correct if it extends the prefix of any active target (choosing a target counts as its first correct character; Space can never start a target). Once a target is aimed at, only its next character is correct; the final Space completes it. Active targets always start with different letters: spawning takes the next stage chunk whose first letter is free (moving it forward, so nothing is skipped) and waits if none is free. Otherwise it's an error.
 
 ### 4.3 Speed and accuracy
 

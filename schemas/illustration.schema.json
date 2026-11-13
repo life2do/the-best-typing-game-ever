@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://life2do.github.io/the-best-typing-game-ever/schemas/illustration.schema.json",
+  "title": "Word illustration",
+  "allOf": [
+    {
+      "$ref": "common.schema.json#/$defs/itemBase"
+    }
+  ],
+  "type": "object",
+  "properties": {
+    "kind": {
+      "const": "illustration"
+    },
+    "words": {
+      "type": "object",
+      "description": "language id -> words this picture illustrates",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "minItems": 1
+      },
+      "minProperties": 1
+    },
+    "entry": {
+      "type": "string",
+      "description": "SVG file (viewBox 0 0 100 100; plain shapes; fill classes f1–f4; no inline styles)"
+    },
+    "animation": {
+      "enum": [
+        "bounce",
+        "wiggle",
+        "float",
+        "spin",
+        "pulse",
+        "swim",
+        "fly",
+        "wave",
+        "drive"
+      ]
+    },
+    "fallbackEmoji": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "words",
+    "entry",
+    "animation"
+  ]
+}

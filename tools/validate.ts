@@ -18,7 +18,7 @@ for (const f of readdirSync(schemaDir).filter((f) => f.endsWith('.schema.json'))
 const schemaFor: Record<string, string> = {
   'language-pack': 'language-pack', 'level-template': 'level-template', 'render-style': 'render-style', palette: 'palette',
   havoc: 'havoc', ability: 'ability', powerup: 'powerup', 'complexity-scale': 'complexity-scale', 'voice-effect': 'voice-effect',
-  'campaign-rules': 'campaign-rules', 'party-mode': 'party-mode',
+  'campaign-rules': 'campaign-rules', 'party-mode': 'party-mode', illustration: 'illustration',
 };
 const SPDX = ['CC0-1.0', 'MIT', 'OFL-1.1', 'CC-BY-4.0', 'CC-BY-SA-4.0', 'Apache-2.0'];
 const CORE_HOOKS = ['idle', 'move', 'jump', 'land', 'stumble', 'celebrate', 'powerup'];
@@ -139,6 +139,25 @@ for (const c of byKind('campaign-rules')) {
 for (const it of items.filter((i) => i.manifest.kind === 'level-template')) {
   const dir = dirname(it.manifestPath);
   for (const f of ['sim.ts', 'view.ts', 'PROMPT.md', 'template.test.ts']) if (!existsSync(join(dir, f))) err(`${it.manifest.id}: missing ${f}`);
+}
+// illustrations: SVG present, plain (no inline styles/scripts), words exist in the language word lists
+for (const it of items.filter((i) => i.manifest.kind === 'illustration')) {
+  const m = it.manifest;
+  const file = join(dirname(it.manifestPath), m.entry);
+  if (!existsSync(file)) {
+    err(`${m.id}: missing ${m.entry}`);
+    continue;
+  }
+  const svg = readFileSync(file, 'utf8');
+  if (!/viewBox="0 0 100 100"/.test(svg)) err(`${m.id}: SVG must use viewBox="0 0 100 100"`);
+  if (/style=|<script|on[a-z]+=|href=/i.test(svg)) err(`${m.id}: SVG must not contain inline styles, scripts, event handlers or links`);
+  for (const [lang, words] of Object.entries(m.words) as [string, string[]][]) {
+    const pack = items.find((i) => i.manifest.kind === 'language-pack' && i.manifest.id === `lang.${lang}`);
+    if (!pack) continue;
+    const dir = dirname(pack.manifestPath);
+    const all = Object.values(pack.manifest.words as Record<string, string>).flatMap((rel) => readFileSync(join(dir, rel), 'utf8').split('\n').map((l) => l.trim()));
+    for (const w of words) if (!all.includes(w)) err(`${m.id}: word "${w}" is not in the ${lang} word lists`);
+  }
 }
 for (const it of items.filter((i) => ['render-style', 'havoc'].includes(i.manifest.kind))) {
   const dir = dirname(it.manifestPath);
