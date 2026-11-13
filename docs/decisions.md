@@ -61,3 +61,4 @@ Decisions agreed during spec discussion (2026-11-13).
 | D55 | Space is drawn as a small space-bar shape (wide rounded bar) everywhere — world letters, labels, prompt chips and the on-screen keyboard — because "␣" reads like "u". |
 | D56 | Racer: road letters start further ahead (the rider never covers them), are centred on their measured ink bounds with generous padding, and the letter route bends around cones. |
 | D57 | Racer chase camera is locked to the rider's drawn position (follow = 1), and its field of view follows a ~1 s smoothed speed, eased by the host, so keystroke speed bursts no longer shake or pulse the view. |
+| D58 | Continuing a level saved while paused logs a `resume`; key events logged while paused are ignored by the simulation (fixes 'key event while paused' when loading runs saved by earlier builds). |

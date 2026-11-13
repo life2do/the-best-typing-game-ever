@@ -22,7 +22,7 @@ browsers, and the milestone 1 acceptance tests all depend on it.
 | Type | Fields | Meaning |
 |---|---|---|
 | `key` | `t, code, player` | A `keydown` that passed the input filter (§4.1) |
-| `pause` / `resume` | `t` | Tab hidden, menu opened, handover screen. Frames don't advance while paused. |
+| `pause` / `resume` | `t` | Tab hidden, menu opened, handover screen, stretch break. Frames don't advance while paused, and key events logged while paused are ignored. A level continued from a save that ended paused gets a `resume` at the saved time. |
 | `segment-end` | `t` | Level left or finished |
 
 `keyup` isn't recorded (no M1 mechanic uses it).
