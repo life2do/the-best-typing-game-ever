@@ -63,3 +63,4 @@ Decisions agreed during spec discussion (2026-11-13).
 | D57 | Racer chase camera is locked to the rider's drawn position (follow = 1), and its field of view follows a ~1 s smoothed speed, eased by the host, so keystroke speed bursts no longer shake or pulse the view. |
 | D58 | Continuing a level saved while paused logs a `resume`; key events logged while paused are ignored by the simulation (fixes 'key event while paused' when loading runs saved by earlier builds). |
 | D59 | Racer: the rider swerves around cones along the same avoidance curve as the letter route, so it never drives over an obstacle. |
+| D60 | Racer route: lanes are planned per stage from the seed — every Space steps the route one lane over (edge ↔ middle; from the middle left or right) and a cone blocks the old lane just after the Space tile. Letters sit in their word's lane, so the route ahead is a blocky zig-zag; random cones are gone. Typing Space makes the rider take the turn. |

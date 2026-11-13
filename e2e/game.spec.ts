@@ -1,4 +1,5 @@
 /** End-to-end: start → intro → play a level by keyboard → crossroads → next level → verify page. */
+import { startLevel } from './helpers';
 import { test, expect, type Page } from '@playwright/test';
 
 const CODE: Record<string, string> = { f: 'KeyF', j: 'KeyJ', d: 'KeyD', k: 'KeyK', s: 'KeyS', l: 'KeyL', a: 'KeyA', ' ': 'Space', ';': 'Semicolon' };
@@ -27,10 +28,7 @@ test('play level 1, choose the next world, then verify the run', async ({ page }
   await page.locator('button', { hasText: 'Start' }).click();
   await expect(page.locator('.intro')).toBeVisible();
   await expect(page.locator('.intro .newkey')).toHaveText(['F', 'J']);
-  await page.keyboard.down('KeyF');
-  await page.keyboard.down('KeyJ');
-  await page.keyboard.up('KeyF');
-  await page.keyboard.up('KeyJ');
+  await startLevel(page);
   await expect(page.locator('.intro')).toHaveCount(0);
   await expect(page.locator('.prompt')).toBeVisible();
   await typeUntil(page, 'crossroads', 120_000);
@@ -50,11 +48,7 @@ test('pause menu logs pause and resume events', async ({ page }) => {
   await page.goto('/');
   await page.locator('.scale button').nth(6).click();
   await page.locator('button', { hasText: 'Start' }).click();
-  await expect(page.locator('.intro')).toBeVisible(); // the level loads asynchronously (save lookup)
-  await page.keyboard.down('KeyF');
-  await page.keyboard.down('KeyJ');
-  await page.keyboard.up('KeyF');
-  await page.keyboard.up('KeyJ');
+  await startLevel(page); // waits for the intro (the level loads asynchronously), then F+J
   for (let i = 0; i < 10; i++) await page.keyboard.press('KeyF');
   await page.keyboard.press('Escape');
   await expect(page.locator('.pause')).toBeVisible();
@@ -72,11 +66,7 @@ test('pause → main menu → continue keeps typing working and the run verifies
   await page.goto('/');
   await page.locator('.scale button').nth(6).click();
   await page.locator('button', { hasText: 'Start' }).click();
-  await expect(page.locator('.intro')).toBeVisible();
-  await page.keyboard.down('KeyF');
-  await page.keyboard.down('KeyJ');
-  await page.keyboard.up('KeyF');
-  await page.keyboard.up('KeyJ');
+  await startLevel(page);
   await typeUntilCount(page, 8);
   await page.keyboard.press('Escape');
   await page.locator('button', { hasText: 'Main menu' }).click();

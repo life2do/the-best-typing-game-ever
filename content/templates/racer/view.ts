@@ -9,13 +9,15 @@ import type { RacerState } from './sim';
 
 const LANE_W = 2.2;
 const FORWARD = new THREE.Vector3(0, 0, -1);
+/** A Space's cone stands this far past the Space tile, in the lane the route leaves. */
+const CONE_AFTER_SPACE = 1.5;
 
 const view: TemplateView = {
   id: 'template.racer',
   rules: [
     { icon: '🏎️', text: 'Type the letters painted on the road to drive over them.' },
     { icon: '🎵', text: 'A steady rhythm is faster than rushing.' },
-    { icon: '↔️', text: 'Space switches lanes.' },
+    { icon: '↔️', text: 'Space turns into the next lane — just in time to pass the cone.' },
   ],
   create({ root, style, avatar }) {
     const road = new THREE.Group();
@@ -39,7 +41,8 @@ const view: TemplateView = {
     });
     const cones = new THREE.Group();
     root.add(cones);
-    const conePool = new Pool<number, THREE.Mesh>(cones, () => new THREE.Mesh(new THREE.ConeGeometry(0.35, 0.8, 10), style.material('hazard')));
+    // One cone per Space: it blocks the lane the route leaves, just after the turn.
+    const conePool = new Pool<number, THREE.Mesh>(cones, () => new THREE.Mesh(new THREE.ConeGeometry(0.4, 0.9, 12), style.material('hazard')));
     const board = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.15, 2.2), style.material('accent'));
     const rider = new THREE.Group();
     board.position.y = 0.3;
@@ -60,7 +63,8 @@ const view: TemplateView = {
       lines.add(l);
     }
     let laneX = 0;
-    let dodgeX = 0;
+    let riderX = 0;
+    let lastNow = 0;
     let renderZ = 0;
     let smoothSpeed = 0;
     return {
@@ -81,31 +85,39 @@ const view: TemplateView = {
         smoothSpeed += (Math.min(1, sim.state.motion.v / 9000) - smoothSpeed) * 0.03;
         const base = Math.floor(z / 10);
         segPool.sync(Array.from({ length: 16 }, (_, i) => base - 1 + i));
-        const cmap = conePool.sync(s.cones.map((c) => c[0]).filter((cz) => fromQ(cz) > z - 5));
-        for (const c of s.cones) {
-          const m = cmap.get(c[0]);
-          if (m) m.position.set(c[1] * LANE_W, 0.5, -fromQ(c[0]));
-        }
-        laneX += (s.lane * LANE_W - laneX) * 0.12;
+        laneX += (s.lane * LANE_W - laneX) * 0.12; // camera follows the lane gently
         const p = sim.state.prompt;
-        // Cones are obstacles: both the rider and the letter route steer around any cone near their
-        // path, sliding toward the free side with a smooth falloff so the path curves.
-        const coneXZ = s.cones.map((c) => [c[1] * LANE_W, -fromQ(c[0])] as const);
-        const avoid = (pt: THREE.Vector3, reach = 2.4) => {
-          for (const [cx, cz] of coneXZ) {
-            const dz = Math.abs(pt.z - cz);
-            if (dz > reach || Math.abs(pt.x - cx) > LANE_W * 0.8) continue;
-            const side = cx >= LANE_W * 0.9 ? -1 : cx <= -LANE_W * 0.9 ? 1 : pt.x >= cx ? 1 : -1;
-            const k = 1 - dz / reach;
-            pt.x = cx + side * LANE_W * (0.55 + 0.25 * k);
-          }
-        };
-        const want = new THREE.Vector3(laneX, 0, -z);
-        avoid(want, 3);
-        dodgeX += (want.x - dodgeX) * 0.2; // ease into the swerve
-        rider.position.set(dodgeX, 0, -z);
-        rider.rotation.z = (want.x - dodgeX) * -0.25 + (s.lane * LANE_W - laneX) * -0.15;
-        trail.update(p.text, p.pos, new THREE.Vector3(laneX, 0.12, -z), FORWARD, now, (pt) => avoid(pt));
+        // Lane of text index i: the word it belongs to (a Space still belongs to the word before it,
+        // so the turn happens right after the Space tile).
+        const wordOf: number[] = [];
+        let w = 0;
+        for (let i = 0; i < p.text.length; i++) {
+          wordOf.push(w);
+          if (p.text[i] === ' ') w++;
+        }
+        const laneOf = (i: number) => s.wordLanes[Math.min(wordOf[Math.max(0, Math.min(i, wordOf.length - 1))] ?? 0, s.wordLanes.length - 1)] ?? s.lane;
+        // Blocky route: every letter sits in its word's lane, so the route steps 90° at each Space.
+        trail.update(p.text, p.pos, new THREE.Vector3(0, 0.12, -z), FORWARD, now, (pt, mesh, i) => {
+          pt.x = laneOf(i) * LANE_W;
+          mesh.rotation.set(-Math.PI / 2, 0, 0);
+        });
+        // Cones: in the old lane, just past each upcoming (or just typed) Space.
+        const spaces: number[] = [];
+        for (let i = Math.max(0, p.pos - 2); i < Math.min(p.text.length, p.pos + 16); i++) if (p.text[i] === ' ') spaces.push(i);
+        const cmap = conePool.sync(spaces);
+        for (const i of spaces) {
+          const ahead = trail.aheadOf(i) + CONE_AFTER_SPACE;
+          const m = cmap.get(i)!;
+          m.visible = ahead > -6;
+          m.position.set(laneOf(i) * LANE_W, 0.45, -z - ahead);
+        }
+        // The rider moves to its lane with a quick, frame-rate-independent swerve when Space is typed.
+        const dt = lastNow ? Math.min(0.25, (now - lastNow) / 1000) : 0;
+        lastNow = now;
+        const target = s.lane * LANE_W;
+        riderX += (target - riderX) * (1 - Math.exp(-dt * 12));
+        rider.position.set(riderX, 0, -z);
+        rider.rotation.set(0, 0, (target - riderX) * -0.18);
         const wpm = sim.liveWpmP();
         const sp = Math.min(1, sim.state.motion.v / 9000);
         const superSpeed = wpm >= SUPER_SPEED_WPM_P;
