@@ -254,3 +254,39 @@ export class AvatarRig {
     });
   }
 }
+
+/** Stretch-break demonstration poses for any avatar (procedural, theme-agnostic). t in seconds. */
+export function stretchPose(rig: AvatarRig, move: import('@/content/types').StretchMove, t: number, reducedMotion = false): void {
+  const b = rig.root.children[0] as THREE.Group;
+  const k = 0.7 + rig.custom.size * 0.06;
+  const slow = reducedMotion ? 0.35 : 1;
+  let y = 0, sx = 1, sy = 1, rotY = 0, rotZ = 0;
+  switch (move) {
+    case 'shake':
+      rotZ = Math.sin(t * 18 * slow) * 0.1;
+      y = Math.abs(Math.sin(t * 9 * slow)) * 0.08;
+      break;
+    case 'roll':
+      rotY = Math.sin(t * 2) * 0.7 * slow;
+      rotZ = Math.cos(t * 2) * 0.12 * slow;
+      break;
+    case 'reach':
+      sy = 1 + 0.28 * (0.5 + 0.5 * Math.sin(t * 1.6));
+      sx = 1 - 0.1 * (0.5 + 0.5 * Math.sin(t * 1.6));
+      y = 0.15 * (0.5 + 0.5 * Math.sin(t * 1.6));
+      break;
+    case 'look':
+      rotY = Math.sin(t * 0.7) * 1.1 * slow;
+      break;
+    case 'wiggle':
+      sx = 1 + Math.sin(t * 14 * slow) * 0.07;
+      sy = 1 - Math.sin(t * 14 * slow) * 0.07;
+      break;
+    case 'breathe':
+      sx = sy = 1 + 0.12 * Math.sin(t * 1.1);
+      break;
+  }
+  b.position.y = y;
+  b.rotation.set(0, rotY, rotZ);
+  b.scale.set(k * sx, k * sy, k * sx);
+}

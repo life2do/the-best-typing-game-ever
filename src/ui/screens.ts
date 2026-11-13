@@ -160,7 +160,3 @@ export function pauseScreen(settings: Settings, onChange: (s: Settings) => void,
 export function nagScreen(text: string, actionLabel: string, onAction: () => void, onClose: () => void): HTMLElement {
   return h('div', { class: 'card nag' }, h('p', {}, text), h('div', { class: 'row-btns' }, h('button', { onclick: onAction }, actionLabel), h('button', { class: 'secondary', onclick: onClose }, 'Keep going')));
 }
-
-export function breakScreen(onDone: () => void): HTMLElement {
-  return h('div', { class: 'overlay' }, h('div', { class: 'card' }, h('h2', {}, '🙆 Stretch break!'), h('p', {}, 'Shake out your hands, roll your shoulders and look far away for a moment.'), h('div', { class: 'row-btns' }, h('button', { onclick: onDone }, 'Ready'))));
-}

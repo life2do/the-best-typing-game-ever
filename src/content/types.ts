@@ -36,7 +36,11 @@ export interface LanguagePackManifest extends ItemBase {
   blocklist: string;
   ui?: Record<string, string>;
   tts?: { lang: string; preferredVoices?: string[] };
+  breakNudges?: string[];
+  stretchSteps?: { move: StretchMove; icon?: string; text: string }[];
 }
+
+export type StretchMove = 'shake' | 'roll' | 'reach' | 'look' | 'wiggle' | 'breathe';
 
 /** Language pack with word lists loaded. */
 export interface LanguagePack extends LanguagePackManifest {
