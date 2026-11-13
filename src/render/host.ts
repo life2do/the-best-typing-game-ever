@@ -34,6 +34,8 @@ const SWAP_AT = 0.42;
 
 export class RenderHost {
   readonly renderer: THREE.WebGLRenderer;
+  /** false when the browser cannot create a WebGL context: the game still runs, with the HUD only. */
+  readonly webgl: boolean;
   readonly scene = new THREE.Scene();
   readonly world = new THREE.Group();
   readonly rig = new CameraRig();
@@ -48,8 +50,19 @@ export class RenderHost {
   private lastNow = 0;
 
   constructor(readonly canvas: HTMLCanvasElement) {
-    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: true });
-    this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+    let renderer: THREE.WebGLRenderer;
+    let webgl = true;
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: true });
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+    } catch (e) {
+      // No WebGL (disabled, blocklisted GPU, headless browser): keep the game playable without 3D graphics.
+      console.warn('WebGL unavailable, running without 3D graphics:', e);
+      webgl = false;
+      renderer = nullRenderer(canvas);
+    }
+    this.renderer = renderer;
+    this.webgl = webgl;
     this.quality = new QualityScaler(this.renderer);
     this.scene.add(this.world);
     this.scene.add(new THREE.AmbientLight(0xffffff, 1.2));
@@ -170,6 +183,7 @@ export class RenderHost {
     const h = this.canvas.clientHeight || innerHeight;
     this.rig.update(now, w / Math.max(1, h));
     const kit = cur ?? this.outgoing;
+    if (!this.webgl) return;
     if (!kit?.kit.render?.(this.renderer, this.scene, this.rig.camera)) this.renderer.render(this.scene, this.rig.camera);
   }
 
@@ -178,3 +192,18 @@ export class RenderHost {
     return presetPose(view);
   }
 }
+
+/** Stand-in used when WebGL is unavailable: accepts the calls the host makes and draws nothing. */
+function nullRenderer(canvas: HTMLCanvasElement): THREE.WebGLRenderer {
+  let pr = 1;
+  return {
+    domElement: canvas,
+    outputColorSpace: THREE.SRGBColorSpace,
+    setSize: () => {},
+    setPixelRatio: (v: number) => void (pr = v),
+    getPixelRatio: () => pr,
+    render: () => {},
+    dispose: () => {},
+  } as unknown as THREE.WebGLRenderer;
+}
+

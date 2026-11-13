@@ -65,8 +65,9 @@ export class Game {
   }
 
   async boot(): Promise<void> {
-    const stored = await loadProfile();
+    const stored = await loadProfile().catch(() => undefined);
     this.showStart(stored);
+    if (!this.host.webgl) toast(this.ui, 'Your browser has 3D graphics turned off, so the worlds are hidden. Typing, sound and progress still work.');
   }
 
   // ------------------------------------------------------------------ screens
