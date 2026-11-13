@@ -1,0 +1,12 @@
+{
+  "id": "ability.jump",
+  "kind": "ability",
+  "version": 1,
+  "description": "Permanent ability: the avatar can jump in every template that supports the jump rig hook.",
+  "prompt": "Design a language-independent 'jump' ability. Provide trigger words per language that are typeable early in each key order, a quick-type budget per tier, and describe the jump feel for abstract avatars (squash-and-stretch for clouds, galaxies).",
+  "license": "CC0-1.0",
+  "type": "permanent",
+  "triggerWords": { "en": ["jump", "hop", "leap"], "ru": ["прыжок", "скок"] },
+  "quickTypeBudgetMs": { "1": 6000, "2": 5000, "3": 4000, "4": 3000, "5": 2200, "6": 1600, "7": 1200 },
+  "rigHook": "jump"
+}

@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://life2do.github.io/the-best-typing-game-ever/schemas/render-style.schema.json",
+  "title": "Render style",
+  "allOf": [
+    {
+      "$ref": "common.schema.json#/$defs/itemBase"
+    }
+  ],
+  "type": "object",
+  "properties": {
+    "kind": {
+      "const": "render-style"
+    },
+    "family": {
+      "enum": [
+        "flat",
+        "toon",
+        "pixel",
+        "ink",
+        "neon",
+        "paper",
+        "crayon",
+        "realistic",
+        "other"
+      ]
+    },
+    "views": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/view"
+      }
+    },
+    "entry": {
+      "type": "string"
+    },
+    "lite": {
+      "$ref": "common.schema.json#/$defs/ref"
+    },
+    "costTier": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    }
+  },
+  "required": [
+    "family",
+    "entry"
+  ]
+}

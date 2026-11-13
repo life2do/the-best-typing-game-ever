@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://life2do.github.io/the-best-typing-game-ever/schemas/party-mode.schema.json",
+  "title": "Hot-seat party mode",
+  "allOf": [
+    {
+      "$ref": "common.schema.json#/$defs/itemBase"
+    }
+  ],
+  "type": "object",
+  "properties": {
+    "kind": {
+      "const": "party-mode"
+    },
+    "mode": {
+      "enum": [
+        "coop",
+        "side-by-side",
+        "companions"
+      ]
+    },
+    "turnPolicy": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "stage",
+          "level"
+        ]
+      },
+      "minItems": 1
+    },
+    "letters": {
+      "enum": [
+        "intersection",
+        "teach-lowest",
+        "per-player",
+        "own-campaign"
+      ]
+    },
+    "maxPlayers": {
+      "type": "integer",
+      "minimum": 2,
+      "maximum": 4
+    },
+    "completion": {
+      "enum": [
+        "each-player-own-target"
+      ]
+    }
+  },
+  "required": [
+    "mode",
+    "turnPolicy",
+    "letters",
+    "maxPlayers"
+  ]
+}

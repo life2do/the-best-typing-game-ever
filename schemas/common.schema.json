@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://life2do.github.io/the-best-typing-game-ever/schemas/common.schema.json",
+  "title": "Common definitions",
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+([.-][a-z0-9]+)*$"
+    },
+    "ref": {
+      "type": "string",
+      "description": "id@version, resolved to a content hash at build time",
+      "pattern": "^[a-z0-9.-]+@[0-9]+$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^sha256-[A-Za-z0-9_-]{43}$"
+    },
+    "spdx": {
+      "type": "string",
+      "description": "SPDX license identifier, e.g. CC0-1.0, MIT, OFL-1.1, CC-BY-4.0"
+    },
+    "localized": {
+      "type": "object",
+      "description": "language id -> string",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "minProperties": 1
+    },
+    "view": {
+      "enum": [
+        "2d",
+        "2.5d",
+        "iso",
+        "3d",
+        "fpv",
+        "split",
+        "4d"
+      ]
+    },
+    "inputMode": {
+      "enum": [
+        "dictated",
+        "targeting"
+      ]
+    },
+    "range": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "itemBase": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "version",
+        "description",
+        "prompt",
+        "license"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 10
+        },
+        "prompt": {
+          "type": "string",
+          "description": "Inline generation prompt, or a relative path to PROMPT.md"
+        },
+        "license": {
+          "$ref": "#/$defs/spdx"
+        },
+        "attribution": {
+          "type": "string"
+        },
+        "authors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "generator": {
+          "type": "object"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "refs": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ref"
+          }
+        },
+        "hash": {
+          "$ref": "#/$defs/hash",
+          "description": "Computed by the build. Never hand-written."
+        }
+      }
+    }
+  }
+}

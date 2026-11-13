@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://life2do.github.io/the-best-typing-game-ever/schemas/palette.schema.json",
+  "title": "Palette",
+  "allOf": [
+    {
+      "$ref": "common.schema.json#/$defs/itemBase"
+    }
+  ],
+  "type": "object",
+  "properties": {
+    "kind": {
+      "const": "palette"
+    },
+    "colors": {
+      "type": "object",
+      "required": [
+        "bg",
+        "fg",
+        "accent",
+        "positive",
+        "negative"
+      ],
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^#[0-9a-fA-F]{6}$"
+      }
+    },
+    "colorBlindSafe": {
+      "type": "boolean"
+    },
+    "mood": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "colors"
+  ]
+}
