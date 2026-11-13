@@ -1,5 +1,5 @@
 {
-  "latest": "vPN3mLJ8bWFlS-6u",
+  "latest": "c9pf9IoS4hIlWv88",
   "builds": [
     {
       "id": "DuWNSrtzFmWjQmAS",
@@ -10,6 +10,11 @@
       "id": "vPN3mLJ8bWFlS-6u",
       "commit": "0c7974a822082d9291503d048e5b18d97971cf51",
       "publishedAt": "2026-11-13T20:45:11.601Z"
+    },
+    {
+      "id": "c9pf9IoS4hIlWv88",
+      "commit": "5225e53f0c18c0c87cdaf445cd916556c7cc8df3",
+      "publishedAt": "2026-11-13T21:01:48.593Z"
     }
   ]
 }
