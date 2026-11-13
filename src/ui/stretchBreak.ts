@@ -89,8 +89,8 @@ export class StretchBreak {
       sun.position.set(2, 4, 3);
       this.scene.add(new THREE.AmbientLight(0xffffff, 1.4), sun);
       this.scene.add(this.o.avatar.root);
-      this.camera.position.set(0, 1.1, 4.4);
-      this.camera.lookAt(0, 0.8, 0);
+      this.camera.position.set(0, 1.0, 3.1); // close-up so the stretches are easy to follow
+      this.camera.lookAt(0, 0.75, 0);
     } catch {
       this.renderer = null; // no WebGL: the step emoji is shown instead
     }
