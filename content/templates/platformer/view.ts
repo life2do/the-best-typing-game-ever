@@ -44,6 +44,9 @@ const view: TemplateView = {
     root.add(sparkle);
     const counter = makeLabel('♪ 0', 0.6);
     root.add(counter);
+    // Upcoming text floating over the path ahead (the typing hint in the world).
+    const text = makeLabel(' ', 0.9);
+    root.add(text);
     let lastCollect = -1;
     return {
       pose: (sim) => presetPose('2d', 10, new THREE.Vector3(fromQ((sim.state.tpl as PlatformerState).x) + 3, -0.6, 0)),
@@ -76,7 +79,10 @@ const view: TemplateView = {
           (sparkle.material as THREE.Material).opacity = 1 - age;
         }
         setLabel(counter, `♪ ${s.collected}`, 0.6);
-        counter.position.set(x + 6, 3.6, 0.5);
+        counter.position.set(x + 4.5, 2.25, 0.5);
+        const p = sim.state.prompt;
+        setLabel(text, p.text.slice(p.pos, p.pos + 14).replace(/ /g, '·') || ' ', 0.9);
+        text.position.set(x + 4.5, 3.2, 0.5);
         avatar.update(now, y > 0 ? 0 : Math.min(1, sim.state.motion.v / 4000));
       },
       dispose() {},
