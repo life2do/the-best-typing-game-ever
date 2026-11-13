@@ -48,7 +48,7 @@ export class GlyphTrail {
    * @param at    the character's position; letters are laid out from here along `forward`
    * @param forward unit direction in which "ahead" lies (e.g. +X for side views, -Z for the racer)
    */
-  update(text: string, pos: number, at: THREE.Vector3, forward: THREE.Vector3, now: number, adjust?: (p: THREE.Vector3) => void): void {
+  update(text: string, pos: number, at: THREE.Vector3, forward: THREE.Vector3, now: number, adjust?: (p: THREE.Vector3, mesh: THREE.Mesh, index: number) => void): void {
     if (Math.abs(pos - this.shown) > 6) this.shown = pos; // new stage text: jump
     if (pos !== this.lastPos) {
       if (pos > this.lastPos && this.lastPos >= 0) this.popAt = now;
@@ -81,8 +81,13 @@ export class GlyphTrail {
       mat.opacity = typed ? (just ? 1 - pop : 0) : Math.min(1, 1.2 - k * 0.05);
       m.visible = mat.opacity > 0.02;
       m.position.copy(at).addScaledVector(forward, ahead);
-      adjust?.(m.position); // e.g. steer the trail around obstacles
+      adjust?.(m.position, m, i); // e.g. put each letter in its lane of the route
     }
+  }
+
+  /** Distance ahead of the character at which text index i is currently drawn. */
+  aheadOf(i: number): number {
+    return this.o.start + (i - this.shown) * this.o.gap;
   }
 
   dispose(): void {

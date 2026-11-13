@@ -170,6 +170,9 @@ export class Game {
       this.seg.log.push(e);
       sim.feed(e);
     }
+    // Save the level as soon as it starts, so the run (and the verify page) always includes it,
+    // instead of relying on a later keypress or a save during page unload (WebKit skips the latter).
+    await this.persist();
     this.stuckShown = false;
     this.hintSpoken = -1;
     const lang = language(this.camp.language);

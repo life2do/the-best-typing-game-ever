@@ -1,15 +1,12 @@
 /** Music: the held chord fades out when the player stops typing (it used to hang on one chord). */
+import { startLevel } from './helpers';
 import { test, expect } from '@playwright/test';
 
 test('music pad goes silent when no keys are pressed', async ({ page }) => {
   await page.goto('/');
   await page.locator('.scale button').nth(6).click();
   await page.locator('button', { hasText: 'Start' }).click();
-  await expect(page.locator('.intro')).toBeVisible(); // the level loads asynchronously (save lookup)
-  await page.keyboard.down('KeyF');
-  await page.keyboard.down('KeyJ');
-  await page.keyboard.up('KeyF');
-  await page.keyboard.up('KeyJ');
+  await startLevel(page); // waits for the intro (the level loads asynchronously), then F+J
   const CODE: Record<string, string> = { f: 'KeyF', j: 'KeyJ', ' ': 'Space' };
   for (let i = 0; i < 24; i++) {
     const ch = await page.evaluate(() => (window as any).__game.sim.expectedChars()[0]);

@@ -1,4 +1,5 @@
 /** Stretch break: can't be skipped early (supportive nudges), countdown + ring, resumes when done. */
+import { startLevel } from './helpers';
 import { test, expect } from '@playwright/test';
 
 test('stretch break blocks early exit with nudges and resumes after the countdown', async ({ page }) => {
@@ -7,11 +8,7 @@ test('stretch break blocks early exit with nudges and resumes after the countdow
   await page.goto('/');
   await page.locator('.scale button').nth(3).click();
   await page.locator('button', { hasText: 'Start' }).click();
-  await expect(page.locator('.intro')).toBeVisible(); // the level loads asynchronously (save lookup)
-  await page.keyboard.down('KeyF');
-  await page.keyboard.down('KeyJ');
-  await page.keyboard.up('KeyF');
-  await page.keyboard.up('KeyJ');
+  await startLevel(page); // waits for the intro (the level loads asynchronously), then F+J
   await page.evaluate(() => (window as any).__game.breakNow(3));
   const brk = page.locator('.overlay.break');
   await expect(brk).toBeVisible();
