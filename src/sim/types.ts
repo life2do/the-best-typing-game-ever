@@ -43,7 +43,8 @@ export interface SimState {
   rng: { text: RngState; drops: RngState; tpl: RngState };
   stage: number;
   attempt: number;
-  prompt: { text: string; pos: number; spans: WordSpan[]; chunks: string[]; nextChunk: number };
+  /** chunkAbilities[i] = ability id of chunks[i] ('' if none); used by targeting levels, which may reorder chunks */
+  prompt: { text: string; pos: number; spans: WordSpan[]; chunks: string[]; chunkAbilities: string[]; nextChunk: number };
   targets: Target[];
   lockedTarget: number;
   nextTargetId: number;

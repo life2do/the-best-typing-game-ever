@@ -53,3 +53,4 @@ Decisions agreed during spec discussion (2026-11-13).
 | D47 | Targeting: Space confirms a target (chunk + trailing Space), matching dictated levels where Space ends each word. The aimed-at label is larger and gold; the others dim. |
 | D48 | Camera near/far planes are fitted tightly to the scene and the renderer uses a logarithmic depth buffer, so flat surfaces close together don't z-fight in the narrow-FOV 2D/iso views. |
 | D49 | Dictated levels show the upcoming letters big, in the world, in front of the character (`src/render/glyphTrail.ts`): standing on the path in side views, painted on the road in chase views. They slide toward the character as you type; the current letter is larger and gold; typed letters pop. The HUD prompt bar stays as a secondary aid. |
+| D51 | Targeting: active targets always start with different letters, so the first letter unambiguously picks one; the suggested target (aimed-at, or the keyboard's next key) is highlighted. |

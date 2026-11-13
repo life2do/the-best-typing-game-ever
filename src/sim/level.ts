@@ -64,7 +64,7 @@ export class LevelSim {
       frame: 0, simT: 0, pausedMs: 0, pauseAt: -1, phase: 'intro', introF: -1, introJ: -1,
       rng: { text: seedState(`${base}:text`), drops: seedState(`${base}:drops`), tpl: seedState(`${base}:tpl`) },
       stage: 0, attempt: 0,
-      prompt: { text: '', pos: 0, spans: [], chunks: [], nextChunk: 0 },
+      prompt: { text: '', pos: 0, spans: [], chunks: [], chunkAbilities: [], nextChunk: 0 },
       targets: [], lockedTarget: -1, nextTargetId: 1,
       win: newWindow(), sm: newStageMetrics(),
       levelStartFrame: 0, stageStartFrame: 0, results: [], bestStars: 0,
@@ -337,7 +337,14 @@ export class LevelSim {
       stageIndex: s.stage, stageCount: L.length, length: L[Math.min(s.stage, L.length - 1)],
       words, specials, blockWords: lang.blockWords, blockSubstrings: lang.blockSubstrings,
     });
-    s.prompt = { text: txt.text, pos: 0, spans: txt.spans, chunks: txt.text.split(' '), nextChunk: 0 };
+    const chunks = txt.text.split(' ');
+    const chunkAbilities: string[] = [];
+    let offset = 0;
+    for (const c of chunks) {
+      chunkAbilities.push(txt.spans.find((sp) => sp.start === offset)?.ability ?? '');
+      offset += c.length + 1;
+    }
+    s.prompt = { text: txt.text, pos: 0, spans: txt.spans, chunks, chunkAbilities, nextChunk: 0 };
     s.targets = [];
     s.lockedTarget = -1;
     s.sm = newStageMetrics();
@@ -456,12 +463,22 @@ export class LevelSim {
     const s = this.state;
     const p = s.prompt;
     if (p.nextChunk >= p.chunks.length) return null;
-    // chunk start offset in text to look up ability spans
-    let offset = 0;
-    for (let i = 0; i < p.nextChunk; i++) offset += p.chunks[i].length + 1;
-    const span = p.spans.find((sp) => sp.start === offset);
+    // The first letter picks a target, so active targets must all start with different letters:
+    // take the next chunk whose first letter is free, moving it forward (nothing is skipped).
+    // If none is free, wait until a target is completed.
+    const used = s.targets.map((x) => x.text[0]);
+    let i = p.nextChunk;
+    while (i < p.chunks.length && used.includes(p.chunks[i][0])) i++;
+    if (i >= p.chunks.length) return null;
+    if (i !== p.nextChunk) {
+      const [c] = p.chunks.splice(i, 1);
+      const [a] = p.chunkAbilities.splice(i, 1);
+      p.chunks.splice(p.nextChunk, 0, c);
+      p.chunkAbilities.splice(p.nextChunk, 0, a);
+    }
+    const ability = p.chunkAbilities[p.nextChunk];
     // A target is its chunk plus a trailing Space: typing the letters aims, Space confirms (docs/02 Input styles).
-    const t: Target = { id: s.nextTargetId++, text: p.chunks[p.nextChunk++] + ' ', progress: 0, ability: span?.ability ?? '' };
+    const t: Target = { id: s.nextTargetId++, text: p.chunks[p.nextChunk++] + ' ', progress: 0, ability };
     s.targets.push(t);
     return t;
   }
