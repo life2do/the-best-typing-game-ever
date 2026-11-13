@@ -40,7 +40,16 @@
       }
     },
     "rigHook": {
-      "type": "string"
+      "enum": [
+        "idle",
+        "move",
+        "jump",
+        "land",
+        "stumble",
+        "celebrate",
+        "powerup"
+      ],
+      "description": "Core hook used when the avatar's scale has no 'ability:<id>' override."
     },
     "powerup": {
       "$ref": "common.schema.json#/$defs/ref"

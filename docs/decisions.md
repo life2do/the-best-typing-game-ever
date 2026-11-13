@@ -39,3 +39,4 @@ Decisions agreed during spec discussion (2026-11-13).
 | D33 | Canonical JSON = RFC 8785 (JCS) + NFC-only strings (reject, don't normalise) + integers-only in state/logs. Hash = `sha256-` + base64url. Text files LF. |
 | D34 | WPM = (correct ÷ 5) ÷ active minutes (intervals capped at 2 s). Every wrong keystroke counts as an error; net = gross because errors are force-corrected. Accuracy is a separate star requirement. Final stage repeats until the target is met. |
 | D35 | Bot typist = seeded integer-only log generator with 6 profiles (pass, star3, struggle, idle, robot, masher); logs generated in Node and replayed in every browser. |
+| D36 | An ability's avatar animation resolves in this order: the scale's `ability:<id>` hook, then the ability's core `rigHook`, then `procedural:ability-pulse`. Only core and `ability:*` hook names are allowed. |

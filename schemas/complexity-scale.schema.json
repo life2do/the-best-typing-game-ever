@@ -57,6 +57,10 @@
       ],
       "additionalProperties": {
         "type": "string"
+      },
+      "description": "Core hooks are required. Optional 'ability:<ability-id>' hooks override an ability's default (core) hook for this theme.",
+      "propertyNames": {
+        "pattern": "^(idle|move|jump|land|stumble|celebrate|powerup|ability:[a-z0-9]+([.-][a-z0-9]+)*)$"
       }
     },
     "customization": {

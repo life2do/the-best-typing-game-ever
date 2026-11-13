@@ -96,7 +96,16 @@ Each scale has 7 steps (one per tier). Shipped set:
 Each step: localized name, TTS line, avatar model reference, rig hooks. Each scale defines **customisation slots**
 (≥ 8 slots; value ranges unlocked by stars). This gives ≥ 50 options per theme. See `complexity-scale.schema.json`.
 
-## Avatar rig hooks (required for every scale)
+## Avatar rig hooks
 
-`idle`, `move`, `jump`, `land`, `stumble`, `celebrate`, `powerup`, `ability:<id>`. Abstract avatars (clouds, galaxies)
-implement them with procedural squash, stretch, spin and particles. Abilities depend only on hooks, never on a specific model.
+**Required core hooks** (every scale): `idle`, `move`, `jump`, `land`, `stumble`, `celebrate`, `powerup`.
+**Optional ability hooks**: `ability:<ability-id>` (e.g. `ability:ability.jump`), for a theme-specific look of that ability.
+Abstract avatars (clouds, galaxies) implement hooks with procedural squash, stretch, spin and particles.
+Abilities depend only on hooks, never on a specific model.
+
+**Resolving an ability's animation** (first match wins):
+1. the scale's `ability:<ability-id>` hook, if defined (a dragon flaps its wings for `jump`);
+2. the core hook named by the ability's `rigHook` (e.g. `jump`);
+3. the generic procedural fallback `procedural:ability-pulse` (glow + squash).
+
+`npm run validate` checks that every ability's `rigHook` names a core hook, and that every `ability:<id>` hook in a scale refers to an existing ability.

@@ -92,7 +92,8 @@
     "land": "procedural:land-sway",
     "stumble": "procedural:stumble-sway",
     "celebrate": "procedural:celebrate-sway",
-    "powerup": "procedural:powerup-sway"
+    "powerup": "procedural:powerup-sway",
+    "ability:ability.jump": "procedural:petal-spring-jump"
   },
   "customization": [
     {
