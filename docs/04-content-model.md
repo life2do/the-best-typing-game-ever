@@ -39,7 +39,7 @@ bytes plus its manifest.
 }
 ```
 
-`hash` is computed by the build: `sha256(canonicalJSON(manifest without hash) + sha256(each file in item, sorted by path))`.
+`hash` is computed by the build as `hash({ manifest: <manifest without hash>, files: { <path>: <file hash> } })`, using RFC 8785 canonical JSON with NFC-only strings and LF line endings. The byte-exact definition is in [10 §3](10-simulation-and-test-harness.md#3-canonical-json-and-hashing).
 Changing any byte changes the hash. Old hashes stay resolvable in old builds (see [05](05-determinism-replay-proofs.md)).
 
 ## Asset manifests

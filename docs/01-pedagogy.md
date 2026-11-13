@@ -66,13 +66,13 @@ Home row: `Ф Ы В А | О Л Д Ж Э`. One letter per level after level 1:
 
 ## Proficiency tiers and benchmarks
 
-Speed is **net WPM** = (correct characters / 5 − uncorrected errors) / minutes. Accuracy = correct keystrokes / all keystrokes.
+Speed is **WPM** = (correct characters / 5) / active minutes. Accuracy = correct keystrokes / all judged keystrokes. A wrong key never advances and must be followed by the correct one, so there are no *uncorrected* errors: net WPM equals gross WPM, and errors cost time plus accuracy. The exact counting rules (what counts as an error, active-time capping, windows) are in [10 §4](10-simulation-and-test-harness.md#4-typing-metrics).
 
 Reference data: US district keyboarding guidelines cluster around grade 3 ≈ 15 WPM, grade 4 ≈ 20, grade 5 ≈ 25 at 85–90% accuracy (about +5 WPM per grade). Average adults type about 40–50 WPM. Professional typists type about 43–80+ WPM at ≥97% accuracy.
 
 | Tier | 1★ target | 2★ | 3★ | Typical |
 |---|---|---|---|---|
-| 1 | 5 WPM · 85% | +20% speed | +40% speed & rhythm ≥ "steady" | 7 y.o. beginner |
+| 1 | 5 WPM · 85% | +20% speed | +40% speed & steadiness ≥ 700‰ | 7 y.o. beginner |
 | 2 | 10 · 88% | | | grade 2–3 |
 | 3 | 18 · 90% | | | grade 3–4 |
 | 4 | 28 · 92% | | | grade 5–6 |

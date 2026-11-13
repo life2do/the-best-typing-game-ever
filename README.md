@@ -20,6 +20,7 @@ Collect every alphabet to unlock a **multidimensional artifact** (a tesseract) w
 | [docs/07-ux-profiles-accessibility.md](docs/07-ux-profiles-accessibility.md) | Start screen, complexity scales, avatar, profiles/PIN, overlays, HUD, TTS, accessibility, analytics |
 | [docs/08-architecture.md](docs/08-architecture.md) | Tech stack, modules, interfaces, rendering & camera, audio, storage, builds |
 | [docs/09-roadmap.md](docs/09-roadmap.md) | Milestones and acceptance criteria |
+| [docs/10-simulation-and-test-harness.md](docs/10-simulation-and-test-harness.md) | **Normative**: clock/tick model, integer numerics, canonical JSON & hashing, metrics, bot typist, M1 test matrix |
 | [docs/decisions.md](docs/decisions.md) | Decision log from the spec discussion |
 | [AGENTS.md](AGENTS.md) | How AI agents (and humans) extend the game |
 | [schemas/](schemas/) | JSON Schemas for all content and save data |

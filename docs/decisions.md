@@ -34,3 +34,8 @@ Decisions agreed during spec discussion (2026-11-13).
 | D28 | Local-only analytics screen for each player. |
 | D29 | Docs split under `docs/`, with `AGENTS.md` and `schemas/`. |
 | D30 | Milestone 1 = English vertical slice, including determinism and basic replay. |
+| D31 | Simulation clock = input log only (integer ms → 60 Hz frames). Each frame: key events (tick + impulse) then a single decay/step. Frame stamps instead of counters; frames at rest are fast-forwarded. ([10 §1](10-simulation-and-test-harness.md)) |
+| D32 | Simulation numerics are integer-only (Q16, permille, `floorDiv`, committed trig tables). |
+| D33 | Canonical JSON = RFC 8785 (JCS) + NFC-only strings (reject, don't normalise) + integers-only in state/logs. Hash = `sha256-` + base64url. Text files LF. |
+| D34 | WPM = (correct ÷ 5) ÷ active minutes (intervals capped at 2 s). Every wrong keystroke counts as an error; net = gross because errors are force-corrected. Accuracy is a separate star requirement. Final stage repeats until the target is met. |
+| D35 | Bot typist = seeded integer-only log generator with 6 profiles (pass, star3, struggle, idle, robot, masher); logs generated in Node and replayed in every browser. |

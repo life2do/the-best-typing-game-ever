@@ -18,9 +18,9 @@ Scope:
 - One profile (no PIN yet), seeded campaign, save/resume.
 - **Basic replay**: a `/verify` page that re-plays a local run, with speed controls and a seek bar with letter marks.
 
-Acceptance:
-- Same seed + same input log ⇒ identical snapshot hashes on Chrome, Firefox and Safari (CI simulation test).
-- Bot typist at tiers 1, 4 and 7 completes all 4 levels with 1★ or more.
+Acceptance (full test matrix in [10 §6](10-simulation-and-test-harness.md#6-milestone-1-test-matrix)):
+- Hash fixtures and Node-generated bot logs replay with identical snapshot hashes in Chromium, Firefox and WebKit.
+- `pass` bot at tiers 1, 4 and 7 completes all 4 levels with 1★ or more within the simulated time budget; `struggle` never completes; fast-forward on/off gives identical hashes.
 - 60 fps at "medium" quality on a mid-range laptop; the quality scaler steps up and down.
 - The dive transition has no visible snap (Playwright visual check).
 

@@ -2,9 +2,11 @@
 
 ## Determinism rules (enforced by lint and tests)
 
-1. **The simulation is separate from rendering.** The simulation runs on logical ticks (one per correct key) plus a fixed-step ease substep (60 Hz logical time from recorded key timestamps). Rendering only interpolates and never writes simulation state.
+> The normative definitions (clock, frame loop, numeric rules, canonical JSON, hashing, metrics, bot typist) are in [10](10-simulation-and-test-harness.md). This section summarises them.
+
+1. **The simulation is separate from rendering.** Time comes only from the input log (integer ms), mapped to 60 Hz frames. In each frame, key events are processed first: a correct key gives a discrete tick plus a velocity impulse. Then one continuous decay/step runs. Frames at rest are skipped. Rendering only interpolates and never writes simulation state.
 2. **All randomness** comes from `ctx.rng` (a seeded PRNG such as `sfc32`), split per subsystem (`rng.fork("drops")`). `Math.random`, `Date.now` and `performance.now` are **forbidden** in simulation code (lint rule).
-3. **Floating point**: simulation maths avoids platform-dependent functions in branching logic, or uses fixed-point helpers for anything that affects outcomes (scores, stars, unlocks).
+3. **Integers only** in the simulation: Q16 fixed point, permille ratios, `floorDiv`, committed trig lookup tables. No `Math.sin/exp/log/sqrt/pow/round/trunc` in simulation code.
 4. **Quality settings never affect the simulation.**
 5. Simulation state must be **serialisable** (plain data), so snapshots are possible.
 
@@ -25,8 +27,8 @@ Compressed with deflate. A full campaign (100–200k keys) is about 0.3–0.6 MB
 | `asset` / `item` | sha256 of manifest + files ([04](04-content-model.md)) |
 | `build` | Merkle root of engine bundle hash + all content item hashes. Mapped to a git commit in `build-info.json` |
 | `campaign` | sha256(build, language, orderVariant, seed, partyMode, playerSlots) |
-| `snapshot` | sha256(canonical simulation state), taken every 10 s of play and at every stage/level boundary |
-| `run` | hash chain: `H(campaign) → H(snapshot₁) → … → H(final)` |
+| `snapshot` | hash of the canonical simulation state, taken every 600 frames (10 s) and at every stage/level boundary |
+| `run` | hash chain: `link₀ = H(campaign)`, `linkₙ = H({prev: linkₙ₋₁, snap: H(snapshotₙ)})` |
 
 Any state can be reconstructed from **(build, campaign seed, input log prefix)**. Snapshots make it fast.
 
