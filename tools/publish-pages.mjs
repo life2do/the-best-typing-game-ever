@@ -16,7 +16,12 @@ const redirect = (to) => `<!doctype html><meta charset="utf-8"><title>The Best T
 writeFileSync(join(pages, 'index.html'), redirect(`./v/${id}/`));
 mkdirSync(join(pages, 'verify'), { recursive: true });
 writeFileSync(join(pages, 'verify', 'index.html'), redirect(`../v/${id}/verify/`));
-writeFileSync(join(pages, '404.html'), redirect(`/${process.env.GITHUB_REPOSITORY?.split('/')[1] ?? ''}/`));
+// 404: send unknown paths to the site root, which is "/" on a custom domain and "/<repo>/" on <user>.github.io.
+const repo = process.env.GITHUB_REPOSITORY?.split('/')[1] ?? '';
+writeFileSync(
+  join(pages, '404.html'),
+  `<!doctype html><meta charset="utf-8"><title>Not found</title><script>var r=${JSON.stringify('/' + repo + '/')};location.replace(location.hostname.endsWith('github.io')&&location.pathname.indexOf(r)===0?r:'/')</script><a href="/">Home</a>\n`,
+);
 writeFileSync(join(pages, '.nojekyll'), '');
 const vf = join(pages, 'versions.json');
 const versions = existsSync(vf) ? JSON.parse(readFileSync(vf, 'utf8')) : { latest: '', builds: [] };

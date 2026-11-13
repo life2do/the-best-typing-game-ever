@@ -4,6 +4,7 @@ import type { LanguagePack } from '@/content/types';
 import { KeyboardOverlay } from './keyboard';
 import { h } from './dom';
 import type { Settings } from '@/storage/profile';
+import { versionBadge } from '@/app/build-info';
 
 const PU_ICON: Record<string, string> = { 'powerup.shield': '🛡️', 'powerup.slow-mo': '🐢', 'powerup.reveal': '🔦' };
 
@@ -26,7 +27,7 @@ export class Hud {
 
   constructor(lang: LanguagePack, private settings: Settings) {
     this.keyboard = new KeyboardOverlay(lang);
-    const top = h('div', { class: 'topbar' }, h('div', {}, this.stages, this.stats), this.stars, this.powerups);
+    const top = h('div', { class: 'topbar' }, h('div', {}, this.stages, this.stats, versionBadge()), this.stars, this.powerups);
     this.el = h('div', { class: 'hud' }, this.dim, this.vignette, this.glow, this.pulse, top, this.prompt, this.keyboard.el, this.fps);
   }
 
