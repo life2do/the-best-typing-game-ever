@@ -77,9 +77,25 @@ The player can override it. It never affects the simulation.
 
 ## Storage
 
-IndexedDB stores: `profiles`, `campaigns`, `segments` (logs + snapshot hashes), `snapshots` (serialised state, pruned to level boundaries after completion), `stats`, `proofs`, `settings`. Schema-versioned, with migrations.
+IndexedDB database `tbtge` (namespaced, because every GitHub Pages site under `life2do.github.io` shares one origin and one storage space) stores: `profiles`, `campaigns`, `segments` (logs + snapshot hashes), `snapshots` (serialised state, pruned to level boundaries after completion), `stats`, `proofs`, `settings`. Schema-versioned, with migrations.
 
 ## Builds & deploy
 
-- CI: lint → typecheck → validate content → unit tests → simulation tests (bot typist at each tier for each template) → build → compute hashes → deploy to `gh-pages` under `/v/<buildHash>/`, and assets under `/a/<hash>`. Update `/` and `/versions.json`.
+- CI: lint → typecheck → validate content → unit tests → simulation tests (bot typist at each tier for each template) → build → compute hashes → deploy by **appending** to the `gh-pages` branch under `/v/<buildHash>/`, and assets under `/a/<hash>`. Update `/` and `/versions.json` (see Hosting constraints).
 - `build-info.json`: build hash, git commit, content item hashes.
+
+## Hosting constraints (GitHub Pages)
+
+The game is a **static site** (an `index.html` plus JS bundles and assets; not a single HTML file) with no backend.
+All features run client-side: IndexedDB, WebCrypto, `speechSynthesis`, Web Audio, Three.js.
+
+| Constraint | Consequence / rule |
+|---|---|
+| **Immutable old builds** (`/v/<hash>/` must stay online for replays) | Don't use the stock "upload artifact + deploy-pages" Action on its own: it replaces the whole site every deploy. Deploy by **pushing to a `gh-pages` branch that only grows** (new build folder + new `/a/<hash>` assets + updated `/index.html` and `/versions.json`). Never delete old `/v/` folders. |
+| **Size**: published site ≤ ~1 GB; soft bandwidth ~100 GB/month; soft limit ~10 builds/hour | Assets are content-addressed under `/a/<hash>` and shared across builds; only engine bundles and changed assets grow. CI reports total site size and fails above 800 MB. Large optional assets (e.g. a WASM TTS engine, 2–20 MB) are added once and shared. |
+| **No server-side routing / rewrites** | Every route is a real file: `/index.html` (redirect to latest build), `/verify/index.html`, `/v/<hash>/index.html`, `/v/<hash>/dev/preview/index.html`. In-app navigation uses query strings or `#` fragments. `404.html` redirects unknown paths to `/`. |
+| **Project-site base path** `/the-best-typing-game-ever/` | Vite `base` is set per build to `/<repo>/v/<hash>/`. All asset URLs are relative or derived from `import.meta.env.BASE_URL`. A custom domain later only changes the root prefix. |
+| **No custom HTTP headers** (no COOP/COEP, no custom CSP or cache headers) | No feature may require cross-origin isolation (`SharedArrayBuffer`, multi-threaded WASM). Future WASM TTS uses a single-threaded build. Caching relies on immutable, hash-named files. |
+| **Shared origin** `life2do.github.io` | Namespace all storage: IndexedDB database `tbtge`, `localStorage` keys `tbtge:*`, service worker scope limited to `/<repo>/`. Builds within the repo intentionally share saves. |
+| **HTTPS** | Provided by Pages. Required for WebCrypto (device keys, hashing) and camera access (ring scan on `/verify`). |
+| **Offline** (optional, milestone 2+) | A service worker scoped to `/<repo>/` may precache the current build and its `/a/` assets. |

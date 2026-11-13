@@ -40,3 +40,4 @@ Decisions agreed during spec discussion (2026-11-13).
 | D34 | WPM = (correct ÷ 5) ÷ active minutes (intervals capped at 2 s). Every wrong keystroke counts as an error; net = gross because errors are force-corrected. Accuracy is a separate star requirement. Final stage repeats until the target is met. |
 | D35 | Bot typist = seeded integer-only log generator with 6 profiles (pass, star3, struggle, idle, robot, masher); logs generated in Node and replayed in every browser. |
 | D36 | An ability's avatar animation resolves in this order: the scale's `ability:<id>` hook, then the ability's core `rigHook`, then `procedural:ability-pulse`. Only core and `ability:*` hook names are allowed. |
+| D37 | Hosting is GitHub Pages as a static site: append-only `gh-pages` branch keeps old builds; real files for every route; per-build Vite base; no features needing custom headers; storage namespaced `tbtge`. |
