@@ -254,7 +254,7 @@ export class LevelSim {
     if (tg.progress >= tg.text.length) {
       s.targets = s.targets.filter((x) => x.id !== tg!.id);
       s.lockedTarget = -1;
-      if (tg.ability) this.wordDone(tg.text, tg.ability, t - s.spanStartT);
+      if (tg.ability) this.wordDone(tg.text.trimEnd(), tg.ability, t - s.spanStartT);
       this.template.onTargetComplete?.(s.tpl, this.ctx(), tg);
     }
   }
@@ -449,7 +449,8 @@ export class LevelSim {
     let offset = 0;
     for (let i = 0; i < p.nextChunk; i++) offset += p.chunks[i].length + 1;
     const span = p.spans.find((sp) => sp.start === offset);
-    const t: Target = { id: s.nextTargetId++, text: p.chunks[p.nextChunk++], progress: 0, ability: span?.ability ?? '' };
+    // A target is its chunk plus a trailing Space: typing the letters aims, Space confirms (docs/02 Input styles).
+    const t: Target = { id: s.nextTargetId++, text: p.chunks[p.nextChunk++] + ' ', progress: 0, ability: span?.ability ?? '' };
     s.targets.push(t);
     return t;
   }

@@ -53,7 +53,7 @@ export class RenderHost {
     let renderer: THREE.WebGLRenderer;
     let webgl = true;
     try {
-      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: true });
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: true, logarithmicDepthBuffer: true });
       renderer.outputColorSpace = THREE.SRGBColorSpace;
     } catch (e) {
       // No WebGL (disabled, blocklisted GPU, headless browser): keep the game playable without 3D graphics.

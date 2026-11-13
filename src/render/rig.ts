@@ -111,8 +111,11 @@ export class CameraRig {
     cam.rotateZ(THREE.MathUtils.degToRad(p.roll + this.extraRoll));
     cam.fov = p.fov;
     cam.aspect = aspect;
-    cam.near = Math.max(0.05, distance - p.frameHeight * 40);
-    cam.far = distance + p.frameHeight * 80 + 500;
+    // Keep the depth range tight around the scene: in the narrow-FOV 2D/iso poses the camera is
+    // hundreds of units away, and a wide near/far range leaves too little depth precision to
+    // separate surfaces a few centimetres apart (z-fighting).
+    cam.near = Math.max(0.05, distance - p.frameHeight * 6);
+    cam.far = distance + Math.max(p.frameHeight * 12, p.fov > 10 ? 250 : 0);
     cam.updateProjectionMatrix();
   }
 }

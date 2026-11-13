@@ -1,20 +1,21 @@
-/** Racer view (3D chase cam): road, lanes, cones, overhead text signs, speed lines, super-speed trails. */
+/** Racer view (3D chase cam): road, lanes, cones, upcoming letters painted on the road, speed lines, super-speed trails. */
 import * as THREE from 'three';
 import type { TemplateView } from '@/render/types';
 import { presetPose } from '@/render/rig';
 import { fromQ, Pool } from '@/render/util';
-import { makeLabel, setLabel } from '@/render/labels';
+import { GlyphTrail } from '@/render/glyphTrail';
 import { SUPER_SPEED_WPM_P } from '@/typing/tiers';
 import type { RacerState } from './sim';
 
 const LANE_W = 2.2;
+const FORWARD = new THREE.Vector3(0, 0, -1);
 
 const view: TemplateView = {
   id: 'template.racer',
   rules: [
-    { icon: '🏎️', text: 'Type to drive. A steady rhythm is faster than rushing.' },
+    { icon: '🏎️', text: 'Type the letters painted on the road to drive over them.' },
+    { icon: '🎵', text: 'A steady rhythm is faster than rushing.' },
     { icon: '↔️', text: 'Space switches lanes.' },
-    { icon: '✨', text: 'Type really fast for super-speed!' },
   ],
   create({ root, style, avatar }) {
     const road = new THREE.Group();
@@ -43,10 +44,12 @@ const view: TemplateView = {
     const rider = new THREE.Group();
     board.position.y = 0.3;
     avatar.root.position.y = 0.38;
+    avatar.root.scale.setScalar(0.75);
     rider.add(board, avatar.root);
     root.add(rider);
-    const sign = makeLabel(' ', 1.4);
-    root.add(sign);
+    // Upcoming letters painted flat on the road in the rider's lane; you drive over each one you type.
+    const trail = new GlyphTrail({ mode: 'ground', start: 4.2, gap: 2.1, size: 1.6 });
+    root.add(trail.group);
     const lines = new THREE.Group();
     root.add(lines);
     const lineMat = style.material('glow');
@@ -59,8 +62,9 @@ const view: TemplateView = {
     return {
       pose: (sim) => {
         const s = sim.state.tpl as RacerState;
-        const p = presetPose('3d', 6, new THREE.Vector3(laneX * 0.5, 0.2, -fromQ(s.z) - 7));
-        p.pitch = 20;
+        // Chase camera: the target is a little ahead of the rider, the camera sits behind it.
+        const p = presetPose('3d', 9, new THREE.Vector3(laneX * 0.5, 0.6, -fromQ(s.z) - 0.5));
+        p.pitch = 26; // high enough to see the letters on the road over the rider
         const sp = Math.min(1, sim.state.motion.v / 9000);
         p.fov = 60 + sp * 12;
         return p;
@@ -79,8 +83,7 @@ const view: TemplateView = {
         rider.position.set(laneX, 0, -z);
         rider.rotation.z = (s.lane * LANE_W - laneX) * -0.15;
         const p = sim.state.prompt;
-        setLabel(sign, p.text.slice(p.pos, p.pos + 12).replace(/ /g, '·') || ' ', 1.4);
-        sign.position.set(0, 4.2, -z - 14);
+        trail.update(p.text, p.pos, new THREE.Vector3(laneX, 0.12, -z), FORWARD, now);
         const wpm = sim.liveWpmP();
         const sp = Math.min(1, sim.state.motion.v / 9000);
         const superSpeed = wpm >= SUPER_SPEED_WPM_P;
@@ -92,7 +95,9 @@ const view: TemplateView = {
         }
         avatar.update(now, sp);
       },
-      dispose() {},
+      dispose() {
+        trail.dispose();
+      },
     };
   },
 };

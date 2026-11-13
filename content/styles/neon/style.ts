@@ -22,7 +22,7 @@ const style: RenderStyle = {
       background: new THREE.Color(c.bg).multiplyScalar(0.6),
       material(role, color) {
         const col = new THREE.Color(color ?? roles[role]);
-        const emissive = role === 'ground' ? 0.25 : role === 'sky' ? 0.1 : role === 'prop' ? 0.5 : 1.6;
+        const emissive = role === 'ground' ? 0.25 : role === 'sky' ? 0.1 : role === 'prop' ? 0.5 : 1.1;
         const m = new THREE.MeshStandardMaterial({
           color: col.clone().multiplyScalar(0.4), emissive: col, emissiveIntensity: emissive, roughness: 0.4, metalness: 0.2,
           transparent: role === 'ice' || role === 'glow', opacity: role === 'ice' ? 0.55 : role === 'glow' ? 0.6 : 1,
