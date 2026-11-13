@@ -13,6 +13,7 @@ import { Hud } from '@/ui/hud';
 import { KeyboardInput } from '@/input/keyboard';
 import { DEFAULT_SETTINGS } from '@/storage/profile';
 import { runBot, type BotProfile } from '../../tools/bot/bot';
+import { WordArt } from '@/ui/wordArt';
 import type { LogEvent } from '@/sim/types';
 
 const q = new URLSearchParams(location.search);
@@ -31,6 +32,9 @@ const styleId = `style.${(q.get('style') ?? 'flat').replace(/^style\./, '')}`;
 const scale = scales.find((s) => s.id === `scale.${q.get('scale') ?? 'flowers'}`) ?? scales[0];
 host.reducedMotion = q.has('reduced');
 host.setLevel({ templateId, view: (q.get('view') as any) ?? tpl.views[0], styleId, palette, havocIds: tpl.supportsHavocs ?? [], havocMaxP: Number(q.get('havoc') ?? 600) }, new AvatarRig(scale, tier), sim, performance.now(), false);
+const wordArt = new WordArt(language('en'));
+wordArt.setPalette(palette);
+canvas.before(wordArt.el);
 const hud = new Hud(language('en'), { ...DEFAULT_SETTINGS, keyboard: 'auto' });
 hud.keyboard.setKnown(letters);
 ui.append(hud.el);
@@ -50,17 +54,19 @@ else {
 sim.on((e) => {
   if (e.type === 'correct') hud.flash(true);
   if (e.type === 'error') {
+    wordArt.noteError();
     hud.flash(false);
     hud.markError(e.frame);
   }
 });
-(window as any).__preview = { sim, host };
+(window as any).__preview = { sim, host, wordArt };
 function frame(now: number) {
   requestAnimationFrame(frame);
   const t = Math.round(now - start);
   if (botLog) while (botIdx < botLog.length && botLog[botIdx].t <= t && botLog[botIdx].k !== 'end') sim.feed(botLog[botIdx++]);
   if (sim.state.phase !== 'done' && t >= sim.state.simT) sim.advanceTo(t);
   host.render(sim, ((t * 3) / 50) % 1, now);
+  wordArt.update(sim, now);
   hud.update(sim, canvas);
 }
 requestAnimationFrame(frame);

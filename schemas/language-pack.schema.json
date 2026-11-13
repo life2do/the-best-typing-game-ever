@@ -152,6 +152,13 @@
           }
         }
       }
+    },
+    "wordEmoji": {
+      "type": "object",
+      "description": "word -> emoji shown when a word has no illustration",
+      "additionalProperties": {
+        "type": "string"
+      }
     }
   },
   "required": [

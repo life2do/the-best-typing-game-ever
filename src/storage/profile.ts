@@ -46,6 +46,8 @@ export interface Profile {
   results: LevelResult[];
   campaign: { language: string; seed: string; level: number };
   collected: string[];
+  /** Word book: words whose pictures were revealed (docs/07 Word art). */
+  wordBook?: Record<string, { golden: boolean; count: number; first: number }>;
   perKey: Record<string, [number, number, number]>;
   settings: Settings;
   createdAt: number;

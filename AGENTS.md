@@ -36,6 +36,9 @@ Same pattern: manifest + code (`style.ts` default-exporting `RenderStyle`, `havo
 ### Add a complexity scale (start-screen theme + avatar)
 `content/scales/<id>/manifest.json`: 7 steps (localised names, TTS line, model asset ref, rig hooks), ≥ 8 customisation slots with ranges and star unlocks.
 
+### Add a word illustration
+`content/illustrations/<word>/manifest.json` (schema: `illustration.schema.json`: `words` per language, `entry`, `animation`, `fallbackEmoji`) + `art.svg`: viewBox `0 0 100 100`, plain shapes only (no inline styles, scripts or links), fillable shapes get class `f1`–`f4` (palette colours, filled when the word completes). The word must be in the language's word lists. Words without a drawing can map to an emoji in the language pack's `wordEmoji`.
+
 ### Add an asset
 Add the file next to its item plus `<name>.asset.json` (schema: `asset-manifest.schema.json`) with `kind`, `description`, `prompt`, `license`, `fallback`.
 

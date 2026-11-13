@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <path class="f4" d="M50 26 Q30 16 12 24 L12 80 Q30 72 50 82 Z"/>
+  <path class="f4" d="M50 26 Q70 16 88 24 L88 80 Q70 72 50 82 Z"/>
+  <line x1="50" y1="26" x2="50" y2="82"/>
+  <path d="M20 38 L40 40 M20 48 L40 50 M60 40 L80 38 M60 50 L80 48"/>
+</svg>
