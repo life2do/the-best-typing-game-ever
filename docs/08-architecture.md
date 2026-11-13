@@ -83,7 +83,7 @@ IndexedDB database `tbtge` (namespaced, because every GitHub Pages site under `l
 
 ## Builds & deploy
 
-- CI: lint → typecheck → validate content → unit tests → simulation tests (bot typist at each tier for each template) → build → compute hashes → deploy by **appending** to the `gh-pages` branch under `/v/<buildHash>/`, and assets under `/a/<hash>`. Update `/` and `/versions.json` (see Hosting constraints).
+- CI (`.github/workflows/ci.yml`): runs on pull requests and on pushes to `main` (no feature-branch push trigger, so a PR's commits aren't tested twice; a newer push cancels a PR's outdated run, runs on `main` are never cancelled). `check`: lint → typecheck → validate content → unit + simulation tests → production build, uploaded as an artifact. `e2e`: Chromium, Firefox and WebKit as parallel jobs with cached Playwright browsers. `deploy` (main only): downloads the tested build and **appends** it to the `gh-pages` branch under `/v/<buildId>/`, then updates `/` and `/versions.json` (see Hosting constraints).
 - `build-info.json` (generated, `src/generated/`): build hash, git commit, content item hashes.
 - **Build id** = the first 16 base64url characters of the build hash; builds are served from `/v/<buildId>/`.
 - The build hash covers **engine sources** (`src/**`, HTML entry points, `package-lock.json`, `vite.config.ts`) plus content item hashes — not the bundle bytes, because the bundle embeds its own `/v/<buildId>/` base path.

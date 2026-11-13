@@ -1,9 +1,17 @@
 name: CI
 
+# Pull requests are tested on their own commits; pushes to main test the merged result and deploy.
+# (No push trigger for feature branches: with a PR open it would run the same commit twice.)
 on:
   push:
-    branches: [main, 'claude/**']
+    branches: [main]
   pull_request:
+
+# A newer push to the same PR cancels its outdated run. Runs on main are never cancelled, so every
+# merged commit is tested and deployed.
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
@@ -20,18 +28,45 @@ jobs:
       - run: npm run typecheck
       - run: npm run validate
       - run: npm test
-      - run: npm run build
+      # The production build is made once here and reused by the deploy job.
+      - name: Build
+        run: |
+          npx vite-node tools/build-content.ts --print > build-id.txt
+          npm run build
+      - uses: actions/upload-artifact@v7
+        with:
+          name: site
+          path: |
+            dist
+            build-id.txt
+          retention-days: 7
 
+  # One job per browser, in parallel. Browsers are cached between runs.
   e2e:
     runs-on: ubuntu-latest
     needs: check
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with: { node-version: 22, cache: npm }
       - run: npm ci
-      - run: npx playwright install --with-deps chromium firefox webkit
-      - run: npm run e2e -- --trace off
+      - name: Cache Playwright browsers
+        id: pw-cache
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ matrix.browser }}-${{ hashFiles('package-lock.json') }}
+      - name: Install ${{ matrix.browser }}
+        if: steps.pw-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+      - name: Install ${{ matrix.browser }} system dependencies (browser restored from cache)
+        if: steps.pw-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps ${{ matrix.browser }}
+      - run: npm run e2e -- --project=${{ matrix.browser }} --trace off
         env: { CI: '1' }
 
   # Append-only deploy to the gh-pages branch (docs/08 Hosting constraints): every build lives forever
@@ -46,15 +81,13 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
-        with: { node-version: 22, cache: npm }
-      - run: npm ci
-      - name: Build (relative asset URLs; published into /v/<buildId>/)
-        run: |
-          ID=$(npx vite-node tools/build-content.ts --print)
-          echo "BUILD_ID=$ID" >> "$GITHUB_ENV"
-          npm run build
+        with: { node-version: 22 }
+      # The exact build that was tested in this run.
+      - uses: actions/download-artifact@v8
+        with: { name: site }
       - name: Append to gh-pages
         run: |
+          BUILD_ID=$(cat build-id.txt)
           git fetch origin gh-pages:gh-pages || true
           if git show-ref --verify --quiet refs/heads/gh-pages; then
             git worktree add pages gh-pages
