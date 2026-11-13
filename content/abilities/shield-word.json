@@ -1,0 +1,22 @@
+{
+  "kind": "ability",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "id": "ability.shield-word",
+  "description": "Boost: typing the word 'shield' quickly activates the shield power-up.",
+  "prompt": "A boost word that triggers the shield power-up.",
+  "type": "boost",
+  "triggerWords": {
+    "en": [
+      "shield"
+    ],
+    "ru": [
+      "щит"
+    ]
+  },
+  "rigHook": "powerup",
+  "powerup": "powerup.shield@1"
+}

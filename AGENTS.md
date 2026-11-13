@@ -17,14 +17,15 @@ and [docs/05-determinism-replay-proofs.md](docs/05-determinism-replay-proofs.md)
 ## Recipes
 
 ### Add a level template
-1. `content/templates/<id>/manifest.json` (schema: `level-template.schema.json`): `minLetters`, `inputMode`, `views`, `stages`, tags.
-2. `index.ts` exporting a `LevelTemplate` (see `docs/08-architecture.md`).
+1. `content/templates/<id>/manifest.json` (schema: `level-template.schema.json`): `minLetters`, `inputMode`, `views`, `stages`, tags, `entry: "sim.ts"`.
+2. `sim.ts` — default export `TemplateSim` (`src/sim/types.ts`): deterministic, integer-only, Node-safe (no Three.js). `step()` must be a no-op when `isAtRest()` and `ctx.v === 0`.
+   `view.ts` — default export `TemplateView` (`src/render/types.ts`): Three.js scene built from the sim state, plus intro `rules`. Views never write simulation state.
 3. `PROMPT.md`: genre, core loop, how ticks/reveal/speed map to the world, art notes, havocs it supports.
 4. `template.test.ts`: run `sim` with the `pass` bot at tiers 1, 4 and 7 (must complete with ≥ 1★ within budget), with `struggle` (must not complete) and `masher` (no crash), and twice with the same seed (identical snapshot hashes).
-5. Preview: `/dev/preview?template=<id>&letters=fjdk&style=<id>&palette=<id>&seed=1`.
+5. Preview: `npm run dev`, then `/dev/preview/?template=<id>&letters=fjdk&style=<id>&palette=<id>&seed=1&tier=4` (add `&bot=pass` to let the bot type).
 
 ### Add a render style / palette / havoc
-Same pattern: manifest + code/shader + `PROMPT.md` + test (screenshot test for styles; intensity 0/0.5/1 test for havocs).
+Same pattern: manifest + code (`style.ts` default-exporting `RenderStyle`, `havoc.ts` default-exporting `HavocVisual`, see `src/render/types.ts`) + `PROMPT.md`. Palettes are a single JSON file in `content/palettes/`. Tests: screenshot test for styles; intensity 0/0.5/1 test for havocs (planned).
 
 ### Add a language
 1. `content/languages/<id>/manifest.json`: alphabet, `layout` (physical `code` → char, finger, row), `order` (+ variants), `keyGroups`, UI and TTS strings.
@@ -38,7 +39,7 @@ Same pattern: manifest + code/shader + `PROMPT.md` + test (screenshot test for s
 ### Add an asset
 Add the file next to its item plus `<name>.asset.json` (schema: `asset-manifest.schema.json`) with `kind`, `description`, `prompt`, `license`, `fallback`.
 
-## Commands (planned, milestone 1)
+## Commands
 
 | Command | Purpose |
 |---|---|
@@ -46,5 +47,6 @@ Add the file next to its item plus `<name>.asset.json` (schema: `asset-manifest.
 | `npm run validate` | schemas, licenses, word blocklist, slot feasibility |
 | `npm run sim -- --template X --tier 4 --profile pass --seed 1` | headless deterministic run with bot typist (profiles: see docs/10 §5) |
 | `npm test` | unit + simulation tests |
-| `npm run e2e` | Playwright (use `--trace off`) |
+| `npm run e2e` | Playwright: cross-browser determinism + game flow (`npm run e2e -- --project=chromium --trace off` locally) |
+| `npm run check` | lint + typecheck + validate + tests |
 | `npm run build` | build + content hashes + `build-info.json` |

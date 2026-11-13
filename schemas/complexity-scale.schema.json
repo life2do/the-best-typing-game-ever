@@ -37,7 +37,11 @@
             "$ref": "common.schema.json#/$defs/localized"
           },
           "model": {
-            "$ref": "common.schema.json#/$defs/ref"
+            "$ref": "common.schema.json#/$defs/assetRef"
+          },
+          "icon": {
+            "type": "string",
+            "description": "Emoji or short glyph shown on the start-screen picker"
           }
         }
       },

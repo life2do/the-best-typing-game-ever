@@ -1,0 +1,31 @@
+{
+  "id": "template.pulse-runner",
+  "kind": "level-template",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "PROMPT.md",
+  "description": "Side-scrolling runner in darkness: every correct key is a heartbeat that pushes the runner forward and lights lanterns along the path.",
+  "tags": [
+    "2d",
+    "dictated",
+    "calm"
+  ],
+  "genre": "runner",
+  "minLetters": 2,
+  "inputMode": "dictated",
+  "views": [
+    "2d"
+  ],
+  "stages": {
+    "min": 3,
+    "max": 3
+  },
+  "supportsHavocs": [
+    "havoc.gravity-tilt"
+  ],
+  "multiplayer": [],
+  "entry": "sim.ts"
+}

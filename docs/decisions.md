@@ -41,3 +41,7 @@ Decisions agreed during spec discussion (2026-11-13).
 | D35 | Bot typist = seeded integer-only log generator with 6 profiles (pass, star3, struggle, idle, robot, masher); logs generated in Node and replayed in every browser. |
 | D36 | An ability's avatar animation resolves in this order: the scale's `ability:<id>` hook, then the ability's core `rigHook`, then `procedural:ability-pulse`. Only core and `ability:*` hook names are allowed. |
 | D37 | Hosting is GitHub Pages as a static site: append-only `gh-pages` branch keeps old builds; real files for every route; per-build Vite base; no features needing custom headers; storage namespaced `tbtge`. |
+| D38 | Active-time/rhythm interval cap = max(2 s, 3 × the level's target interval), so tier-1 beginners' normal gaps count fully. |
+| D39 | `simT` changes only on logged events; snapshots are taken before the events that announce them. |
+| D40 | Build id = first 16 characters of the build hash; the build hash covers engine sources + content (not bundle bytes). |
+| D41 | M1 campaign covers all 26 English letter levels: levels 1–4 are pinned to the vertical-slice templates; later levels reuse them via seeded slot filling. Key-group levels come in M2. |

@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [main, 'claude/**']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run validate
+      - run: npm test
+      - run: npm run build
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: check
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium firefox webkit
+      - run: npm run e2e -- --trace off
+        env: { CI: '1' }
+
+  # Append-only deploy to the gh-pages branch (docs/08 Hosting constraints): every build lives forever
+  # under /v/<buildId>/ so old runs can be replayed on the engine that recorded them.
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs: [check, e2e]
+    permissions:
+      contents: write
+    concurrency: { group: pages-deploy, cancel-in-progress: false }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Build into /v/<buildId>/
+        run: |
+          ID=$(npx vite-node tools/build-content.ts --print)
+          echo "BUILD_ID=$ID" >> "$GITHUB_ENV"
+          TBTGE_BASE="/${GITHUB_REPOSITORY#*/}/v/$ID/" npm run build
+      - name: Append to gh-pages
+        run: |
+          git fetch origin gh-pages:gh-pages || true
+          if git show-ref --verify --quiet refs/heads/gh-pages; then
+            git worktree add pages gh-pages
+          else
+            git worktree add --detach pages
+            (cd pages && git checkout --orphan gh-pages && git rm -rfq . && git clean -fdq)
+          fi
+          node tools/publish-pages.mjs dist pages "$BUILD_ID" "$GITHUB_SHA"
+          cd pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Deploy build $BUILD_ID ($GITHUB_SHA)" || exit 0
+          git push origin gh-pages

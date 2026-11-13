@@ -1,0 +1,10 @@
+{
+  "input": {
+    "ru": "Привет, мир! ёЁ",
+    "emoji": "🐉🌸🚀",
+    "esc": "tab\tnl\nquote\"bs\\ctl\u0001\u001f del ls ",
+    "slash": "a/b"
+  },
+  "canonical": "{\"emoji\":\"🐉🌸🚀\",\"esc\":\"tab\\tnl\\nquote\\\"bs\\\\ctl\\u0001\\u001f del ls \",\"ru\":\"Привет, мир! ёЁ\",\"slash\":\"a/b\"}",
+  "hash": "sha256-5tibJ0jge-DO83RUP3KCXRq0DBdg07I_bPPRFWaxjhA"
+}

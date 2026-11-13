@@ -1,0 +1,318 @@
+{
+  "id": "scale.dragon",
+  "kind": "complexity-scale",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "PROMPT.md",
+  "description": "Dragon scale: from an egg to a cosmic dragon.",
+  "icon": "🐉",
+  "steps": [
+    {
+      "tier": 1,
+      "name": {
+        "en": "egg"
+      },
+      "tts": {
+        "en": "You are a egg!"
+      },
+      "model": "procedural:dragon-1",
+      "icon": "🥚"
+    },
+    {
+      "tier": 2,
+      "name": {
+        "en": "hatchling"
+      },
+      "tts": {
+        "en": "You are a hatchling!"
+      },
+      "model": "procedural:dragon-2",
+      "icon": "🐣"
+    },
+    {
+      "tier": 3,
+      "name": {
+        "en": "whelp"
+      },
+      "tts": {
+        "en": "You are a whelp!"
+      },
+      "model": "procedural:dragon-3",
+      "icon": "🦎"
+    },
+    {
+      "tier": 4,
+      "name": {
+        "en": "drake"
+      },
+      "tts": {
+        "en": "You are a drake!"
+      },
+      "model": "procedural:dragon-4",
+      "icon": "🐊"
+    },
+    {
+      "tier": 5,
+      "name": {
+        "en": "wyvern"
+      },
+      "tts": {
+        "en": "You are a wyvern!"
+      },
+      "model": "procedural:dragon-5",
+      "icon": "🐲"
+    },
+    {
+      "tier": 6,
+      "name": {
+        "en": "elder dragon"
+      },
+      "tts": {
+        "en": "You are a elder dragon!"
+      },
+      "model": "procedural:dragon-6",
+      "icon": "🐉"
+    },
+    {
+      "tier": 7,
+      "name": {
+        "en": "cosmic dragon"
+      },
+      "tts": {
+        "en": "You are a cosmic dragon!"
+      },
+      "model": "procedural:dragon-7",
+      "icon": "🌠"
+    }
+  ],
+  "rigHooks": {
+    "idle": "procedural:idle-wing",
+    "move": "procedural:move-wing",
+    "jump": "procedural:jump-wing",
+    "land": "procedural:land-wing",
+    "stumble": "procedural:stumble-wing",
+    "celebrate": "procedural:celebrate-wing",
+    "powerup": "procedural:powerup-wing"
+  },
+  "customization": [
+    {
+      "slot": "primary-color",
+      "kind": "color",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "secondary-color",
+      "kind": "color",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "pattern",
+      "kind": "pattern",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "size",
+      "kind": "size",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "accessory",
+      "kind": "accessory",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "trail",
+      "kind": "trail",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "aura",
+      "kind": "aura",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "idle-style",
+      "kind": "idle-style",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    }
+  ]
+}

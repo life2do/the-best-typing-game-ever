@@ -1,0 +1,26 @@
+{
+  "id": "powerup.slow-mo",
+  "kind": "powerup",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "Slow motion: world and hazards at half speed for 15 s, music pitched down. Earned by a steady rhythm streak or by the word 'slow'.",
+  "description": "Slow-mo: world and hazards move at half speed for 15 s.",
+  "effect": "slow-mo",
+  "durationMs": 15000,
+  "earnedBy": [
+    {
+      "source": "rhythm-streak",
+      "threshold": 20
+    },
+    {
+      "source": "word"
+    },
+    {
+      "source": "random-drop",
+      "weight": 1
+    }
+  ]
+}

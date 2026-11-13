@@ -1,0 +1,36 @@
+{
+  "name": "the-best-typing-game-ever",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite-node tools/build-content.ts && tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "validate": "vite-node tools/validate.ts",
+    "sim": "vite-node tools/sim.ts --",
+    "test": "vitest run",
+    "e2e": "vite-node tools/gen-e2e-fixtures.ts && playwright test",
+    "check": "npm run lint && npm run typecheck && npm run validate && npm test"
+  },
+  "dependencies": {
+    "@noble/hashes": "^2.4.0",
+    "three": "^0.187.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "1.63.0",
+    "@types/node": "^26.6.6",
+    "@types/three": "^0.187.0",
+    "ajv": "^8.20.0",
+    "eslint": "^10.14.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.2",
+    "vite": "^8.3.8",
+    "vite-node": "^6.0.0",
+    "vitest": "^5.1.0"
+  }
+}

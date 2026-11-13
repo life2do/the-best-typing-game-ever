@@ -1,0 +1,411 @@
+{
+  "id": "campaign.en",
+  "kind": "campaign-rules",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "Campaign slot rules for English: 26 letter levels + 7 key-group levels. Milestone 1 pins levels 1–4 to the vertical-slice templates; later slots are filled by seed from templates that satisfy minLetters and the view band (relaxed if nothing fits).",
+  "description": "English campaign: view arc 2D → isometric → 3D → mixed → 4D finale; M1 pins levels 1–4.",
+  "language": "lang.en",
+  "slots": [
+    {
+      "level": 1,
+      "viewBand": [
+        "2d"
+      ],
+      "havocIntensity": [
+        0,
+        0
+      ],
+      "fixedTemplate": "template.pulse-runner@1"
+    },
+    {
+      "level": 2,
+      "viewBand": [
+        "2d"
+      ],
+      "havocIntensity": [
+        0,
+        0.26
+      ],
+      "fixedTemplate": "template.platformer@1"
+    },
+    {
+      "level": 3,
+      "viewBand": [
+        "2d"
+      ],
+      "havocIntensity": [
+        0,
+        0.29
+      ],
+      "fixedTemplate": "template.tower-defence@1"
+    },
+    {
+      "level": 4,
+      "viewBand": [
+        "2d"
+      ],
+      "havocIntensity": [
+        0,
+        0.32
+      ],
+      "fixedTemplate": "template.racer@1"
+    },
+    {
+      "level": 5,
+      "viewBand": [
+        "2d"
+      ],
+      "havocIntensity": [
+        0,
+        0.35
+      ]
+    },
+    {
+      "level": 6,
+      "viewBand": [
+        "2d"
+      ],
+      "havocIntensity": [
+        0,
+        0.38
+      ]
+    },
+    {
+      "level": 7,
+      "viewBand": [
+        "2d",
+        "2.5d",
+        "iso"
+      ],
+      "havocIntensity": [
+        0,
+        0.41
+      ],
+      "boss": true
+    },
+    {
+      "level": 8,
+      "viewBand": [
+        "iso"
+      ],
+      "havocIntensity": [
+        0,
+        0.44
+      ]
+    },
+    {
+      "level": 9,
+      "viewBand": [
+        "iso"
+      ],
+      "havocIntensity": [
+        0,
+        0.47
+      ]
+    },
+    {
+      "level": 10,
+      "viewBand": [
+        "iso"
+      ],
+      "havocIntensity": [
+        0,
+        0.5
+      ]
+    },
+    {
+      "level": 11,
+      "viewBand": [
+        "iso"
+      ],
+      "havocIntensity": [
+        0,
+        0.53
+      ]
+    },
+    {
+      "level": 12,
+      "viewBand": [
+        "3d",
+        "fpv"
+      ],
+      "havocIntensity": [
+        0,
+        0.56
+      ]
+    },
+    {
+      "level": 13,
+      "viewBand": [
+        "3d",
+        "fpv"
+      ],
+      "havocIntensity": [
+        0,
+        0.59
+      ]
+    },
+    {
+      "level": 14,
+      "viewBand": [
+        "3d",
+        "fpv"
+      ],
+      "havocIntensity": [
+        0,
+        0.62
+      ]
+    },
+    {
+      "level": 15,
+      "viewBand": [
+        "3d",
+        "fpv"
+      ],
+      "havocIntensity": [
+        0,
+        0.65
+      ]
+    },
+    {
+      "level": 16,
+      "viewBand": [
+        "split",
+        "3d",
+        "iso",
+        "2d"
+      ],
+      "havocIntensity": [
+        0,
+        0.68
+      ]
+    },
+    {
+      "level": 17,
+      "viewBand": [
+        "3d",
+        "fpv"
+      ],
+      "havocIntensity": [
+        0,
+        0.71
+      ]
+    },
+    {
+      "level": 18,
+      "viewBand": [
+        "3d",
+        "fpv"
+      ],
+      "havocIntensity": [
+        0,
+        0.74
+      ]
+    },
+    {
+      "level": 19,
+      "viewBand": [
+        "3d",
+        "fpv"
+      ],
+      "havocIntensity": [
+        0,
+        0.77
+      ]
+    },
+    {
+      "level": 20,
+      "viewBand": [
+        "3d",
+        "fpv"
+      ],
+      "havocIntensity": [
+        0,
+        0.8
+      ]
+    },
+    {
+      "level": 21,
+      "viewBand": [
+        "2d",
+        "iso",
+        "3d"
+      ],
+      "havocIntensity": [
+        0,
+        0.83
+      ]
+    },
+    {
+      "level": 22,
+      "viewBand": [
+        "2d",
+        "iso",
+        "3d"
+      ],
+      "havocIntensity": [
+        0,
+        0.86
+      ]
+    },
+    {
+      "level": 23,
+      "viewBand": [
+        "2d",
+        "iso",
+        "3d"
+      ],
+      "havocIntensity": [
+        0,
+        0.89
+      ],
+      "boss": true
+    },
+    {
+      "level": 24,
+      "viewBand": [
+        "2d",
+        "iso",
+        "3d"
+      ],
+      "havocIntensity": [
+        0,
+        0.92
+      ]
+    },
+    {
+      "level": 25,
+      "viewBand": [
+        "2d",
+        "iso",
+        "3d"
+      ],
+      "havocIntensity": [
+        0,
+        0.95
+      ]
+    },
+    {
+      "level": 26,
+      "viewBand": [
+        "4d",
+        "3d",
+        "iso",
+        "2d"
+      ],
+      "havocIntensity": [
+        0,
+        0.98
+      ],
+      "boss": true
+    },
+    {
+      "level": 27,
+      "viewBand": [
+        "2d",
+        "iso",
+        "3d"
+      ],
+      "havocIntensity": [
+        0,
+        1
+      ]
+    },
+    {
+      "level": 28,
+      "viewBand": [
+        "2d",
+        "iso",
+        "3d"
+      ],
+      "havocIntensity": [
+        0,
+        1
+      ]
+    },
+    {
+      "level": 29,
+      "viewBand": [
+        "2d",
+        "iso",
+        "3d"
+      ],
+      "havocIntensity": [
+        0,
+        1
+      ]
+    },
+    {
+      "level": 30,
+      "viewBand": [
+        "2d",
+        "iso",
+        "3d"
+      ],
+      "havocIntensity": [
+        0,
+        1
+      ]
+    },
+    {
+      "level": 31,
+      "viewBand": [
+        "2d",
+        "iso",
+        "3d"
+      ],
+      "havocIntensity": [
+        0,
+        1
+      ]
+    },
+    {
+      "level": 32,
+      "viewBand": [
+        "2d",
+        "iso",
+        "3d"
+      ],
+      "havocIntensity": [
+        0,
+        1
+      ]
+    },
+    {
+      "level": 33,
+      "viewBand": [
+        "2d",
+        "iso",
+        "3d"
+      ],
+      "havocIntensity": [
+        0,
+        1
+      ]
+    }
+  ],
+  "constraints": {
+    "noTemplateRepeatWithin": 1,
+    "noStyleTwice": false,
+    "dictatedShare": 0.6
+  },
+  "dropTable": [
+    {
+      "item": "powerup.shield@1",
+      "weight": 2
+    },
+    {
+      "item": "powerup.slow-mo@1",
+      "weight": 1
+    },
+    {
+      "item": "powerup.reveal@1",
+      "weight": 2
+    }
+  ],
+  "pityAfterTicks": 300
+}

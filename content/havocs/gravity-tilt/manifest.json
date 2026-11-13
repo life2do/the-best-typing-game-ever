@@ -1,0 +1,23 @@
+{
+  "id": "havoc.gravity-tilt",
+  "kind": "havoc",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "PROMPT.md",
+  "description": "Gravity tilt: the whole world slowly tilts and sways (camera roll); intensity sets the max angle.",
+  "entry": "havoc.ts",
+  "intensity": [
+    0,
+    1
+  ],
+  "compatibleViews": [
+    "2d",
+    "iso",
+    "3d"
+  ],
+  "reducedMotion": "calm-builtin",
+  "affectsInput": false
+}

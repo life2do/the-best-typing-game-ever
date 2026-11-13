@@ -24,6 +24,25 @@ Acceptance (full test matrix in [10 §6](10-simulation-and-test-harness.md#6-mil
 - 60 fps at "medium" quality on a mid-range laptop; the quality scaler steps up and down.
 - The dive transition has no visible snap (Playwright visual check).
 
+### Status (implemented on branch `claude/milestone-1-vertical-slice`)
+
+| Item | Status |
+|---|---|
+| Scaffold, CI, append-only GitHub Pages deploy | ✅ (`.github/workflows/ci.yml`, `tools/publish-pages.mjs`) |
+| English language pack, word lists, blocklist | ✅ |
+| Typing core, layout-mismatch hint, metrics, weakness model | ✅ |
+| Deterministic simulation, snapshots, input log, fast-forward | ✅ |
+| Intro overlay, HUD (rhythm frame, fading keyboard), TTS | ✅ |
+| Camera rig with dive/flatten transitions | ✅ (continuity unit test) |
+| 4 levels / 3 genres: pulse runner, platformer, iso tower defence, 3D racer | ✅ (+ levels 5–26 reuse them via seeded slots) |
+| Stages, stars, crossroads, slow-mo/shield/reveal power-ups, word abilities | ✅ (`ability.home-row-secret` appears from level 6; `jump`, `shield`, `slow` later) |
+| 2 render styles, 3 palettes, 2 havocs | ✅ |
+| 5 complexity scales, random picker, procedural avatars with 8 customisation slots in data | ✅ (customisation UI comes in M2) |
+| One profile, seeded campaign, exact save/resume | ✅ |
+| `/verify` page: verify + replay with speed controls and a letter-marked seek bar | ✅ |
+| Cross-browser hash test | ✅ Chromium locally; Firefox and WebKit run in CI |
+| "60 fps at medium on a mid-range laptop" | ⏳ needs a check on real hardware (CI only has software WebGL) |
+
 ## Milestone 2 — Breadth & proofs
 - Remaining English letters (26 levels) and key groups; template library to ~15 genres.
 - **Russian language pack**.

@@ -4,7 +4,28 @@ A browser game (GitHub Pages, no backend) that teaches **touch typing** to playe
 Every new key unlocks a new level, a new genre and a new kind of havoc. The world moves only when you type.
 Collect every alphabet to unlock a **multidimensional artifact** (a tesseract) with your run's verifiable fingerprint encoded in it.
 
-> Status: **specification phase**. No code yet. Start with the docs below.
+> Status: **milestone 1 (vertical slice, English)** — playable levels, deterministic simulation, replay & verify page. See [docs/09-roadmap.md](docs/09-roadmap.md).
+
+## Run it
+
+```bash
+npm install
+```
+
+```bash
+npm run dev
+```
+
+Open the printed URL. Other useful commands:
+
+| Command | What it does |
+|---|---|
+| `npm run check` | lint, typecheck, content validation, unit + simulation tests |
+| `npm run e2e -- --project=chromium --trace off` | browser tests (cross-browser hashes, full game flow) |
+| `npm run sim -- --level 3 --tier 4 --profile pass --seed 1` | headless run with the bot typist |
+| `npm run build` | production build with build fingerprint |
+
+Dev preview of any template: `/dev/preview/?template=racer&letters=fjdks&bot=pass`. Replays: `/verify/`.
 
 ## Specification
 

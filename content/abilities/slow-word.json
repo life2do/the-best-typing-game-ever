@@ -1,0 +1,22 @@
+{
+  "kind": "ability",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "id": "ability.slow-word",
+  "description": "Boost: typing the word 'slow' quickly activates slow motion.",
+  "prompt": "A boost word that triggers the slow-mo power-up.",
+  "type": "boost",
+  "triggerWords": {
+    "en": [
+      "slow"
+    ],
+    "ru": [
+      "тихо"
+    ]
+  },
+  "rigHook": "powerup",
+  "powerup": "powerup.slow-mo@1"
+}

@@ -1,0 +1,21 @@
+{
+  "input": {
+    "b": {
+      "z": 1,
+      "a": [
+        3,
+        2,
+        1
+      ]
+    },
+    "a": true,
+    "B": null,
+    "aa": "x",
+    "é": 1,
+    "€": 2,
+    "😀": 3,
+    "｡": 4
+  },
+  "canonical": "{\"B\":null,\"a\":true,\"aa\":\"x\",\"b\":{\"a\":[3,2,1],\"z\":1},\"é\":1,\"€\":2,\"😀\":3,\"｡\":4}",
+  "hash": "sha256-MbPKlMvyJbiFXHeIrYDcNEE-ubD50G7frQTHipw5OTQ"
+}

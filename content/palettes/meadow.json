@@ -1,0 +1,22 @@
+{
+  "id": "palette.meadow",
+  "kind": "palette",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "Create a palette named meadow: Meadow: bright greens and sky blue for daytime levels. Provide bg, fg, accent, positive, negative, ground, sky as hex colours with readable contrast between fg and bg.",
+  "description": "Meadow: bright greens and sky blue for daytime levels.",
+  "colors": {
+    "bg": "#bde0fe",
+    "fg": "#1d3557",
+    "accent": "#ffafcc",
+    "positive": "#06d6a0",
+    "negative": "#ef476f",
+    "ground": "#80b918",
+    "sky": "#a2d2ff"
+  },
+  "colorBlindSafe": true,
+  "mood": "cheerful"
+}
