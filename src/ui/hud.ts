@@ -106,7 +106,8 @@ export class Hud {
     if (sim.setup.inputMode === 'targeting') {
       const parts = s.targets.map((t) => {
         const locked = s.lockedTarget === t.id;
-        return h('span', { class: locked ? 'locked' : '' }, h('span', { class: 'typed' }, t.text.slice(0, t.progress)), t.text.slice(t.progress), '   ');
+        const vis = (x: string) => x.replace(/ /g, '␣');
+        return h('span', { class: `target${locked ? ' locked' : ''}` }, h('span', { class: 'typed' }, vis(t.text.slice(0, t.progress))), vis(t.text.slice(t.progress)));
       });
       this.prompt.replaceChildren(...parts);
       return;

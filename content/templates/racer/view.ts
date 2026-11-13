@@ -59,8 +59,9 @@ const view: TemplateView = {
     return {
       pose: (sim) => {
         const s = sim.state.tpl as RacerState;
-        const p = presetPose('3d', 6, new THREE.Vector3(laneX * 0.5, 0.2, -fromQ(s.z) - 7));
-        p.pitch = 20;
+        // Chase camera: the target is a little ahead of the rider, the camera sits behind it.
+        const p = presetPose('3d', 8, new THREE.Vector3(laneX * 0.5, 0.2, -fromQ(s.z) - 1.5));
+        p.pitch = 16;
         const sp = Math.min(1, sim.state.motion.v / 9000);
         p.fov = 60 + sp * 12;
         return p;

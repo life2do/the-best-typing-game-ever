@@ -52,7 +52,9 @@ a.version:hover { opacity: 1; text-decoration: underline; }
 .prompt .typed { opacity: 0.35; }
 .prompt .cur { background: var(--gold); color: #111; border-radius: 6px; padding: 0 2px; }
 .prompt .cur.err { background: var(--bad); color: white; }
-.prompt .locked { color: var(--gold); }
+.prompt .target { display: inline-block; margin: 0 0.35em; padding: 0 0.2em; border-radius: 8px; }
+.prompt .target.locked { color: #111; background: var(--gold); }
+.prompt .target.locked .typed { opacity: 0.45; }
 .prompt .special { color: var(--gold); text-decoration: underline wavy; }
 .prompt .space { opacity: 0.5; }
 

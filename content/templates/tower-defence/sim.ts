@@ -22,6 +22,8 @@ export interface TowerState {
 }
 
 export const PATH_LEN = 12 * 65536;
+/** Minimum distance between active blobs along the path (Q16). */
+export const SPACING = (5 * 65536) / 2;
 
 function activeCount(s: TowerState): number {
   let n = 0;
@@ -34,7 +36,10 @@ function fill(s: TowerState, ctx: TemplateCtx): void {
   while (activeCount(s) < want) {
     const t = ctx.spawnTarget();
     if (!t) return;
-    s.creatures.push({ id: t.id, pos: ctx.rng.int(2 * 65536), lane: ctx.rng.int(3), frozen: -1 });
+    // Space blobs out along the path so their letter labels never overlap.
+    let pos = 0;
+    while (pos < PATH_LEN / 2 && s.creatures.some((c) => c.frozen < 0 && c.pos > pos - SPACING && c.pos < pos + SPACING)) pos += SPACING;
+    s.creatures.push({ id: t.id, pos, lane: t.id % 3, frozen: -1 });
   }
 }
 
