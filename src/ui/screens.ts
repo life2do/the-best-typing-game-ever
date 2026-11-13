@@ -162,10 +162,6 @@ export function nagScreen(text: string, actionLabel: string, onAction: () => voi
   return h('div', { class: 'card nag' }, h('p', {}, text), h('div', { class: 'row-btns' }, h('button', { onclick: onAction }, actionLabel), h('button', { class: 'secondary', onclick: onClose }, 'Keep going')));
 }
 
-export function breakScreen(onDone: () => void): HTMLElement {
-  return h('div', { class: 'overlay' }, h('div', { class: 'card' }, h('h2', {}, '🙆 Stretch break!'), h('p', {}, 'Shake out your hands, roll your shoulders and look far away for a moment.'), h('div', { class: 'row-btns' }, h('button', { onclick: onDone }, 'Ready'))));
-}
-
 /** Word book: every illustrated word, revealed ones in colour (golden frame if typed golden), others locked. */
 export function wordBookScreen(
   book: Record<string, { golden: boolean; count: number }>,

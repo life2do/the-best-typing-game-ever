@@ -47,7 +47,7 @@
 - **Dyslexia-friendly font** (OpenDyslexic) / high-legibility font (Atkinson Hyperlegible).
 - **Text size** scale; **high contrast** mode.
 - **Volume** sliders (music / effects / voice); voice on or off.
-- **Break reminder** (default every 20 min; "stretch your fingers" scene); parent settings behind an adult check (e.g. "type the word shown backwards"). The parent area holds the break interval, maximum session length and profile management.
+- **Break reminder** (default every 20 min): a 2-minute stretch break (setting `breakSeconds`) with a countdown number and a ring filling around the player's avatar, which demonstrates a stretch for each part (shake hands, roll shoulders, reach up, look far away, wiggle fingers, breathe). It can't be skipped: early clicks, keys or Escape show one of the language pack's supportive `breakNudges` phrases. Parent settings sit behind an adult check (e.g. "type the word shown backwards"). The parent area holds the break interval, maximum session length and profile management.
 
 ## Local analytics screen (per player)
 

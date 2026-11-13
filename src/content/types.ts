@@ -38,7 +38,11 @@ export interface LanguagePackManifest extends ItemBase {
   tts?: { lang: string; preferredVoices?: string[] };
   /** word -> emoji shown when a word has no illustration */
   wordEmoji?: Record<string, string>;
+  breakNudges?: string[];
+  stretchSteps?: { move: StretchMove; icon?: string; text: string }[];
 }
+
+export type StretchMove = 'shake' | 'roll' | 'reach' | 'look' | 'wiggle' | 'breathe';
 
 /** Language pack with word lists loaded. */
 export interface LanguagePack extends LanguagePackManifest {

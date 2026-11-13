@@ -572,7 +572,11 @@
   "blocklist": "words/blocklist.txt",
   "ui": {
     "pressFJ": "Put your fingers on F and J, then press them together",
-    "yourTurn": "Your turn"
+    "yourTurn": "Your turn",
+    "breakTitle": "Stretch break!",
+    "breakReady": "I'm ready! ▶",
+    "breakWait": "Ready in",
+    "breakDone": "Great stretching! Let's go!"
   },
   "tts": {
     "lang": "en-US",
@@ -784,5 +788,49 @@
     "lazy": "🦥",
     "eggs": "🥚",
     "drag": "🐉"
-  }
+  },
+  "breakNudges": [
+    "Not yet! Breaks help your fingers get faster.",
+    "Almost there! Rested hands type quicker.",
+    "Hold on — your brain is saving everything you just learned.",
+    "Stretch a little more. Champions rest too!",
+    "Not yet! Even rockets refuel before the next launch.",
+    "Patience is a superpower, and you have it!",
+    "Your fingers are recharging… just a bit more! ⚡",
+    "Great typists take breaks — and you're one of them.",
+    "Wait for the ring to fill — you'll come back even stronger.",
+    "Relax your shoulders… the keyboard will wait for you."
+  ],
+  "stretchSteps": [
+    {
+      "move": "shake",
+      "icon": "👐",
+      "text": "Shake out your hands"
+    },
+    {
+      "move": "roll",
+      "icon": "🔄",
+      "text": "Roll your shoulders"
+    },
+    {
+      "move": "reach",
+      "icon": "🙆",
+      "text": "Reach up high to the sky"
+    },
+    {
+      "move": "look",
+      "icon": "👀",
+      "text": "Look far away and blink slowly"
+    },
+    {
+      "move": "wiggle",
+      "icon": "🖐️",
+      "text": "Wiggle your fingers"
+    },
+    {
+      "move": "breathe",
+      "icon": "🌬️",
+      "text": "Deep breath in… and slowly out"
+    }
+  ]
 }

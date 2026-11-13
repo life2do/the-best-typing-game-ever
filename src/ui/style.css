@@ -180,3 +180,23 @@ body.reduced-motion .sparkle { display: none; }
 .word-book .entry.locked { opacity: 0.35; }
 .word-book .entry.locked svg * { fill: none !important; stroke-dasharray: 3 5; }
 .word-book .entry .em { font-size: 52px; line-height: 72px; }
+/* stretch break */
+.break .card { min-width: min(520px, 94vw); }
+.break-stage { position: relative; width: 300px; height: 300px; margin: 6px auto 0; }
+.break-ring { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.break-ring circle { fill: none; stroke-width: 16; }
+.break-ring .track { stroke: rgba(255, 255, 255, 0.1); }
+.break-ring .fill { stroke: #3a86ff; stroke-linecap: round; transition: stroke 0.6s; }
+.break.done .break-ring .fill { stroke: var(--gold); }
+.break-avatar { position: absolute; left: 40px; top: 40px; width: 220px; height: 220px; }
+.break-emoji { position: absolute; inset: 0; display: grid; place-items: center; font-size: 96px; animation: breathe 2.4s ease-in-out infinite; }
+@keyframes breathe { 50% { transform: scale(1.12); } }
+.break-count { font: 800 3em var(--mono); color: var(--gold); margin-top: 4px; }
+.break-count.tick { animation: tick 0.35s ease-out; }
+@keyframes tick { 0% { transform: scale(1.18); } 100% { transform: scale(1); } }
+.break-step { font-size: 1.4em; font-weight: 700; min-height: 1.5em; }
+.break-nudge { min-height: 1.6em; margin-top: 8px; color: #ffd6a5; font-weight: 600; }
+.break-button.waiting { background: rgba(255, 255, 255, 0.16); }
+.shake { animation: shake-x 0.45s ease; }
+@keyframes shake-x { 20% { transform: translateX(-8px) rotate(-2deg); } 40% { transform: translateX(8px) rotate(2deg); } 60% { transform: translateX(-5px); } 80% { transform: translateX(5px); } }
+body.reduced-motion .shake, body.reduced-motion .break-emoji, body.reduced-motion .break-count.tick { animation: none; }

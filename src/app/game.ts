@@ -14,8 +14,9 @@ import { templateViews } from '@/render/registry';
 import { AvatarRig } from '@/avatar/procedural';
 import { Hud } from '@/ui/hud';
 import { h, toast } from '@/ui/dom';
-import { breakScreen, crossroadsScreen, introScreen, nagScreen, pauseScreen, startScreen, wordBookScreen } from '@/ui/screens';
+import { crossroadsScreen, introScreen, nagScreen, pauseScreen, startScreen, wordBookScreen } from '@/ui/screens';
 import { WordArt } from '@/ui/wordArt';
+import { StretchBreak } from '@/ui/stretchBreak';
 import { KeyboardInput } from '@/input/keyboard';
 import { AudioEngine, Voice } from '@/audio/audio';
 import {
@@ -52,6 +53,7 @@ export class Game {
   private showIntro: () => void = () => {};
   private lastCollect = -2;
   private wordArt: WordArt;
+  private breakUi: StretchBreak | null = null;
 
   constructor(canvas: HTMLCanvasElement, ui: HTMLElement) {
     this.ui = ui;
@@ -79,6 +81,10 @@ export class Game {
 
   // ------------------------------------------------------------------ screens
   private setOverlay(el: HTMLElement | null): void {
+    if (this.breakUi && el !== this.breakUi.el) {
+      this.breakUi.destroy();
+      this.breakUi = null;
+    }
     this.overlay?.remove();
     this.overlay = el;
     if (el) this.ui.append(el);
@@ -231,7 +237,8 @@ export class Game {
 
   private togglePause(): void {
     if (this.screen !== 'level' || !this.sim) return;
-    if (this.paused) this.resume();
+    if (this.pauseReason === 'break') this.breakUi?.tryFinish(); // Escape can't skip the stretch break
+    else if (this.paused) this.resume();
     else this.pause('menu');
   }
 
@@ -241,7 +248,22 @@ export class Game {
     this.pauseReason = reason;
     this.record({ k: 'pause', t: this.logT() });
     void this.persist();
-    if (reason === 'break') this.setOverlay(breakScreen(() => this.resume()));
+    if (reason === 'break') {
+      const lang = language(this.camp.language);
+      const s = this.profile.settings;
+      this.breakUi = new StretchBreak({
+        seconds: s.breakSeconds ?? 120,
+        lang,
+        avatar: this.avatar(),
+        voice: s.voice ? this.voice : undefined,
+        reducedMotion: s.reducedMotion,
+        onDone: () => {
+          this.breakUi = null;
+          this.resume();
+        },
+      });
+      this.setOverlay(this.breakUi.el);
+    }
     else
       this.setOverlay(
         pauseScreen(
@@ -259,6 +281,13 @@ export class Game {
           () => void this.exportRun(),
         ),
       );
+  }
+
+  /** Start a stretch break now (also used by e2e tests with a short duration). */
+  breakNow(seconds?: number): void {
+    if (seconds !== undefined) this.profile.settings.breakSeconds = seconds;
+    this.playMs = 0;
+    this.pause('break');
   }
 
   private resume(): void {
