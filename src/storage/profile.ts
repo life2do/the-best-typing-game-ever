@@ -17,12 +17,13 @@ export interface Settings {
   highContrast: boolean;
   colorBlindPatterns: boolean;
   breakMinutes: number;
+  showFps: boolean;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
   reducedMotion: typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches,
-  musicVolume: 0.5, sfxVolume: 0.7, voice: true, keyboard: 'auto', quality: 'auto', textScale: 1,
-  dyslexicFont: false, highContrast: false, colorBlindPatterns: false, breakMinutes: 20,
+  musicVolume: 0.35, sfxVolume: 0.6, voice: true, keyboard: 'auto', quality: 'auto', textScale: 1,
+  dyslexicFont: false, highContrast: false, colorBlindPatterns: false, breakMinutes: 20, showFps: true,
 };
 
 export interface LevelResult {

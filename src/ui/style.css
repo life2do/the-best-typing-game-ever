@@ -19,6 +19,8 @@ button.secondary { background: rgba(255, 255, 255, 0.14); }
 button:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
 
 /* vignette for reveal/fog */
+.dim { position: fixed; inset: 0; pointer-events: none !important; background: #000; opacity: 0; transition: opacity 0.3s; }
+.fps { position: fixed; right: 12px; bottom: 10px; font: 600 12px var(--mono); padding: 3px 7px; border-radius: 6px; background: rgba(0, 0, 0, 0.55); color: #9ef01a; pointer-events: none !important; }
 .vignette { position: fixed; inset: 0; pointer-events: none !important; background: radial-gradient(ellipse at 50% 55%, transparent 25%, rgba(0, 0, 0, 0.95) 80%); transition: opacity 0.3s; }
 
 /* rhythm frame */

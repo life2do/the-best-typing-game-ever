@@ -1,17 +1,31 @@
-/** Platformer view: ground with gaps, jump arcs on Space, collectible notes. */
+/** Platformer view: ground blocks with gaps, a hop over every gap, notes that pop when collected. */
 import * as THREE from 'three';
 import type { TemplateView } from '@/render/types';
 import { presetPose } from '@/render/rig';
 import { fromQ, Pool } from '@/render/util';
 import { makeLabel, setLabel } from '@/render/labels';
-import type { PlatformerState } from './sim';
+import { HOP_MARGIN, Q1, type PlatformerState } from './sim';
+
+const HOP_HEIGHT = 1.3;
+
+/** Height of the runner at world x: an arc over any gap it is crossing, 0 on solid ground. */
+export function hopHeight(x: number, gaps: readonly number[]): number {
+  const m = fromQ(HOP_MARGIN);
+  for (const gq of gaps) {
+    const g = fromQ(gq);
+    const start = g - m;
+    const end = g + fromQ(Q1) + m;
+    if (x > start && x < end) return Math.sin(((x - start) / (end - start)) * Math.PI) * HOP_HEIGHT;
+  }
+  return 0;
+}
 
 const view: TemplateView = {
   id: 'template.platformer',
   rules: [
     { icon: '🏃', text: 'Type to run.' },
-    { icon: '⬆️', text: 'Space makes you jump over the gap ahead.' },
-    { icon: '🎶', text: 'Steady typing makes you faster.' },
+    { icon: '⬆️', text: 'Every Space opens a gap ahead — you hop over it.' },
+    { icon: '🎶', text: 'Hop through the notes to collect them.' },
   ],
   create({ root, style, avatar }) {
     const blocks = new THREE.Group();
@@ -25,34 +39,45 @@ const view: TemplateView = {
       return m;
     });
     const notePool = new Pool<number, THREE.Mesh>(notes, () => new THREE.Mesh(new THREE.OctahedronGeometry(0.25), style.material('accent')));
-    const text = makeLabel(' ', 0.9);
-    text.position.set(0, 3.4, 0.5);
-    root.add(text);
-    let lastJump = -1;
+    const sparkle = new THREE.Mesh(new THREE.RingGeometry(0.2, 0.3, 24), style.material('glow'));
+    sparkle.visible = false;
+    root.add(sparkle);
+    const counter = makeLabel('♪ 0', 0.6);
+    root.add(counter);
+    let lastCollect = -1;
     return {
       pose: (sim) => presetPose('2d', 10, new THREE.Vector3(fromQ((sim.state.tpl as PlatformerState).x) + 3, -0.6, 0)),
       update(sim, alpha, now) {
         const s = sim.state.tpl as PlatformerState;
         const x = fromQ(s.x + sim.state.motion.v * alpha);
-        const gaps = s.gaps.map((g) => Math.floor(fromQ(g)));
+        const gaps = s.gaps.map((g) => Math.round(fromQ(g)));
         const ids: number[] = [];
         for (let i = Math.floor(x) - 6; i < Math.floor(x) + 14; i++) if (!gaps.includes(i)) ids.push(i);
         blockPool.sync(ids);
-        const nmap = notePool.sync(s.coins.filter((c) => fromQ(c) > x - 1));
+        const nmap = notePool.sync(s.coins);
         for (const [c, m] of nmap) {
-          m.position.set(fromQ(c), 1.6 + Math.sin(now / 300 + c) * 0.15, 0.2);
+          m.position.set(fromQ(c), HOP_HEIGHT + 0.45 + Math.sin(now / 300 + c) * 0.08, 0.2);
           m.rotation.y = now / 400;
         }
-        const j = s.jumps[s.jumps.length - 1] ?? -1;
-        if (j !== lastJump && j >= 0) {
-          lastJump = j;
-          avatar.play('jump', now);
+        const y = hopHeight(x, s.gaps);
+        avatar.root.position.set(x, y, 0.3);
+        if (s.lastCollect !== lastCollect) {
+          if (lastCollect !== -1 || s.lastCollect >= 0) {
+            avatar.play('powerup', now);
+            sparkle.userData.t0 = now;
+          }
+          lastCollect = s.lastCollect;
         }
-        avatar.root.position.set(x, 0, 0.3);
-        const p = sim.state.prompt;
-        setLabel(text, p.text.slice(p.pos, p.pos + 14).replace(/ /g, '·') || ' ', 0.9);
-        text.position.x = x + 3;
-        avatar.update(now, Math.min(1, sim.state.motion.v / 4000));
+        const age = (now - (sparkle.userData.t0 ?? -1e9)) / 400;
+        sparkle.visible = age < 1;
+        if (sparkle.visible) {
+          sparkle.position.set(x, y + 1, 0.4);
+          sparkle.scale.setScalar(1 + age * 4);
+          (sparkle.material as THREE.Material).opacity = 1 - age;
+        }
+        setLabel(counter, `♪ ${s.collected}`, 0.6);
+        counter.position.set(x + 6, 3.6, 0.5);
+        avatar.update(now, y > 0 ? 0 : Math.min(1, sim.state.motion.v / 4000));
       },
       dispose() {},
     };

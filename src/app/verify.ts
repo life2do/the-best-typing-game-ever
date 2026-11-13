@@ -138,7 +138,7 @@ class Player {
     host.setLevel({ templateId: plan.templateId, view: plan.view, styleId: plan.styleId, palette, havocIds: plan.havocIds, havocMaxP: plan.havocMaxP }, avatar, this.sim!, performance.now(), transition);
     this.hud?.el.remove();
     this.hud = new Hud(language(this.camp.language), { ...DEFAULT_SETTINGS, keyboard: 'off' });
-    this.hud.keyboard.setKnown(plan.letters, plan.newKeys);
+    this.hud.keyboard.setKnown(plan.letters);
     ui.prepend(this.hud.el);
   }
 

@@ -32,7 +32,7 @@ const scale = scales.find((s) => s.id === `scale.${q.get('scale') ?? 'flowers'}`
 host.reducedMotion = q.has('reduced');
 host.setLevel({ templateId, view: (q.get('view') as any) ?? tpl.views[0], styleId, palette, havocIds: tpl.supportsHavocs ?? [], havocMaxP: Number(q.get('havoc') ?? 600) }, new AvatarRig(scale, tier), sim, performance.now(), false);
 const hud = new Hud(language('en'), { ...DEFAULT_SETTINGS, keyboard: 'auto' });
-hud.keyboard.setKnown(letters, letters.slice(-1));
+hud.keyboard.setKnown(letters);
 ui.append(hud.el);
 const start = performance.now();
 let botLog: LogEvent[] | null = null;

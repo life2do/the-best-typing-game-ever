@@ -45,3 +45,6 @@ Decisions agreed during spec discussion (2026-11-13).
 | D39 | `simT` changes only on logged events; snapshots are taken before the events that announce them. |
 | D40 | Build id = first 16 characters of the build hash; the build hash covers engine sources + content (not bundle bytes). |
 | D41 | M1 campaign covers all 26 English letter levels: levels 1–4 are pinned to the vertical-slice templates; later levels reuse them via seeded slot filling. Key-group levels come in M2. |
+| D42 | Automatic quality scaling stops at native pixel density; supersampling beyond native is manual. FPS counter in the HUD (setting, default on). |
+| D43 | During play the keyboard overlay highlights only the next key; the new-key outline is shown in the level intro only. |
+| D44 | Platformer: gaps snap to the block grid and the hop is derived from the runner's position, so ground is always under it; notes hang over gaps and are collected when passed. |
