@@ -49,8 +49,10 @@ export interface LanguagePack extends LanguagePackManifest {
   wordLists: Record<string, string[]>;
   blockWords: string[];
   blockSubstrings: string[];
-  /** char -> physical code */
+  /** char -> physical code (unshifted chars first, then Shift chars such as capitals and `?`) */
   codeOf: Record<string, string>;
+  /** chars that need Shift held (capitals, `?`, `!`, `(`…) */
+  needsShift: Record<string, true>;
 }
 
 export interface LevelTemplateManifest extends ItemBase {

@@ -17,11 +17,14 @@ import { Hud } from '@/ui/hud';
 import { h, toast } from '@/ui/dom';
 import { crossroadsScreen, drillOfferScreen, introScreen, nagScreen, pauseScreen, startScreen, wordBookScreen } from '@/ui/screens';
 import { WordArt } from '@/ui/wordArt';
+import { pinPad, profilePicker } from '@/ui/profiles';
+import { buildExport, checkPin, parseImport, pinHash } from '@/storage/profileIO';
 import { StretchBreak } from '@/ui/stretchBreak';
 import { KeyboardInput } from '@/input/keyboard';
 import { AudioEngine, Voice } from '@/audio/audio';
 import {
-  DEFAULT_SETTINGS, freshSeed, loadProfile, loadSegment, newProfile, saveProfile, saveSegment, segmentKey, segmentsFor, weakKeys,
+  DEFAULT_SETTINGS, allSegments, deleteProfile, freshSeed, listProfiles, loadProfileById, loadSegment, migrateProfiles, newProfile, profileSeeds,
+  saveProfile, saveSegment, segmentKey, segmentsFor, startNewRun, weakKeys,
   type Profile, type Segment, type Settings,
 } from '@/storage/profile';
 import { levelTargetWpmP, tierAcc } from '@/typing/tiers';
@@ -80,8 +83,8 @@ export class Game {
   }
 
   async boot(): Promise<void> {
-    const stored = await loadProfile().catch(() => undefined);
-    this.showStart(stored);
+    await migrateProfiles().catch(() => {});
+    await this.showProfiles();
     if (!this.host.webgl) toast(this.ui, 'Your browser has 3D graphics turned off, so the worlds are hidden. Typing, sound and progress still work.');
   }
 
@@ -96,37 +99,151 @@ export class Game {
     if (el) this.ui.append(el);
   }
 
-  private showStart(stored?: Profile): void {
+  private leaveLevel(): void {
     this.screen = 'start';
+    this.sim = null;
     this.wordArt?.clear();
     this.hud?.el.remove();
     this.hud = null;
-    const scale = scales[Math.floor(Math.random() * scales.length)]; // cosmetic: a different theme every load
-    const showBook = stored
-      ? () =>
-          this.setOverlay(
-            wordBookScreen(stored.wordBook ?? {}, illustrations.map((i) => ({ word: i.words.en?.[0] ?? i.id, svg: i.svg })), language('en').wordEmoji ?? {}, () => this.showStart(stored)),
-          )
-      : undefined;
+  }
+
+  /** Start: the profile picker, or the new-player form when this device has no profiles yet (docs/07). */
+  async showProfiles(message?: string): Promise<void> {
+    this.leaveLevel();
+    const profiles = await listProfiles().catch(() => [] as Profile[]);
+    if (!profiles.length) return this.showNewPlayer(false);
     this.setOverlay(
-      startScreen(scale, stored, async (c) => {
-        this.audio.unlock();
-        if (c.action === 'continue' && stored) {
-          this.profile = stored;
-          this.profile.settings = { ...DEFAULT_SETTINGS, ...stored.settings };
-          if (c.name) this.profile.name = c.name;
-        } else {
-          this.profile = newProfile(c.name, c.scale, c.tier, freshSeed());
-          if (stored) this.profile.settings = stored.settings;
-        }
-        this.profile.tier = c.action === 'new' ? c.tier : this.profile.tier;
-        this.applySettings(this.profile.settings);
-        await saveProfile(this.profile);
-        this.camp = campaignFor(this.profile.campaign.seed, this.profile.campaign.language);
-        if (this.profile.name) this.voice.speak(`Hi ${this.profile.name}! Let's type.`);
-        await this.startLevel(this.profile.campaign.level, false);
-      }, showBook),
+      profilePicker(profiles, scales, {
+        onPick: (p) => this.unlock(p, () => this.showStart(p)),
+        onNew: () => this.showNewPlayer(true),
+        onImport: (f) => void this.importProfile(f),
+      }, message),
     );
+  }
+
+  /** Ask for the profile's PIN, if it has one, then continue. */
+  private unlock(p: Profile, then: () => void, error?: string): void {
+    if (!p.pinHash) return then();
+    this.setOverlay(
+      pinPad({
+        title: `${p.name || 'Player'}: enter your PIN`,
+        error,
+        onDone: (pin) => (checkPin(p, pin) ? then() : this.unlock(p, then, 'Not quite — try again.')),
+        onCancel: () => void this.showProfiles(),
+      }),
+    );
+  }
+
+  private randomScale() {
+    return scales[Math.floor(Math.random() * scales.length)]; // cosmetic: a different theme every load
+  }
+
+  private showNewPlayer(canGoBack: boolean): void {
+    this.leaveLevel();
+    this.setOverlay(
+      startScreen(this.randomScale(), undefined, async (c) => {
+        this.audio.unlock();
+        const p = newProfile(c.name, c.scale, c.tier, freshSeed());
+        await this.play(p);
+      }, undefined, { onBack: canGoBack ? () => void this.showProfiles() : undefined, onImport: (f) => void this.importProfile(f) }),
+    );
+  }
+
+  /** A profile's home: continue, new run, word book, export, PIN, switch player, delete. */
+  private showStart(stored: Profile): void {
+    this.leaveLevel();
+    const showBook = () =>
+      this.setOverlay(
+        wordBookScreen(stored.wordBook ?? {}, illustrations.map((i) => ({ word: i.words.en?.[0] ?? i.id, svg: i.svg })), language('en').wordEmoji ?? {}, () => this.showStart(stored)),
+      );
+    this.setOverlay(
+      startScreen(this.randomScale(), stored, async (c) => {
+        this.audio.unlock();
+        let p: Profile = { ...stored, settings: { ...DEFAULT_SETTINGS, ...stored.settings } };
+        if (c.name) p.name = c.name;
+        if (c.action === 'new') p = startNewRun(p, freshSeed(), c.tier);
+        await this.play(p);
+      }, showBook, {
+        onExport: () => void this.exportProfile(stored),
+        onPin: () => this.changePin(stored),
+        onSwitch: () => void this.showProfiles(),
+        onDelete: () => void this.removeProfile(stored),
+      }),
+    );
+  }
+
+  private async play(p: Profile): Promise<void> {
+    p.lastPlayed = Date.now();
+    this.profile = p;
+    this.applySettings(p.settings);
+    await saveProfile(p);
+    this.camp = campaignFor(p.campaign.seed, p.campaign.language);
+    if (p.name) this.voice.speak(`Hi ${p.name}! Let's type.`);
+    await this.startLevel(p.campaign.level, false);
+  }
+
+  /** Set a PIN (chosen twice), or remove the current one. */
+  private changePin(p: Profile): void {
+    if (p.pinHash) {
+      if (!confirm(`Remove the PIN from ${p.name || 'this player'}?`)) return;
+      p.pinHash = undefined;
+      void saveProfile(p).then(() => this.showStart(p));
+      return;
+    }
+    const ask = (error?: string) =>
+      this.setOverlay(
+        pinPad({
+          title: 'Choose a PIN (4 shapes)',
+          error,
+          onCancel: () => this.showStart(p),
+          onDone: (first) =>
+            this.setOverlay(
+              pinPad({
+                title: 'Once more, the same PIN',
+                onCancel: () => this.showStart(p),
+                onDone: (second) => {
+                  if (second !== first) return ask('Those were different. Choose again.');
+                  p.pinHash = pinHash(p.profileId, first);
+                  void saveProfile(p).then(() => {
+                    toast(this.ui, '🔒 PIN set');
+                    this.showStart(p);
+                  });
+                },
+              }),
+            ),
+        }),
+      );
+    ask();
+  }
+
+  private async exportProfile(p: Profile): Promise<void> {
+    const seeds = profileSeeds(p);
+    const segments = (await allSegments()).filter((s) => seeds.includes(s.campaignSeed));
+    const blob = new Blob([JSON.stringify(buildExport(p, segments, BUILD, Date.now()))], { type: 'application/json' });
+    const safe = (p.name || 'player').replace(/[^\p{L}\p{N}_-]+/gu, '_');
+    const a = h('a', { href: URL.createObjectURL(blob), download: `${safe}.tbtge-profile.json` });
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  }
+
+  private async importProfile(file: File): Promise<void> {
+    let data;
+    try {
+      data = parseImport(await file.text());
+    } catch (e) {
+      return this.showProfiles(`⚠️ ${(e as Error).message}`);
+    }
+    const existing = await loadProfileById(data.profile.profileId);
+    if (existing && !confirm(`${existing.name || 'This player'} already exists on this device. Replace with the imported copy?`)) return this.showProfiles();
+    for (const seg of data.segments) await saveSegment(seg);
+    await saveProfile(data.profile);
+    await this.showProfiles(`✅ Imported ${data.profile.name || 'player'} (${data.segments.length} saved levels).`);
+  }
+
+  private async removeProfile(p: Profile): Promise<void> {
+    if (!confirm(`Delete ${p.name || 'this player'}? Their progress on this device is removed. (Export first to keep a copy.)`)) return;
+    await deleteProfile(p);
+    await this.showProfiles();
   }
 
   private applySettings(s: Settings): void {
@@ -206,8 +323,12 @@ export class Game {
         const tierName = scale.steps[this.seg.tier - 1]?.name.en ?? `tier ${this.seg.tier}`;
         this.setOverlay(introScreen(lang, this.plan, rules, tierName));
         const nk = this.plan.newKeys.filter((k) => k !== ' ');
-        const finger = nk.map((k) => `${k.toUpperCase()}, with your ${FINGER_NAMES[lang.layout[lang.codeOf[k]]?.finger ?? 'li']}`).join('. ');
-        this.voice.speak(`Level ${index}. New key: ${finger}. ${rules.map((r) => r.text).join(' ')} Put your fingers on F and J, then press them together.`);
+        const spoken: Record<string, string> = { '\b': 'Backspace', '\n': 'Enter', '\t': 'Tab' };
+        const what = this.plan.keyGroup?.keys.includes('Shift')
+          ? 'Capitals: hold Shift with the little finger of the other hand'
+          : nk.map((k) => `${spoken[k] ?? k.toUpperCase()}, with your ${FINGER_NAMES[lang.layout[lang.codeOf[k]]?.finger ?? 'li']}`).join('. ');
+        const intro = this.plan.keyGroup ? `Level ${index}: ${this.plan.keyGroup.name}. ${what}.` : `Level ${index}. New key: ${what}.`;
+        this.voice.speak(`${intro} ${rules.map((r) => r.text).join(' ')} Put your fingers on F and J, then press them together.`);
       } else if (sim.state.phase === 'crossroads') this.setOverlay(crossroadsScreen(sim.state.bestStars));
       else this.setOverlay(null);
     });

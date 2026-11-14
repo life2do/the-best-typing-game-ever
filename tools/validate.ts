@@ -123,6 +123,11 @@ for (const c of byKind('campaign-rules')) {
     continue;
   }
   const levels = lang.order.length + lang.keyGroups.length;
+  // Every key-group key must be on the keyboard: "Shift", a layout key code, or a character (plain or with Shift).
+  const chars = new Set(Object.values(lang.layout as Record<string, { char: string; shift?: string }>).flatMap((k) => [k.char, k.shift ?? '']).filter(Boolean));
+  for (const g of lang.keyGroups)
+    for (const k of g.keys)
+      if (k !== 'Shift' && !(k in lang.layout) && !chars.has(k)) err(`${lang.id}: key group ${g.id} key ${JSON.stringify(k)} is not on the keyboard layout`);
   if (c.slots.length < levels) warnings.push(`${c.id}: ${c.slots.length} slots for ${levels} levels (extra levels use defaults)`);
   for (const s of c.slots) {
     const known = (lang.order as string[][]).slice(0, Math.min(s.level, lang.order.length)).flat().filter((k) => k !== ' ').length;

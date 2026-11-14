@@ -60,13 +60,20 @@ export function loadLanguage(id: string): LanguagePack {
   for (const [tag, rel] of Object.entries(m.words)) wordLists[tag] = parseWordList(file(rel));
   const block = parseWordList(file(m.blocklist));
   const codeOf: Record<string, string> = {};
+  const needsShift: Record<string, true> = {};
   for (const [code, k] of Object.entries(m.layout)) if (!(k.char in codeOf)) codeOf[k.char] = code;
+  for (const [code, k] of Object.entries(m.layout))
+    if (k.shift && !(k.shift in codeOf)) {
+      codeOf[k.shift] = code;
+      needsShift[k.shift] = true;
+    }
   return {
     ...m,
     wordLists,
     blockWords: block.filter((w) => !w.startsWith('~')),
     blockSubstrings: block.filter((w) => w.startsWith('~')).map((w) => w.slice(1)),
     codeOf,
+    needsShift,
   };
 }
 

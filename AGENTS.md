@@ -22,7 +22,8 @@ and [docs/05-determinism-replay-proofs.md](docs/05-determinism-replay-proofs.md)
    `view.ts` — default export `TemplateView` (`src/render/types.ts`): Three.js scene built from the sim state, plus intro `rules`. Views never write simulation state.
 3. `PROMPT.md`: genre, core loop, how ticks/reveal/speed map to the world, art notes, havocs it supports.
 4. `template.test.ts`: run `sim` with the `pass` bot at tiers 1, 4 and 7 (must complete with ≥ 1★ within budget), with `struggle` (must not complete) and `masher` (no crash), and twice with the same seed (identical snapshot hashes).
-5. Preview: `npm run dev`, then `/dev/preview/?template=<id>&letters=fjdk&style=<id>&palette=<id>&seed=1&tier=4` (add `&bot=pass` to let the bot type).
+5. CI tests every template in its own job (simulation tests + `e2e/templates.spec.ts` browser smoke test in each view); a new folder is picked up automatically, and a PR that only touches your template runs only its job (`node tools/affected.mjs --files <paths>` shows the plan).
+6. Preview: `npm run dev`, then `/dev/preview/?template=<id>&letters=fjdk&style=<id>&palette=<id>&seed=1&tier=4` (add `&bot=pass` to let the bot type).
 
 ### Add a render style / palette / havoc
 Same pattern: manifest + code (`style.ts` default-exporting `RenderStyle`, `havoc.ts` default-exporting `HavocVisual`, see `src/render/types.ts`) + `PROMPT.md`. Palettes are a single JSON file in `content/palettes/`. Tests: screenshot test for styles; intensity 0/0.5/1 test for havocs (planned).

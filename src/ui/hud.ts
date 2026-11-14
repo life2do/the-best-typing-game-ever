@@ -1,4 +1,5 @@
 /** In-game HUD: rhythm frame, vignette, prompt, keyboard, stage dots, stars, power-ups (docs/07 HUD). */
+import { displayGlyph, displayText } from '@/content/glyphs';
 import type { LevelSim } from '@/sim/level';
 import type { LanguagePack } from '@/content/types';
 import { KeyboardOverlay } from './keyboard';
@@ -107,7 +108,7 @@ export class Hud {
       const parts = s.targets.map((t) => {
         const locked = sim.suggestedTargetId() === t.id;
         // Space shows as a little space-bar shape (a "␣" glyph looks too much like "u").
-        const vis = (x: string) => x.split(/( )/).filter(Boolean).map((c) => (c === ' ' ? h('span', { class: 'spacebar' }) : c));
+        const vis = (x: string) => x.split(/( )/).filter(Boolean).map((c) => (c === ' ' ? h('span', { class: 'spacebar' }) : displayText(c)));
         return h('span', { class: `target${locked ? ' locked' : ''}` }, h('span', { class: 'typed' }, ...vis(t.text.slice(0, t.progress))), ...vis(t.text.slice(t.progress)));
       });
       this.prompt.replaceChildren(...parts);
@@ -121,7 +122,7 @@ export class Hud {
       const ch = p.text[i];
       const special = p.spans.some((sp) => i >= sp.start && i < sp.end);
       const cls = [i < p.pos ? 'typed' : '', i === p.pos ? (err ? 'cur err' : 'cur') : '', special ? 'special' : '', ch === ' ' ? 'space' : ''].filter(Boolean).join(' ');
-      nodes.push(h('span', { class: cls }, ch === ' ' ? '·' : ch));
+      nodes.push(h('span', { class: cls }, ch === ' ' ? '·' : displayGlyph(ch)));
     }
     this.prompt.replaceChildren(...nodes);
   }

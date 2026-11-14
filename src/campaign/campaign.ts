@@ -16,6 +16,32 @@ export interface LevelPlan {
   havocIds: string[];
   havocMaxP: number; // permille
   boss: boolean;
+  /** Key-group level (Shift, punctuation, digits, symbols, editing keys; docs/01 Key order). */
+  keyGroup?: { id: string; name: string; keys: string[] };
+  /** Characters learned in key-group levels so far (capitals, punctuation, digits…), included in `letters`. */
+  groupChars: string[];
+}
+
+/**
+ * Characters a key group adds. "Shift" adds the capitals of every letter known so far; key names such as
+ * "Backspace" add that key's character (`\b`, `\n`, `\t`); single characters stand for themselves.
+ */
+export function groupCharsFor(keys: string[], lang: LanguagePack, known: string[]): string[] {
+  const out: string[] = [];
+  const add = (c: string | undefined) => {
+    if (c && !out.includes(c)) out.push(c);
+  };
+  for (const k of keys) {
+    if (k === 'Shift') {
+      for (const c of known) {
+        const code = lang.codeOf[c];
+        const up = code ? lang.layout[code].shift : undefined;
+        if (up && /\p{L}/u.test(c)) add(up);
+      }
+    } else if ([...k].length === 1) add(k);
+    else add(lang.layout[k]?.char);
+  }
+  return out;
 }
 
 export interface Campaign {
@@ -44,9 +70,20 @@ export function createCampaign(seed: string, lang: LanguagePack, c: CampaignCont
   const known: string[] = [];
   const recentTemplates: string[] = [];
   const usedLook: string[] = [];
-  const steps: string[][] = order.map((k) => k);
+  // Letter levels first, then one level per key group. Key-group levels come after every letter level,
+  // so adding them never changes the seeded choices for the letter levels (existing runs replay as before).
+  const steps: { keys: string[]; group?: LanguagePack['keyGroups'][number] }[] = [
+    ...order.map((k) => ({ keys: k })),
+    ...(lang.keyGroups ?? []).map((g) => ({ keys: [] as string[], group: g })),
+  ];
+  const groupChars: string[] = [];
   for (let i = 0; i < steps.length; i++) {
-    const newKeys = steps[i];
+    const step = steps[i];
+    let newKeys = step.keys;
+    if (step.group) {
+      newKeys = groupCharsFor(step.group.keys, lang, known).filter((c) => !known.includes(c));
+      groupChars.push(...newKeys);
+    }
     for (const k of newKeys) if (k !== ' ' && !known.includes(k)) known.push(k);
     const slot = c.rules.slots.find((s) => s.level === i + 1) ?? { level: i + 1, viewBand: ['2d', 'iso', '3d'] as View[] };
     let templateId: string;
@@ -87,6 +124,8 @@ export function createCampaign(seed: string, lang: LanguagePack, c: CampaignCont
       havocIds: i === 0 || maxP === 0 ? [] : supported,
       havocMaxP: maxP,
       boss: !!slot.boss,
+      keyGroup: step.group ? { id: step.group.id, name: step.group.name?.[lang.id.replace(/^lang\./, '')] ?? step.group.id, keys: [...step.group.keys] } : undefined,
+      groupChars: [...groupChars],
     });
   }
   return { seed, language: lang.id, orderVariant, levels };

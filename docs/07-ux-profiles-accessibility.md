@@ -12,6 +12,7 @@
 - Stored locally (IndexedDB). There can be several per device.
 - **Optional PIN** (4 digits). The number pad shows each digit with a **unique colour + shape** (0 ⚪●, 1 🔴■, 2 🟠▲, 3 🟡◆, 4 🟢★, 5 🔵⬟, 6 🟣♥, 7 🟤☾, 8 ⚫✚, 9 🩷⬢), so children who can't read numbers yet can use it. This is a lock against siblings, **not security**.
 - **Export / import** profile (JSON + proofs) as a file.
+- *Implemented (M2.1):* profiles are stored by `profileId` in IndexedDB, with a pointer to the last-played one; an M1 save (one profile under the key `current`) is migrated on load. The start screen is the profile picker (most recently played first; 🔒 marks a PIN). A profile's home offers Continue, New run (new campaign seed, level 1; stats, collections and word book stay), Word book, Switch player, Export, Set/Remove PIN and Delete. The PIN is chosen twice and stored as a hash salted with the profile id. Export is `tbtge-profile/1` JSON: the profile plus the run segments of all its campaigns (current and earlier seeds); import checks the format, keeps only the profile's own segments and asks before replacing an existing profile with the same id.
 
 ## Avatar
 

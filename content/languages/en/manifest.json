@@ -395,7 +395,7 @@
       "char": "\t",
       "finger": "lp",
       "row": "top",
-      "col": 99
+      "col": -1
     }
   },
   "order": [

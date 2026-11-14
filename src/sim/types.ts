@@ -88,6 +88,8 @@ export interface LevelSetup {
   powerups: PowerupManifest[];
   collected: string[];
   weakKeys: string[];
+  /** Characters from key-group levels (capitals, punctuation, digits, editing keys); added to words by decoration. */
+  groupChars?: string[];
 }
 
 export type SimEvent =

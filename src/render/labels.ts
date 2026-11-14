@@ -1,10 +1,12 @@
 /** Text labels as canvas-texture sprites (kid-readable, high contrast). */
 import * as THREE from 'three';
+import { displayText } from '@/content/glyphs';
 
 const cache = new Map<string, THREE.CanvasTexture>();
 const SPACE = '␣';
 
 export function labelTexture(text: string, color = '#ffffff', bg = 'rgba(0,0,0,0.55)', font = '600 64px "Atkinson Hyperlegible", system-ui, sans-serif'): THREE.CanvasTexture {
+  text = displayText(text); // editing keys (Backspace, Enter, Tab) are drawn as symbols
   const key = `${text}|${color}|${bg}|${font}`;
   const hit = cache.get(key);
   if (hit) return hit;

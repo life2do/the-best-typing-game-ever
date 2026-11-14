@@ -57,6 +57,8 @@ Each key's finger is defined by **physical key code** (`KeyboardEvent.code`) in 
 
 Key groups after the letters (one level each): **Shift/capitals** · `. ,` · `' / ? !` · digits `1–5` · digits `6–0` · symbols `- = ( ) : "` · `Backspace Enter Tab`.
 
+*Implemented (M2.2):* the campaign appends one level per key group (English levels 27–33) after the letter levels, so the seeded choices for letter levels don't change. Shift adds the capital of every letter; key names add their character (`\b` Backspace, `\n` Enter, `\t` Tab, drawn as ⌫ ⏎ ⇥). Group characters aren't mixed into pseudo-words; they **decorate** chunks — capitals capitalise a chunk, `. , ? ! :` follow it, quotes wrap it, `( )` enclose it, `- / =` join its halves, digits form numbers, and editing keys are chunks of their own — with the new-key share for the level's own group and 15% for earlier groups. Characters that need Shift are typed with Shift held (a capital without Shift is a mistake). From the first key-group level on, the keyboard overlay shows the full keyboard (number row, symbols, editing keys, both Shift keys) and lights the opposite hand's Shift key with the letter.
+
 The language pack may define **order variants** (equivalent valid orders). The campaign seed picks one.
 
 ### Russian (ЙЦУКЕН), provisional

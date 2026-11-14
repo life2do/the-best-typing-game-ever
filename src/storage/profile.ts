@@ -38,7 +38,8 @@ export interface LevelResult {
 }
 
 export interface Profile {
-  schemaVersion: 1;
+  /** 1 = M1 (single profile stored under the key "current"); 2 = several profiles keyed by profileId. */
+  schemaVersion: 1 | 2;
   profileId: string;
   name: string;
   avatar: { scale: string; customization: AvatarCustomization };
@@ -55,6 +56,12 @@ export interface Profile {
   perKey: Record<string, [number, number, number]>;
   settings: Settings;
   createdAt: number;
+  /** Optional 4-digit colour/shape PIN, stored as a salted hash (a lock against siblings, not security; docs/07). */
+  pinHash?: string;
+  /** Seeds of this profile's earlier campaigns ("New run"), so export includes their segments. */
+  pastSeeds?: string[];
+  /** Last time this profile was played (orders the profile picker). */
+  lastPlayed?: number;
 }
 
 /** One level played on one build: everything needed to replay it exactly (docs/05 Proof bundle). */
@@ -75,11 +82,13 @@ export interface Segment {
   startedAt: number;
 }
 
-export const PROFILE_KEY = 'current';
+/** M1 stored its single profile under this key; migrateProfiles() moves it to its profileId. */
+export const LEGACY_PROFILE_KEY = 'current';
+const CURRENT_KEY = 'currentProfile';
 
 export function newProfile(name: string, scale: string, tier: number, seed: string): Profile {
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     profileId: seed,
     name,
     avatar: { scale, customization: { ...DEFAULT_CUSTOMIZATION } },
@@ -95,8 +104,52 @@ export function newProfile(name: string, scale: string, tier: number, seed: stri
   };
 }
 
-export const loadProfile = () => db.get<Profile>('profiles', PROFILE_KEY);
-export const saveProfile = (p: Profile) => db.put('profiles', PROFILE_KEY, p);
+/** Move an M1 save (one profile under "current") to the multi-profile layout. Idempotent. */
+export async function migrateProfiles(): Promise<void> {
+  const legacy = await db.get<Profile>('profiles', LEGACY_PROFILE_KEY);
+  if (!legacy) return;
+  const p: Profile = { ...legacy, schemaVersion: 2 };
+  await db.put('profiles', p.profileId, p);
+  await db.put('settings', CURRENT_KEY, p.profileId);
+  await db.del('profiles', LEGACY_PROFILE_KEY);
+}
+
+/** All profiles, most recently played first. */
+export async function listProfiles(): Promise<Profile[]> {
+  const all = (await db.all<Profile>('profiles')).filter((p) => p && p.profileId);
+  return all.sort((a, b) => (b.lastPlayed ?? b.createdAt) - (a.lastPlayed ?? a.createdAt));
+}
+
+export const currentProfileId = () => db.get<string>('settings', CURRENT_KEY);
+export const loadProfileById = (id: string) => db.get<Profile>('profiles', id);
+
+/** The profile that was played last, if any. */
+export async function loadProfile(): Promise<Profile | undefined> {
+  const id = await currentProfileId();
+  return id ? loadProfileById(id) : undefined;
+}
+
+export async function saveProfile(p: Profile): Promise<void> {
+  p.schemaVersion = 2;
+  await db.put('profiles', p.profileId, p);
+  await db.put('settings', CURRENT_KEY, p.profileId);
+}
+
+/** Seeds of every campaign this profile has played. */
+export const profileSeeds = (p: Profile) => [...new Set([p.campaign.seed, ...(p.pastSeeds ?? [])])];
+
+/** Delete a profile and all its run segments. */
+export async function deleteProfile(p: Profile): Promise<void> {
+  const seeds = profileSeeds(p);
+  for (const s of await db.all<Segment>('segments')) if (seeds.includes(s.campaignSeed)) await db.del('segments', s.key);
+  await db.del('profiles', p.profileId);
+  if ((await currentProfileId()) === p.profileId) await db.del('settings', CURRENT_KEY);
+}
+
+/** Start a new campaign ("New run") for an existing profile: new seed, level 1; stats and collections stay. */
+export function startNewRun(p: Profile, seed: string, tier: number): Profile {
+  return { ...p, pastSeeds: profileSeeds(p), campaign: { ...p.campaign, seed, level: 1 }, tier, drillOfferedAt: undefined };
+}
 
 export const segmentKey = (seed: string, level: number) => `${seed}:${String(level).padStart(3, '0')}`;
 export const loadSegment = (key: string) => db.get<Segment>('segments', key);
