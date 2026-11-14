@@ -1,5 +1,5 @@
 {
-  "latest": "p3GMBvLzjQBzU9E6",
+  "latest": "RO8a0vKlgm_bnEFD",
   "builds": [
     {
       "id": "DuWNSrtzFmWjQmAS",
@@ -65,6 +65,11 @@
       "id": "p3GMBvLzjQBzU9E6",
       "commit": "a5463c9860b0d06bdbbc422f21a37517dd5eff31",
       "publishedAt": "2026-11-14T20:59:24.385Z"
+    },
+    {
+      "id": "RO8a0vKlgm_bnEFD",
+      "commit": "3a02aa76463b6adc18125fb476463706897c6ca7",
+      "publishedAt": "2026-11-14T21:31:24.695Z"
     }
   ]
 }
