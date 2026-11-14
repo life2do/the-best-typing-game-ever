@@ -1,0 +1,31 @@
+{
+  "id": "template.word-city",
+  "kind": "level-template",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "PROMPT.md",
+  "description": "Isometric word city (targeting): building plots float over the city with words; type a word and Space to raise that building, block by block.",
+  "tags": [
+    "iso",
+    "targeting",
+    "builder"
+  ],
+  "genre": "city-builder",
+  "minLetters": 8,
+  "inputMode": "targeting",
+  "views": [
+    "iso"
+  ],
+  "stages": {
+    "min": 3,
+    "max": 3
+  },
+  "supportsHavocs": [
+    "havoc.map-rotate"
+  ],
+  "multiplayer": [],
+  "entry": "sim.ts"
+}
