@@ -86,7 +86,8 @@ key groups before the full campaign, all games and languages before the artifact
 | M2.3 Genre library | ✅ (15 templates) |
 | M2.4 Russian | ✅ |
 | M2.5 Scales and avatars | ✅ |
-| M2.6 – M2.10 | planned |
+| M2.6 Analytics | ✅ |
+| M2.7 – M2.10 | planned |
 
 ## Milestone 3 — Depth
 - Fix-it training drills tuned with real play data (local only).
