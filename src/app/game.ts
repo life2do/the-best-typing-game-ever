@@ -33,6 +33,11 @@ import {
   type Profile, type Segment, type Settings,
 } from '@/storage/profile';
 import { creditLevel } from '@/campaign/progress';
+import { runFingerprint } from '@/proof/fingerprint';
+import { buildProof, nameHash, PROOF_KEYWORD, type Identity } from '@/proof/bundle';
+import { addITXt } from '@/proof/png';
+import { artifactPng, artifactScreen, type IdentityChoice } from '@/ui/artifact';
+import type { RunFile } from './replay';
 import { nextTurn, partyStarsKey, roundPlans, swapsAfter, type Party, type PartyPlayerPlan } from '@/party/party';
 import { handoverScreen, iconOf, partyResultsScreen, partySetupScreen, type PartyResultRow, type PartySetupResult } from '@/ui/party';
 import { BUILD } from './build-info';
@@ -128,6 +133,10 @@ export class Game {
 
   // ------------------------------------------------------------------ screens
   private setOverlay(el: HTMLElement | null): void {
+    if (this.artifactUi && el !== this.overlay) {
+      this.artifactUi.dispose();
+      this.artifactUi = null;
+    }
     if (this.breakUi && el !== this.breakUi.el) {
       this.breakUi.destroy();
       this.breakUi = null;
@@ -204,6 +213,7 @@ export class Game {
         if (c.action === 'new') p = startNewRun(p, freshSeed(), c.tier, c.language);
         await this.play(p);
       }, showBook, {
+        onArtifact: stored.campaign.level > campaignFor(stored.campaign.seed, stored.campaign.language).levels.length ? () => void this.showArtifact(stored) : undefined,
         onAvatar: () => this.showAvatar(stored),
         onStats: () => void this.showStats(stored),
         onSettings: () => this.showSettings(stored),
@@ -688,7 +698,11 @@ export class Game {
       partyResultsScreen(run.party, rows, () => {
         run.party.round++;
         void this.startPartyRound(true);
-      }, () => void this.endParty()),
+      }, () => void this.endParty(), run.party.mode === 'companions' ? undefined : () => {
+        // One picture for the party: its fingerprint covers every player's stream so far.
+        const letters = [...new Set(run.slots.flatMap((x) => x.plan.letters))];
+        void this.showArtifact(run.profiles[0], { seed: run.party.seed, language: run.party.language, mode: run.party.mode, letters, round: run.party.round, back: () => this.showPartyResults() });
+      }),
     );
   }
 
@@ -816,10 +830,62 @@ export class Game {
     this.hud?.el.remove();
     this.hud = null;
     this.audio.fanfare();
-    this.voice.speak('You learned every letter! The artifact is waking up.');
-    this.setOverlay(
-      h('div', { class: 'overlay' }, h('div', { class: 'card' }, h('h1', {}, '🔷 All letters collected!'), h('p', {}, 'The multidimensional artifact is waking up. (Its full reveal arrives in the next milestone.)'), h('div', { class: 'row-btns' }, h('a', { href: './verify/' }, h('button', {}, 'Watch your replay')), h('button', { class: 'secondary', onclick: () => this.showStart(this.profile) }, 'Main menu')))),
-    );
+    this.voice.speak('You learned every letter! The artifact is waking up. Type each letter to scratch it free.');
+    void this.showArtifact(this.profile);
+  }
+
+  // ------------------------------------------------------------------ artifact (docs/03, docs/05)
+  /** The artifact screen while it is open: typed letters scratch glyphs free. */
+  private artifactUi: { scratch: (char: string) => boolean; lang: string; dispose: () => void } | null = null;
+
+  /** A campaign's artifact (its segments on this device); also the party picture (`party` given). */
+  async showArtifact(p: Profile, party?: { seed: string; language: string; mode: string; letters: string[]; round: number; back: () => void }): Promise<void> {
+    const seed = party?.seed ?? p.campaign.seed;
+    const langId = party?.language ?? p.campaign.language;
+    const segments = await segmentsFor(seed);
+    const run: RunFile = { format: 'tbtge-run/1', build: BUILD, campaign: { language: langId, seed }, segments };
+    const fingerprint = runFingerprint(run.campaign, segments);
+    const learned = party?.letters ?? [...new Set(segments.filter((s) => s.complete).flatMap((s) => s.plan?.letters ?? []))];
+    const letters = learned.filter((c) => /^\p{Ll}$/u.test(c));
+    const back = party?.back ?? (() => this.showStart(p));
+    const name = party ? undefined : p.name || undefined;
+    const caption = party ? `A party of ${new Set(segments.map((s) => s.profileId)).size} · round ${party.round}` : `${p.name || 'A player'} · ${letters.length} letters`;
+    const identity = (choice: IdentityChoice): Identity => {
+      if (choice === 'plain' && name) return { mode: 'plain', name };
+      if (choice === 'hashed' && name) {
+        const salt = freshSeed();
+        return { mode: 'hashed', salt, nameHash: nameHash(salt, name) };
+      }
+      return { mode: 'none' };
+    };
+    const fileBase = `typing-artifact-${seed.slice(0, 8)}`;
+    const ui = artifactScreen({
+      title: party ? '🔷 Your party picture' : '🔷 The artifact',
+      subtitle: party ? 'One picture for the whole party: its fingerprint covers every player.' : 'Every letter you learned lives in this tesseract. Its colours and turns come from your run alone.',
+      letters, fingerprint, reducedMotion: !!p.settings?.reducedMotion, name,
+      onSavePng: async (choice) => {
+        const proof = await buildProof(run, identity(choice), party?.mode ?? null);
+        const png = addITXt(await artifactPng(fingerprint, letters, caption), PROOF_KEYWORD, JSON.stringify(proof));
+        this.download(png, `${fileBase}.png`, 'image/png');
+      },
+      onSaveProof: async (choice) => {
+        const proof = await buildProof(run, identity(choice), party?.mode ?? null);
+        this.download(JSON.stringify(proof), `${fileBase}.proof`, 'application/json');
+      },
+      onClose: () => {
+        this.artifactUi = null;
+        back();
+      },
+    });
+    this.setOverlay(ui.el);
+    this.artifactUi = { scratch: ui.scratch, lang: langId, dispose: ui.dispose };
+  }
+
+  private download(data: Uint8Array | string, name: string, type: string): void {
+    const blob = new Blob([data as BlobPart], { type });
+    const a = h('a', { href: URL.createObjectURL(blob), download: name });
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
   }
 
   // ------------------------------------------------------------------ input
@@ -843,6 +909,11 @@ export class Game {
     if (this.offer) {
       if (code === 'KeyF') this.offer.yes();
       else if (code === 'KeyJ') this.offer.no();
+      return;
+    }
+    if (this.artifactUi) {
+      const ch = language(this.artifactUi.lang).layout[code]?.char;
+      if (ch) this.artifactUi.scratch(ch);
       return;
     }
     if (this.handover) return this.handoverKey(code);

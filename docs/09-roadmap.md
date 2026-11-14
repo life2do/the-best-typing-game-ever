@@ -90,7 +90,7 @@ key groups before the full campaign, all games and languages before the artifact
 | M2.7 Accessibility + parent area | ✅ |
 | M2.8 Voice effects | ✅ (5 effects) |
 | M2.9 Hot seat | ✅ (3 modes) |
-| M2.10 Artifact and proofs | planned |
+| M2.10 Artifact and proofs | ✅ |
 
 ## Milestone 3 — Depth
 - Fix-it training drills tuned with real play data (local only).
