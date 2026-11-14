@@ -1,5 +1,5 @@
 {
-  "latest": "MEh6SGQ9Zs5iBaWN",
+  "latest": "_xVFk1O25OmFpywl",
   "builds": [
     {
       "id": "DuWNSrtzFmWjQmAS",
@@ -35,6 +35,11 @@
       "id": "MEh6SGQ9Zs5iBaWN",
       "commit": "a44f2b285980bbae6fe0a156ff001f4df235c688",
       "publishedAt": "2026-11-14T11:49:24.257Z"
+    },
+    {
+      "id": "_xVFk1O25OmFpywl",
+      "commit": "07ccba5a3c06e9b57dab0b7f89b7c0d267f624b4",
+      "publishedAt": "2026-11-14T13:05:22.493Z"
     }
   ]
 }
