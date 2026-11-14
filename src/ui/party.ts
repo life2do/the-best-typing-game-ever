@@ -108,7 +108,7 @@ export interface PartyResultRow {
 }
 
 /** Shared result screen after a round; each player's stars also went to their own profile. */
-export function partyResultsScreen(party: Party, rows: PartyResultRow[], onNext: () => void, onEnd: () => void): HTMLElement {
+export function partyResultsScreen(party: Party, rows: PartyResultRow[], onNext: () => void, onEnd: () => void, onPicture?: () => void): HTMLElement {
   const total = rows.reduce((a, r) => a + r.stars, 0);
   return h(
     'div',
@@ -126,6 +126,6 @@ export function partyResultsScreen(party: Party, rows: PartyResultRow[], onNext:
             r.grewTo ? h('span', { class: 'grew' }, `grew into a ${r.grewTo}!`) : ''),
         )),
       h('p', {}, 'Stars and progress went to each player.'),
-      h('div', { class: 'row-btns' }, h('button', { 'data-party': 'next', onclick: onNext }, '▶ Next round'), h('button', { class: 'secondary', 'data-party': 'end', onclick: onEnd }, 'End the party'))),
+      h('div', { class: 'row-btns' }, h('button', { 'data-party': 'next', onclick: onNext }, '▶ Next round'), onPicture ? h('button', { class: 'secondary', 'data-party': 'picture', onclick: onPicture }, '🖼 Party picture') : '', h('button', { class: 'secondary', 'data-party': 'end', onclick: onEnd }, 'End the party'))),
   );
 }

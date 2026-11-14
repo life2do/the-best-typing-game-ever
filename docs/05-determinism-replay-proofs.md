@@ -78,3 +78,14 @@ Input: drop a PNG or `.proof` file, or scan the ring with the camera.
 
 There's no server, so the proof shows **the run is internally consistent and can be replayed**. It can't show who typed it.
 An auto-typing bot can produce a valid run. A timing check (distribution of gaps between keys) flags obviously robotic runs as "suspicious", but this is only a hint.
+
+## Implemented (M2.10)
+
+- **Fingerprint** (`src/proof/fingerprint.ts`): `link₀ = H({campaign: {language, seed}})` (language without the `lang.` prefix), then `linkₙ = H({prev, snap})` over every snapshot of every segment, levels in order and, in a hot-seat party, players in turn order.
+- **Traits** (`src/proof/traits.ts`): four hues and a saturation, two distinct 4D rotation planes with speeds, the order of the 48 glyph slots (16 vertices, 32 edge midpoints) and a trail style, all read from the fingerprint bytes.
+- **Code ring** (`src/proof/ring.ts`): 160 dashes clockwise from 12 o'clock — an 8-cell start mark, then version (1 byte), the first 128 bits of the fingerprint and a CRC-16 — bright for 1, dim for 0. It is read back from the PNG or from a screenshot showing the whole picture (sizes tested down to 360 px); the CRC rejects misreads.
+- **Proof bundle** `tbtge-proof/1` (`src/proof/bundle.ts`): per segment the build, level, player, plan, settings for the level and the log as base64url of deflate-raw of its canonical JSON, plus snapshots; a summary (stars and tiers per level, mean best final-stage WPM and accuracy, active time) computed by re-simulation; the identity chosen at export (*no name*, *hidden name* — salted hash, checked by typing it on `/verify` —, *name shown*); and the fingerprint. The device signature is not implemented yet.
+- **Artifact picture**: Canvas 2D, so it looks the same everywhere and needs no WebGL. Saved as a 1024 px PNG with the bundle in an uncompressed `iTXt` chunk `tbtge-proof` (`src/proof/png.ts`); a `.proof` file can be saved too.
+- **`/verify`** opens run files, `.proof` files and PNGs. A PNG with its proof gets the full check: every segment re-simulated, the fingerprint chain, the summary, the picture's code ring against the proof, and the hidden name. A picture without a proof (a screenshot) gives the fingerprint from its ring and looks it up among this device's runs (weak check). Camera scanning is not implemented.
+- **Per-build verification**: on the published site, segments recorded on another build are sent to that build's verify page running as an engine (`/v/<id>/verify/?engine=1` in a hidden frame, same-origin `postMessage`), which re-simulates them on the engine that recorded them; the page says so. Builds from before M2.10 have no engine mode, so their segments fall back to the current build with a note, as before.
+

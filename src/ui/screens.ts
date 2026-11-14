@@ -33,6 +33,8 @@ export interface StartExtras {
   onStats?: () => void;
   onSettings?: () => void;
   onParents?: () => void;
+  /** shown once the campaign is complete (M2.10) */
+  onArtifact?: () => void;
 }
 
 export function startScreen(scale: ComplexityScaleManifest, profile: Profile | undefined, onChoose: (c: StartChoice) => void, onWordBook?: () => void, extras: StartExtras = {}): HTMLElement {
@@ -84,6 +86,7 @@ export function startScreen(scale: ComplexityScaleManifest, profile: Profile | u
     'div',
     { class: 'row-btns more' },
     small('← Back', extras.onBack),
+    small('🔷 Artifact', extras.onArtifact),
     small('🎨 Avatar', extras.onAvatar),
     small('📊 Stats', extras.onStats),
     small('⚙ Settings', extras.onSettings),

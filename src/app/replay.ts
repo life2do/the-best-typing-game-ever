@@ -30,6 +30,8 @@ export interface SegmentVerdict {
   stageTimes: number[];
   /** hot seat: the player's turn position in the party */
   player?: number;
+  /** verify page: re-simulated on this build, on the build that recorded it, or here because that one isn't available */
+  checkedOn?: 'this' | 'own' | 'fallback';
 }
 
 /** The plan a segment was played with: stored in the segment, or (M1 segments) the campaign's. */

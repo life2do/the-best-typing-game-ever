@@ -25,6 +25,24 @@ export function base64url(bytes: Uint8Array): string {
   return s;
 }
 
+/** Inverse of base64url (no padding). */
+export function fromBase64url(s: string): Uint8Array {
+  const out: number[] = [];
+  let acc = 0;
+  let bits = 0;
+  for (const ch of s) {
+    const v = B64.indexOf(ch);
+    if (v < 0) throw new Error(`Not base64url: ${JSON.stringify(ch)}`);
+    acc = (acc << 6) | v;
+    bits += 6;
+    if (bits >= 8) {
+      bits -= 8;
+      out.push((acc >> bits) & 255);
+    }
+  }
+  return Uint8Array.from(out);
+}
+
 export function sha256Bytes(data: Uint8Array | string): Uint8Array {
   return sha256(typeof data === 'string' ? enc.encode(data) : data);
 }

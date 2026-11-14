@@ -316,3 +316,10 @@ body.reduced-motion .shake, body.reduced-motion .break-emoji, body.reduced-motio
 @keyframes reach { to { stroke-dashoffset: -22; } }
 body.reduced-motion .hands * { animation: none !important; }
 .spacebar { display: inline-block; width: 1.3em; height: 0.36em; margin: 0 0.12em; border: 0.09em solid currentColor; border-radius: 0.2em; vertical-align: middle; }
+
+/* artifact (M2.10) */
+.artifact .card { max-height: 96vh; overflow-y: auto; }
+.artifact-canvas { width: min(520px, 80vw, 62vh); aspect-ratio: 1; display: block; margin: 6px auto; border-radius: 50%; cursor: pointer; touch-action: none; }
+.artifact .fingerprint { font-family: var(--mono); font-size: 0.85em; opacity: 0.75; }
+.artifact-identity { display: block; margin: 6px 0; }
+.verify-proof { margin: 6px 0; }
