@@ -29,7 +29,7 @@ import {
 } from '@/storage/profile';
 import { levelTargetWpmP, tierAcc } from '@/typing/tiers';
 import { BUILD } from './build-info';
-import { FINGER_NAMES } from '@/ui/dom';
+import { fingerName, homeKeys, keyName, tr } from '@/content/i18n';
 
 export class Game {
   readonly host: RenderHost;
@@ -143,7 +143,7 @@ export class Game {
     this.setOverlay(
       startScreen(this.randomScale(), undefined, async (c) => {
         this.audio.unlock();
-        const p = newProfile(c.name, c.scale, c.tier, freshSeed());
+        const p = newProfile(c.name, c.scale, c.tier, freshSeed(), c.language);
         await this.play(p);
       }, undefined, { onBack: canGoBack ? () => void this.showProfiles() : undefined, onImport: (f) => void this.importProfile(f) }),
     );
@@ -161,7 +161,7 @@ export class Game {
         this.audio.unlock();
         let p: Profile = { ...stored, settings: { ...DEFAULT_SETTINGS, ...stored.settings } };
         if (c.name) p.name = c.name;
-        if (c.action === 'new') p = startNewRun(p, freshSeed(), c.tier);
+        if (c.action === 'new') p = startNewRun(p, freshSeed(), c.tier, c.language);
         await this.play(p);
       }, showBook, {
         onExport: () => void this.exportProfile(stored),
@@ -178,7 +178,11 @@ export class Game {
     this.applySettings(p.settings);
     await saveProfile(p);
     this.camp = campaignFor(p.campaign.seed, p.campaign.language);
-    if (p.name) this.voice.speak(`Hi ${p.name}! Let's type.`);
+    // Keys, voice and word pictures follow the campaign's language (docs/04 Language packs).
+    const lang = language(this.camp.language);
+    this.input.setLanguage(lang);
+    this.voice.setLanguage(lang.tts?.lang ?? 'en-US', lang.tts?.preferredVoices);
+    if (p.name) this.voice.speak(tr(lang, 'sayHi', "Hi {name}! Let's type.", { name: p.name }));
     await this.startLevel(p.campaign.level, false);
   }
 
@@ -325,13 +329,17 @@ export class Game {
         const tierName = scale.steps[this.seg.tier - 1]?.name.en ?? `tier ${this.seg.tier}`;
         this.setOverlay(introScreen(lang, this.plan, rules, tierName));
         const nk = this.plan.newKeys.filter((k) => k !== ' ');
-        const spoken: Record<string, string> = { '\b': 'Backspace', '\n': 'Enter', '\t': 'Tab' };
+        const [hf, hj] = homeKeys(lang);
         const what = this.plan.keyGroup?.keys.includes('Shift')
-          ? 'Capitals: hold Shift with the little finger of the other hand'
-          : nk.map((k) => `${spoken[k] ?? k.toUpperCase()}, with your ${FINGER_NAMES[lang.layout[lang.codeOf[k]]?.finger ?? 'li']}`).join('. ');
-        const intro = this.plan.keyGroup ? `Level ${index}: ${this.plan.keyGroup.name}. ${what}.` : `Level ${index}. New key: ${what}.`;
-        this.voice.speak(`${intro} ${rules.map((r) => r.text).join(' ')} Put your fingers on F and J, then press them together.`);
-      } else if (sim.state.phase === 'crossroads') this.setOverlay(crossroadsScreen(sim.state.bestStars));
+          ? tr(lang, 'sayShift', 'Capitals: hold Shift with the little finger of the other hand')
+          : nk.map((k) => tr(lang, 'sayKey', '{key}, with your {finger}', { key: keyName(lang, k), finger: fingerName(lang, lang.layout[lang.codeOf[k]]?.finger ?? 'li') })).join('. ');
+        const intro = this.plan.keyGroup
+          ? tr(lang, 'sayGroup', 'Level {n}: {group}. {keys}.', { n: index, group: this.plan.keyGroup.name, keys: what })
+          : tr(lang, 'sayIntro', 'Level {n}. New key: {keys}.', { n: index, keys: what });
+        // Template rules are English text for now; they are only read out in English.
+        const ruleText = lang.id === 'lang.en' ? rules.map((r) => r.text).join(' ') : '';
+        this.voice.speak(`${intro} ${ruleText} ${tr(lang, 'sayPress', `Put your fingers on ${hf} and ${hj}, then press them together.`)}`);
+      } else if (sim.state.phase === 'crossroads') this.setOverlay(crossroadsScreen(sim.state.bestStars, lang));
       else this.setOverlay(null);
     });
     if (transition) setTimeout(showIntro, TRANSITION_MS * 0.8);
@@ -409,7 +417,7 @@ export class Game {
       if (this.sim !== sim) return;
       if (sim.state.phase !== 'intro') return this.setOverlay(null);
       this.setOverlay(introScreen(lang, { ...this.plan, letters: setup.letters, newKeys: [key] }, rules, `${K} practice`, `Fix-it drill: ${K}`));
-      this.voice.speak(`Fix-it drill. Type ${K} with your ${FINGER_NAMES[lang.layout[lang.codeOf[key]]?.finger ?? 'li']}. Put your fingers on F and J, then press them together.`);
+      this.voice.speak(`Fix-it drill. Type ${K} with your ${fingerName(lang, lang.layout[lang.codeOf[key]]?.finger ?? 'li')}. ${tr(lang, 'sayPress', 'Put your fingers on F and J, then press them together.')}`);
     });
     setTimeout(show, TRANSITION_MS * 0.8);
   }
@@ -479,7 +487,7 @@ export class Game {
     const after = this.sim.state.phase;
     if (before === 'intro' && after === 'play') {
       this.setOverlay(null);
-      this.voice.speak('Go!');
+      this.voice.speak(tr(language(this.camp.language), 'sayGo', 'Go!'));
     }
     if (performance.now() - this.lastSave > 3000) void this.persist();
   }
@@ -545,7 +553,7 @@ export class Game {
     this.pauseReason = null;
     this.record({ k: 'resume', t: this.logT() });
     const ph = this.sim.state.phase;
-    this.setOverlay(ph === 'crossroads' ? crossroadsScreen(this.sim.state.bestStars) : null);
+    this.setOverlay(ph === 'crossroads' ? crossroadsScreen(this.sim.state.bestStars, language(this.camp.language)) : null);
     if (ph === 'intro') this.showIntro();
   }
 
@@ -590,8 +598,12 @@ export class Game {
           break;
         }
         this.audio.fanfare();
-        this.setOverlay(crossroadsScreen(sim.state.bestStars));
-        this.voice.speak('You did it! Press F to stay for more stars, or J to go to the next world.');
+        {
+          const lang = language(this.camp.language);
+          const [hf, hj] = homeKeys(lang);
+          this.setOverlay(crossroadsScreen(sim.state.bestStars, lang));
+          this.voice.speak(tr(lang, 'sayCross', `You did it! Press ${hf} to stay for more stars, or ${hj} to go to the next world.`));
+        }
         break;
       case 'more':
         this.setOverlay(null);
@@ -695,7 +707,7 @@ export class Game {
           const ch = sim.expectedChars()[0];
           const lang = language(this.camp.language);
           const code = ch !== undefined ? lang.codeOf[ch] : undefined;
-          if (code) this.voice.speak(`Find the ${ch === ' ' ? 'space bar' : ch.toUpperCase()} with your ${FINGER_NAMES[lang.layout[code].finger]}.`);
+          if (code) this.voice.speak(tr(lang, 'sayFind', 'Find the {key} with your {finger}.', { key: keyName(lang, ch), finger: fingerName(lang, lang.layout[code].finger) }));
         }
         if (!this.stuckShown && sim.stuck()) {
           this.stuckShown = true;

@@ -205,6 +205,12 @@ export class Voice {
   rate = 1;
   constructor(public lang = 'en-US', private preferred: string[] = []) {}
 
+  /** Speak in another language (the campaign's language pack). */
+  setLanguage(lang: string, preferred: string[] = []): void {
+    this.lang = lang;
+    this.preferred = preferred;
+  }
+
   speak(text: string, interrupt = true): void {
     if (!this.enabled || typeof speechSynthesis === 'undefined') return;
     if (interrupt) speechSynthesis.cancel();

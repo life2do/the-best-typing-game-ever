@@ -32,7 +32,8 @@ export class KeyboardOverlay {
       if (row === 'number' && !opts.showNumbers && !full) continue;
       const r = h('div', { class: `row ${row}` });
       const codes = Object.entries(lang.layout)
-        .filter(([code, k]) => k.row === row && (full || !COMPACT_HIDDEN.includes(code)))
+        // Keys that type a letter always show (in Russian, Quote and the brackets are Э, Х and Ъ).
+        .filter(([code, k]) => k.row === row && (full || !COMPACT_HIDDEN.includes(code) || /\p{L}/u.test(k.char)))
         .sort((a, b) => a[1].col - b[1].col);
       const keyEl = (code: string, finger: string, label: Node | string, extra = '') => {
         const el = h('div', { class: `key f-${finger} ${WIDE[code] ?? ''} ${extra}`.trim() }, label);
@@ -63,7 +64,12 @@ export class KeyboardOverlay {
     // Any known character beyond the compact keyboard (digits, symbols, editing keys, capitals) → full keyboard.
     const full = !!this.opts.full || chars.some((c) => {
       const code = this.lang.codeOf[c];
-      return !!this.lang.needsShift[c] || (!!code && (COMPACT_HIDDEN.includes(code) || this.lang.layout[code].row === 'number'));
+      if (!code) return false;
+      if (this.lang.needsShift[c]) return true;
+      const row = this.lang.layout[code].row;
+      // Letters show on the compact keyboard, except one on the number row (Ё in Russian).
+      if (/\p{L}/u.test(c)) return row === 'number';
+      return COMPACT_HIDDEN.includes(code) || row === 'number';
     });
     if (full !== this.full) this.build(full);
     const shiftKnown = chars.some((c) => this.lang.needsShift[c]);

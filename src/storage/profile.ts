@@ -89,7 +89,7 @@ export interface Segment {
 export const LEGACY_PROFILE_KEY = 'current';
 const CURRENT_KEY = 'currentProfile';
 
-export function newProfile(name: string, scale: string, tier: number, seed: string): Profile {
+export function newProfile(name: string, scale: string, tier: number, seed: string, language = 'en'): Profile {
   return {
     schemaVersion: 2,
     profileId: seed,
@@ -99,7 +99,7 @@ export function newProfile(name: string, scale: string, tier: number, seed: stri
     tierHistory: [],
     starsByTier: {},
     results: [],
-    campaign: { language: 'en', seed, level: 1 },
+    campaign: { language, seed, level: 1 },
     collected: [],
     perKey: {},
     settings: { ...DEFAULT_SETTINGS },
@@ -150,8 +150,8 @@ export async function deleteProfile(p: Profile): Promise<void> {
 }
 
 /** Start a new campaign ("New run") for an existing profile: new seed, level 1; stats and collections stay. */
-export function startNewRun(p: Profile, seed: string, tier: number): Profile {
-  return { ...p, pastSeeds: profileSeeds(p), campaign: { ...p.campaign, seed, level: 1 }, tier, drillOfferedAt: undefined };
+export function startNewRun(p: Profile, seed: string, tier: number, language = p.campaign.language): Profile {
+  return { ...p, pastSeeds: profileSeeds(p), campaign: { language, seed, level: 1 }, tier, drillOfferedAt: undefined };
 }
 
 export const segmentKey = (seed: string, level: number) => `${seed}:${String(level).padStart(3, '0')}`;

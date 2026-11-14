@@ -1,0 +1,767 @@
+{
+  "id": "lang.ru",
+  "kind": "language-pack",
+  "version": 1,
+  "description": "Russian ЙЦУКЕН language pack: physical key map with fingers, home-row-first key order, curated kid-friendly words and a blocklist.",
+  "prompt": "PROMPT.md",
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "name": {
+    "en": "Russian",
+    "ru": "Русский"
+  },
+  "script": "cyrillic",
+  "alphabet": [
+    "а",
+    "б",
+    "в",
+    "г",
+    "д",
+    "е",
+    "ё",
+    "ж",
+    "з",
+    "и",
+    "й",
+    "к",
+    "л",
+    "м",
+    "н",
+    "о",
+    "п",
+    "р",
+    "с",
+    "т",
+    "у",
+    "ф",
+    "х",
+    "ц",
+    "ч",
+    "ш",
+    "щ",
+    "ъ",
+    "ы",
+    "ь",
+    "э",
+    "ю",
+    "я"
+  ],
+  "layout": {
+    "Backquote": {
+      "char": "ё",
+      "shift": "Ё",
+      "finger": "lp",
+      "row": "number",
+      "col": 0
+    },
+    "Digit1": {
+      "char": "1",
+      "shift": "!",
+      "finger": "lp",
+      "row": "number",
+      "col": 1
+    },
+    "Digit2": {
+      "char": "2",
+      "shift": "\"",
+      "finger": "lr",
+      "row": "number",
+      "col": 2
+    },
+    "Digit3": {
+      "char": "3",
+      "shift": "№",
+      "finger": "lm",
+      "row": "number",
+      "col": 3
+    },
+    "Digit4": {
+      "char": "4",
+      "shift": ";",
+      "finger": "li",
+      "row": "number",
+      "col": 4
+    },
+    "Digit5": {
+      "char": "5",
+      "shift": "%",
+      "finger": "li",
+      "row": "number",
+      "col": 5
+    },
+    "Digit6": {
+      "char": "6",
+      "shift": ":",
+      "finger": "ri",
+      "row": "number",
+      "col": 6
+    },
+    "Digit7": {
+      "char": "7",
+      "shift": "?",
+      "finger": "ri",
+      "row": "number",
+      "col": 7
+    },
+    "Digit8": {
+      "char": "8",
+      "shift": "*",
+      "finger": "rm",
+      "row": "number",
+      "col": 8
+    },
+    "Digit9": {
+      "char": "9",
+      "shift": "(",
+      "finger": "rr",
+      "row": "number",
+      "col": 9
+    },
+    "Digit0": {
+      "char": "0",
+      "shift": ")",
+      "finger": "rp",
+      "row": "number",
+      "col": 10
+    },
+    "Minus": {
+      "char": "-",
+      "shift": "_",
+      "finger": "rp",
+      "row": "number",
+      "col": 11
+    },
+    "Equal": {
+      "char": "=",
+      "shift": "+",
+      "finger": "rp",
+      "row": "number",
+      "col": 12
+    },
+    "KeyQ": {
+      "char": "й",
+      "shift": "Й",
+      "finger": "lp",
+      "row": "top",
+      "col": 0
+    },
+    "KeyW": {
+      "char": "ц",
+      "shift": "Ц",
+      "finger": "lr",
+      "row": "top",
+      "col": 1
+    },
+    "KeyE": {
+      "char": "у",
+      "shift": "У",
+      "finger": "lm",
+      "row": "top",
+      "col": 2
+    },
+    "KeyR": {
+      "char": "к",
+      "shift": "К",
+      "finger": "li",
+      "row": "top",
+      "col": 3
+    },
+    "KeyT": {
+      "char": "е",
+      "shift": "Е",
+      "finger": "li",
+      "row": "top",
+      "col": 4
+    },
+    "KeyY": {
+      "char": "н",
+      "shift": "Н",
+      "finger": "ri",
+      "row": "top",
+      "col": 5
+    },
+    "KeyU": {
+      "char": "г",
+      "shift": "Г",
+      "finger": "ri",
+      "row": "top",
+      "col": 6
+    },
+    "KeyI": {
+      "char": "ш",
+      "shift": "Ш",
+      "finger": "rm",
+      "row": "top",
+      "col": 7
+    },
+    "KeyO": {
+      "char": "щ",
+      "shift": "Щ",
+      "finger": "rr",
+      "row": "top",
+      "col": 8
+    },
+    "KeyP": {
+      "char": "з",
+      "shift": "З",
+      "finger": "rp",
+      "row": "top",
+      "col": 9
+    },
+    "BracketLeft": {
+      "char": "х",
+      "shift": "Х",
+      "finger": "rp",
+      "row": "top",
+      "col": 10
+    },
+    "BracketRight": {
+      "char": "ъ",
+      "shift": "Ъ",
+      "finger": "rp",
+      "row": "top",
+      "col": 11
+    },
+    "Backslash": {
+      "char": "\\",
+      "shift": "/",
+      "finger": "rp",
+      "row": "top",
+      "col": 12
+    },
+    "KeyA": {
+      "char": "ф",
+      "shift": "Ф",
+      "finger": "lp",
+      "row": "home",
+      "col": 0
+    },
+    "KeyS": {
+      "char": "ы",
+      "shift": "Ы",
+      "finger": "lr",
+      "row": "home",
+      "col": 1
+    },
+    "KeyD": {
+      "char": "в",
+      "shift": "В",
+      "finger": "lm",
+      "row": "home",
+      "col": 2
+    },
+    "KeyF": {
+      "char": "а",
+      "shift": "А",
+      "finger": "li",
+      "row": "home",
+      "col": 3,
+      "homeBump": true
+    },
+    "KeyG": {
+      "char": "п",
+      "shift": "П",
+      "finger": "li",
+      "row": "home",
+      "col": 4
+    },
+    "KeyH": {
+      "char": "р",
+      "shift": "Р",
+      "finger": "ri",
+      "row": "home",
+      "col": 5
+    },
+    "KeyJ": {
+      "char": "о",
+      "shift": "О",
+      "finger": "ri",
+      "row": "home",
+      "col": 6,
+      "homeBump": true
+    },
+    "KeyK": {
+      "char": "л",
+      "shift": "Л",
+      "finger": "rm",
+      "row": "home",
+      "col": 7
+    },
+    "KeyL": {
+      "char": "д",
+      "shift": "Д",
+      "finger": "rr",
+      "row": "home",
+      "col": 8
+    },
+    "Semicolon": {
+      "char": "ж",
+      "shift": "Ж",
+      "finger": "rp",
+      "row": "home",
+      "col": 9
+    },
+    "Quote": {
+      "char": "э",
+      "shift": "Э",
+      "finger": "rp",
+      "row": "home",
+      "col": 10
+    },
+    "KeyZ": {
+      "char": "я",
+      "shift": "Я",
+      "finger": "lp",
+      "row": "bottom",
+      "col": 0
+    },
+    "KeyX": {
+      "char": "ч",
+      "shift": "Ч",
+      "finger": "lr",
+      "row": "bottom",
+      "col": 1
+    },
+    "KeyC": {
+      "char": "с",
+      "shift": "С",
+      "finger": "lm",
+      "row": "bottom",
+      "col": 2
+    },
+    "KeyV": {
+      "char": "м",
+      "shift": "М",
+      "finger": "li",
+      "row": "bottom",
+      "col": 3
+    },
+    "KeyB": {
+      "char": "и",
+      "shift": "И",
+      "finger": "li",
+      "row": "bottom",
+      "col": 4
+    },
+    "KeyN": {
+      "char": "т",
+      "shift": "Т",
+      "finger": "ri",
+      "row": "bottom",
+      "col": 5
+    },
+    "KeyM": {
+      "char": "ь",
+      "shift": "Ь",
+      "finger": "ri",
+      "row": "bottom",
+      "col": 6
+    },
+    "Comma": {
+      "char": "б",
+      "shift": "Б",
+      "finger": "rm",
+      "row": "bottom",
+      "col": 7
+    },
+    "Period": {
+      "char": "ю",
+      "shift": "Ю",
+      "finger": "rr",
+      "row": "bottom",
+      "col": 8
+    },
+    "Slash": {
+      "char": ".",
+      "shift": ",",
+      "finger": "rp",
+      "row": "bottom",
+      "col": 9
+    },
+    "Space": {
+      "char": " ",
+      "finger": "rt",
+      "row": "space",
+      "col": 0
+    },
+    "Backspace": {
+      "char": "\b",
+      "finger": "rp",
+      "row": "number",
+      "col": 99
+    },
+    "Enter": {
+      "char": "\n",
+      "finger": "rp",
+      "row": "home",
+      "col": 99
+    },
+    "Tab": {
+      "char": "\t",
+      "finger": "lp",
+      "row": "top",
+      "col": -1
+    }
+  },
+  "order": [
+    [
+      "а",
+      "о",
+      " "
+    ],
+    [
+      "в"
+    ],
+    [
+      "л"
+    ],
+    [
+      "ы"
+    ],
+    [
+      "д"
+    ],
+    [
+      "ф"
+    ],
+    [
+      "ж"
+    ],
+    [
+      "э"
+    ],
+    [
+      "п"
+    ],
+    [
+      "р"
+    ],
+    [
+      "е"
+    ],
+    [
+      "н"
+    ],
+    [
+      "к"
+    ],
+    [
+      "г"
+    ],
+    [
+      "м"
+    ],
+    [
+      "ь"
+    ],
+    [
+      "и"
+    ],
+    [
+      "т"
+    ],
+    [
+      "с"
+    ],
+    [
+      "б"
+    ],
+    [
+      "у"
+    ],
+    [
+      "ш"
+    ],
+    [
+      "ц"
+    ],
+    [
+      "щ"
+    ],
+    [
+      "ч"
+    ],
+    [
+      "ю"
+    ],
+    [
+      "я"
+    ],
+    [
+      "х"
+    ],
+    [
+      "й"
+    ],
+    [
+      "з"
+    ],
+    [
+      "ъ"
+    ],
+    [
+      "ё"
+    ]
+  ],
+  "orderVariants": [],
+  "keyGroups": [
+    {
+      "id": "shift",
+      "keys": [
+        "Shift"
+      ],
+      "name": {
+        "ru": "Заглавные буквы",
+        "en": "Capitals"
+      }
+    },
+    {
+      "id": "punct-1",
+      "keys": [
+        ".",
+        ","
+      ],
+      "name": {
+        "ru": "Точка и запятая",
+        "en": "Dot and comma"
+      }
+    },
+    {
+      "id": "punct-2",
+      "keys": [
+        "!",
+        "?",
+        "\"",
+        ":"
+      ],
+      "name": {
+        "ru": "Восклицательный, вопросительный, кавычки, двоеточие",
+        "en": "Exclamation, question, quotes, colon"
+      }
+    },
+    {
+      "id": "digits-1",
+      "keys": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "name": {
+        "ru": "Цифры 1–5",
+        "en": "Digits 1–5"
+      }
+    },
+    {
+      "id": "digits-2",
+      "keys": [
+        "6",
+        "7",
+        "8",
+        "9",
+        "0"
+      ],
+      "name": {
+        "ru": "Цифры 6–0",
+        "en": "Digits 6–0"
+      }
+    },
+    {
+      "id": "symbols",
+      "keys": [
+        "-",
+        "=",
+        "(",
+        ")",
+        ";",
+        "%"
+      ],
+      "name": {
+        "ru": "Символы",
+        "en": "Symbols"
+      }
+    },
+    {
+      "id": "editing",
+      "keys": [
+        "Backspace",
+        "Enter",
+        "Tab"
+      ],
+      "name": {
+        "ru": "Клавиши правки",
+        "en": "Editing keys"
+      }
+    }
+  ],
+  "words": {
+    "common": "words/common.txt",
+    "easter-egg": "words/easter-egg.txt"
+  },
+  "blocklist": "words/blocklist.txt",
+  "ui": {
+    "pressFJ": "Поставь пальцы на А и О и нажми их вместе",
+    "yourTurn": "Твой ход",
+    "breakTitle": "Разминка!",
+    "breakReady": "Я готов! ▶",
+    "breakWait": "Готово через",
+    "breakDone": "Отличная разминка! Поехали!",
+    "introNewKey": "Уровень {n}: новая клавиша",
+    "introNewKeys": "Уровень {n}: новые клавиши",
+    "introGroup": "Уровень {n}: {group}",
+    "introRest": "Положи пальцы на основной ряд. Нащупай бугорки на А и О. Смотри на экран.",
+    "introGoal": "Цель: {tier}. Esc — пауза.",
+    "introSpace": "Пробел — большие пальцы",
+    "introShift": "Shift — мизинец другой руки, пока буквенный палец печатает (Ф → правый Shift, О → левый Shift)",
+    "sayIntro": "Уровень {n}. Новая клавиша: {keys}.",
+    "sayGroup": "Уровень {n}: {group}. {keys}.",
+    "sayKey": "{key}, {finger}",
+    "sayPress": "Поставь пальцы на А и О и нажми их вместе.",
+    "sayShift": "Заглавные: держи Shift мизинцем другой руки",
+    "sayGo": "Вперёд!",
+    "sayFind": "Найди {key}. Это {finger}.",
+    "sayHi": "Привет, {name}! Давай печатать.",
+    "crossTitle": "Получилось! Куда дальше?",
+    "crossMore": "⬅ Остаться и собрать ещё звёзды",
+    "crossNext": "В следующий мир ➡",
+    "sayCross": "Получилось! Нажми А, чтобы остаться за звёздами, или О — чтобы идти дальше.",
+    "space": "пробел",
+    "key.\b": "Backspace",
+    "key.\n": "Enter",
+    "key.\t": "Tab",
+    "finger.lp": "левый мизинец",
+    "finger.lr": "левый безымянный",
+    "finger.lm": "левый средний",
+    "finger.li": "левый указательный",
+    "finger.lt": "левый большой",
+    "finger.rt": "правый большой",
+    "finger.ri": "правый указательный",
+    "finger.rm": "правый средний",
+    "finger.rr": "правый безымянный",
+    "finger.rp": "правый мизинец"
+  },
+  "tts": {
+    "lang": "ru-RU",
+    "preferredVoices": [
+      "Google русский",
+      "Milena",
+      "Microsoft Irina",
+      "Microsoft Svetlana"
+    ]
+  },
+  "wordEmoji": {
+    "кот": "🐱",
+    "собака": "🐶",
+    "рыба": "🐟",
+    "дом": "🏠",
+    "солнце": "☀️",
+    "луна": "🌙",
+    "звезда": "⭐",
+    "цветок": "🌸",
+    "дерево": "🌳",
+    "яблоко": "🍎",
+    "мяч": "⚽",
+    "машина": "🚗",
+    "поезд": "🚂",
+    "лодка": "⛵",
+    "ракета": "🚀",
+    "торт": "🎂",
+    "книга": "📖",
+    "море": "🌊",
+    "гора": "⛰️",
+    "снег": "❄️",
+    "дождь": "🌧️",
+    "облако": "☁️",
+    "радуга": "🌈",
+    "сердце": "❤️",
+    "музыка": "🎵",
+    "птица": "🐦",
+    "заяц": "🐰",
+    "лиса": "🦊",
+    "медведь": "🐻",
+    "сова": "🦉",
+    "пчела": "🐝",
+    "бабочка": "🦋",
+    "слон": "🐘",
+    "жираф": "🦒",
+    "лев": "🦁",
+    "тигр": "🐯",
+    "кит": "🐋",
+    "дельфин": "🐬",
+    "черепаха": "🐢",
+    "лягушка": "🐸",
+    "гриб": "🍄",
+    "вода": "💧",
+    "огонь": "🔥",
+    "ключ": "🔑",
+    "подарок": "🎁",
+    "шар": "🎈",
+    "флаг": "🚩",
+    "часы": "⌚",
+    "очки": "👓",
+    "шапка": "🧢",
+    "сыр": "🧀",
+    "хлеб": "🍞",
+    "молоко": "🥛",
+    "арбуз": "🍉",
+    "груша": "🍐",
+    "банан": "🍌",
+    "лимон": "🍋",
+    "морковь": "🥕",
+    "водопад": "🏞️",
+    "лава": "🌋",
+    "дракон": "🐉",
+    "робот": "🤖",
+    "клоун": "🤡",
+    "корона": "👑",
+    "мост": "🌉",
+    "замок": "🏰"
+  },
+  "breakNudges": [
+    "Ещё чуть-чуть! Перерыв помогает пальцам стать быстрее.",
+    "Почти! Отдохнувшие руки печатают быстрее.",
+    "Подожди — мозг сохраняет всё, чему ты научился.",
+    "Потянись ещё немного. Чемпионы тоже отдыхают!",
+    "Ещё рано! Даже ракеты заправляются перед стартом.",
+    "Терпение — это суперсила, и она у тебя есть!",
+    "Пальцы заряжаются… ещё капельку! ⚡",
+    "Хорошие печатники делают перерывы — и ты тоже!",
+    "Сделай вдох и выдох. Скоро продолжим!",
+    "Ты отлично справляешься. Ещё немного отдыха!"
+  ],
+  "stretchSteps": [
+    {
+      "move": "shake",
+      "icon": "👐",
+      "text": "Потряси кистями"
+    },
+    {
+      "move": "roll",
+      "icon": "🔄",
+      "text": "Покрути плечами"
+    },
+    {
+      "move": "reach",
+      "icon": "🙆",
+      "text": "Потянись высоко к небу"
+    },
+    {
+      "move": "look",
+      "icon": "👀",
+      "text": "Посмотри вдаль и поморгай"
+    },
+    {
+      "move": "wiggle",
+      "icon": "🖐️",
+      "text": "Пошевели пальцами"
+    },
+    {
+      "move": "breathe",
+      "icon": "🌬️",
+      "text": "Глубоко вдохни и выдохни"
+    }
+  ]
+}

@@ -1,19 +1,23 @@
 /** Overlay screens: start (random complexity scale picker), level intro, crossroads, pause/settings, nag. */
 import type { ComplexityScaleManifest, LanguagePack } from '@/content/types';
 import type { LevelPlan } from '@/campaign/campaign';
-import { h, FINGER_NAMES } from './dom';
+import { h } from './dom';
 import { KeyboardOverlay } from './keyboard';
 import { displayGlyph } from '@/content/glyphs';
+import { fingerName, homeKeys, tr } from '@/content/i18n';
 import { keyboardWithHands } from './hands';
 import { TIER_WPM } from '@/typing/tiers';
 import type { Profile, Settings } from '@/storage/profile';
 import { versionBadge } from '@/app/build-info';
+import { languages } from '@/content/registry';
 
 export interface StartChoice {
   action: 'new' | 'continue';
   name: string;
   tier: number;
   scale: string;
+  /** Campaign language for a new player or a new run ('en', 'ru'…). */
+  language: string;
 }
 
 /** Start screen. The complexity-scale theme is random on every page load (docs/03). */
@@ -27,6 +31,20 @@ export interface StartExtras {
 }
 
 export function startScreen(scale: ComplexityScaleManifest, profile: Profile | undefined, onChoose: (c: StartChoice) => void, onWordBook?: () => void, extras: StartExtras = {}): HTMLElement {
+  // Language: a flag + name button per language pack (a keyboard layout hint shows in game if the OS layout differs).
+  let langId = profile?.campaign.language ?? 'en';
+  const FLAGS: Record<string, string> = { en: '🇬🇧', ru: '🇷🇺' };
+  const langRow = h('div', { class: 'langs', role: 'radiogroup', 'aria-label': 'Language' });
+  const paintLangs = () =>
+    langRow.replaceChildren(
+      ...languages
+        .map((l) => ({ id: l.id.replace(/^lang\./, ''), name: l.name[l.id.replace(/^lang\./, '')] ?? l.name.en }))
+        .sort((a, b) => (a.id < b.id ? -1 : 1))
+        .map((l) =>
+          h('button', { class: `secondary small${l.id === langId ? ' sel' : ''}`, role: 'radio', 'aria-checked': l.id === langId ? 'true' : 'false', 'data-lang': l.id, onclick: () => { langId = l.id; paintLangs(); } }, `${FLAGS[l.id] ?? '⌨️'} ${l.name}`),
+        ),
+    );
+  paintLangs();
   let tier = profile?.tier ?? 2;
   const name = h('input', { type: 'text', placeholder: 'Your name (optional)', maxlength: 24, value: profile?.name ?? '', 'aria-label': 'Your name' });
   const steps = h('div', { class: 'scale', role: 'radiogroup', 'aria-label': 'Choose how fast you type' });
@@ -50,10 +68,10 @@ export function startScreen(scale: ComplexityScaleManifest, profile: Profile | u
   const btns = h('div', { class: 'row-btns' });
   if (profile) {
     btns.append(
-      h('button', { onclick: () => onChoose({ action: 'continue', name: name.value.trim(), tier, scale: profile.avatar.scale }) }, `▶ Continue — level ${profile.campaign.level}`),
-      h('button', { class: 'secondary', onclick: () => onChoose({ action: 'new', name: name.value.trim(), tier, scale: scale.id }) }, '✨ New run'),
+      h('button', { onclick: () => onChoose({ action: 'continue', name: name.value.trim(), tier, scale: profile.avatar.scale, language: profile.campaign.language }) }, `▶ Continue — level ${profile.campaign.level}`),
+      h('button', { class: 'secondary', onclick: () => onChoose({ action: 'new', name: name.value.trim(), tier, scale: scale.id, language: langId }) }, '✨ New run'),
     );
-  } else btns.append(h('button', { onclick: () => onChoose({ action: 'new', name: name.value.trim(), tier, scale: scale.id }) }, '▶ Start'));
+  } else btns.append(h('button', { onclick: () => onChoose({ action: 'new', name: name.value.trim(), tier, scale: scale.id, language: langId }) }, '▶ Start'));
   if (profile && onWordBook) btns.append(h('button', { class: 'secondary', onclick: onWordBook }, `📖 Word book (${Object.keys(profile.wordBook ?? {}).length})`));
   btns.append(h('a', { href: './verify/', style: { color: 'white', alignSelf: 'center' } }, 'Replays'));
   const small = (label: string, fn?: () => void) => (fn ? h('button', { class: 'secondary small', onclick: fn }, label) : null);
@@ -85,6 +103,7 @@ export function startScreen(scale: ComplexityScaleManifest, profile: Profile | u
       steps,
       h('p', { style: { opacity: '0.7', fontSize: '0.9em' } }, 'Not sure? Pick a small one — the game moves you up when you are ready.'),
       name,
+      langRow,
       btns,
       more.childElementCount ? more : '',
     ),
@@ -110,14 +129,19 @@ export function introScreen(lang: LanguagePack, plan: LevelPlan, rules: { icon: 
         return badge(displayGlyph(k).toUpperCase(), code ? lang.layout[code].finger : 'li');
       });
   const fingerText = shiftGroup
-    ? 'Shift — the little finger of the other hand, while the letter finger types (A → right Shift, J → left Shift)'
+    ? tr(lang, 'introShift', 'Shift — the little finger of the other hand, while the letter finger types (A → right Shift, J → left Shift)')
     : newKeys
         .map((k) => {
           const code = lang.codeOf[k];
-          return code ? `${displayGlyph(k).toUpperCase()} — ${FINGER_NAMES[lang.layout[code].finger]}${lang.needsShift[k] ? ' + Shift' : ''}` : '';
+          return code ? `${displayGlyph(k).toUpperCase()} — ${fingerName(lang, lang.layout[code].finger)}${lang.needsShift[k] ? ' + Shift' : ''}` : '';
         })
         .join(' · ');
-  const heading = plan.keyGroup ? `Level ${plan.index}: ${plan.keyGroup.name}` : `Level ${plan.index}: new ${newKeys.length > 1 ? 'keys' : 'key'}`;
+  const heading = plan.keyGroup
+    ? tr(lang, 'introGroup', 'Level {n}: {group}', { n: plan.index, group: plan.keyGroup.name })
+    : newKeys.length > 1
+      ? tr(lang, 'introNewKeys', 'Level {n}: new keys', { n: plan.index })
+      : tr(lang, 'introNewKey', 'Level {n}: new key', { n: plan.index });
+  const [hf, hj] = homeKeys(lang);
   return h(
     'div',
     { class: 'overlay intro' },
@@ -125,17 +149,18 @@ export function introScreen(lang: LanguagePack, plan: LevelPlan, rules: { icon: 
       'div',
       { class: 'card' },
       h('h2', {}, title ?? heading, ...keyBadges),
-      h('p', {}, fingerText, plan.newKeys.includes(' ') ? ' · Space — thumbs' : ''),
+      h('p', {}, fingerText, plan.newKeys.includes(' ') ? ` · ${tr(lang, 'introSpace', 'Space — thumbs')}` : ''),
       keyboardWithHands(kb, lang, shiftGroup ? ['ShiftLeft', 'ShiftRight'] : plan.newKeys),
-      h('p', {}, 'Rest your fingers on the home row. Feel the little bumps on F and J. Keep your eyes on the screen.'),
+      h('p', {}, tr(lang, 'introRest', `Rest your fingers on the home row. Feel the little bumps on ${hf} and ${hj}. Keep your eyes on the screen.`)),
       h('div', { class: 'rules' }, ...rules.map((r) => h('div', {}, h('span', { class: 'ic' }, r.icon), r.text))),
-      h('div', { class: 'press' }, 'Put your fingers on F and J — then press them together'),
-      h('p', { style: { opacity: '0.6', fontSize: '0.85em' } }, `Goal: ${tierName}. Esc = pause.`),
+      h('div', { class: 'press' }, tr(lang, 'pressFJ', `Put your fingers on ${hf} and ${hj} — then press them together`)),
+      h('p', { style: { opacity: '0.6', fontSize: '0.85em' } }, tr(lang, 'introGoal', 'Goal: {tier}. Esc = pause.', { tier: tierName })),
     ),
   );
 }
 
-export function crossroadsScreen(stars: number): HTMLElement {
+export function crossroadsScreen(stars: number, lang?: LanguagePack): HTMLElement {
+  const [hf, hj] = homeKeys(lang);
   return h(
     'div',
     { class: 'overlay crossroads' },
@@ -143,12 +168,12 @@ export function crossroadsScreen(stars: number): HTMLElement {
       'div',
       { class: 'card' },
       h('div', { class: 'big-stars' }, '★'.repeat(stars) + '☆'.repeat(3 - stars)),
-      h('h2', {}, 'You did it! Which way now?'),
+      h('h2', {}, tr(lang, 'crossTitle', 'You did it! Which way now?')),
       h(
         'div',
         { class: 'choices' },
-        h('div', { class: 'choice' }, h('b', {}, 'F'), h('div', {}, '⬅ Stay and collect more stars')),
-        h('div', { class: 'choice' }, h('b', {}, 'J'), h('div', {}, 'Go to the next world ➡')),
+        h('div', { class: 'choice' }, h('b', {}, hf), h('div', {}, tr(lang, 'crossMore', '⬅ Stay and collect more stars'))),
+        h('div', { class: 'choice' }, h('b', {}, hj), h('div', {}, tr(lang, 'crossNext', 'Go to the next world ➡'))),
       ),
     ),
   );

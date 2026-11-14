@@ -111,6 +111,8 @@ body.cb-patterns .kbd .key.known.f-lm, body.cb-patterns .kbd .key.known.f-rm { b
 .pin-key { height: 74px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; background: rgba(255, 255, 255, 0.1); font-size: 1em; }
 .pin-key .shape { font-size: 2em; line-height: 1; text-shadow: 0 0 2px #fff; }
 .pin-key .digit { font-size: 0.8em; opacity: 0.75; }
+.langs { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
+.langs button.sel { background: #3a86ff; box-shadow: 0 0 0 2px var(--gold); }
 .row-btns.more { margin-top: 12px; }
 button.small { font-size: 0.85em; padding: 6px 12px; }
 .row-btns { display: flex; gap: 12px; justify-content: center; margin-top: 18px; flex-wrap: wrap; }

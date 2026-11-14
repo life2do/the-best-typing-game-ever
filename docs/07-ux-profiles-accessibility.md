@@ -4,7 +4,7 @@
 
 1. A **profile picker**: avatar tiles, plus "New player", plus "Party (hot seat)".
 2. For a new profile: name (optional; TTS reads it), avatar theme, starting **tier** chosen on a **complexity scale picked at random each load** (e.g. 🌸 seed → bouquet), each step showing its target as stars or WPM in icon form.
-3. Language choice (a flag plus keyboard picture). Shows a hint if the OS keyboard layout doesn't match.
+3. Language choice (a flag plus keyboard picture). Shows a hint if the OS keyboard layout doesn't match. *(M2.4: flag buttons on the new-player form and the player home; on the home it applies to New run.)*
 4. Continue campaign / New run / Collection / Artifact / Stats / Settings.
 
 ## Profiles
