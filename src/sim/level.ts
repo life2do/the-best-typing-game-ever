@@ -417,9 +417,15 @@ export class LevelSim {
   }
 
   /** Keyboard overlay opacity, permille: brightens as accuracy drops. */
+  /**
+   * Keyboard overlay opacity (permille), the reverse of recent accuracy: fully visible at ≤ 20% accuracy,
+   * invisible at ≥ 80%, linear in between. Before any keystroke (no accuracy yet), while the idle hint
+   * pulses the next key, and when stuck (docs/02 Getting stuck) it is fully visible.
+   */
   keyboardOpacity(): number {
+    if (this.state.win.recent.length === 0 || this.idleHint() || this.stuck()) return 1000;
     const acc = recentAccP(this.state.win);
-    return clamp(1000 - floorDiv((acc - 800) * 7, 2), 250, 1000);
+    return clamp(floorDiv((800 - acc) * 5, 3), 0, 1000);
   }
 
   steadinessP(): number {

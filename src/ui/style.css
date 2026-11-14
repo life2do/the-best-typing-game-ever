@@ -62,7 +62,7 @@ a.version:hover { opacity: 1; text-decoration: underline; }
 .kbd { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); display: flex; flex-direction: column; gap: 5px; padding: 10px; background: var(--panel); border-radius: 16px; transition: opacity 0.4s; pointer-events: none !important; }
 .kbd .row { display: flex; gap: 5px; }
 .kbd .row.top { margin-left: 22px; } .kbd .row.home { margin-left: 34px; } .kbd .row.bottom { margin-left: 56px; } .kbd .row.space { justify-content: center; }
-.kbd .key { width: 42px; height: 40px; border-radius: 8px; display: grid; place-items: center; font-weight: 700; font-size: 1.05em; background: #1d2238; color: rgba(255, 255, 255, 0.35); position: relative; border-bottom: 4px solid rgba(255, 255, 255, 0.08); }
+.kbd .key { width: 42px; height: 40px; border-radius: 8px; display: grid; place-items: center; font-weight: 700; font-size: 1.05em; background: #2a3150; color: rgba(255, 255, 255, 0.7); position: relative; border-bottom: 4px solid rgba(255, 255, 255, 0.14); }
 .kbd .key.space { width: 300px; }
 .kbd .key.known { color: #111; }
 .kbd .key.f-lp.known, .kbd .key.f-rp.known { background: var(--f-lp); } .kbd .key.f-lr.known, .kbd .key.f-rr.known { background: var(--f-lr); }
