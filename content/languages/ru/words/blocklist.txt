@@ -1,0 +1,40 @@
+# Words and substrings that must never appear in generated text (CC0-1.0).
+# Checked at build time against every word list and at runtime against generated pseudo-words.
+# Matching is case-insensitive substring matching for entries prefixed with "~", whole-word otherwise.
+~хуй
+~хуе
+~хуё
+~хуя
+~пизд
+~ебат
+~ебан
+~ебал
+~ебу
+~ёба
+~ёбн
+~бляд
+~блят
+~сука
+~суки
+~мудак
+~мудил
+~гандон
+~пидор
+~пидар
+~шлюх
+~залуп
+~дроч
+~жопа
+~жопу
+~говн
+~дерьм
+~срал
+~сран
+~ссан
+~херн
+~манда
+~гонд
+убить
+убей
+смерть
+труп

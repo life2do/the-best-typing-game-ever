@@ -64,7 +64,9 @@ The language pack may define **order variants** (equivalent valid orders). The c
 ### Russian (ЙЦУКЕН), provisional
 
 Home row: `Ф Ы В А | О Л Д Ж Э`. One letter per level after level 1:
-`А О ␣` → `В` → `Л` → `Ы` → `Д` → `Ф` → `Ж` → `Э` → `П` → `Р` → `Е` → `Н` → `К` → `Г` → `М` → `Ь` → `И` → `Т` → `С` → `Б` → `У` → `Ш` → `Ц` → `Щ` → `Ч` → `Ю` → `Я` → `Х` → `Й` → `З` → `Ъ` → `Ё` (32 levels covering 33 letters). Key groups follow the same pattern as English. To be checked against Russian touch-typing curricula in milestone 2.
+`А О ␣` → `В` → `Л` → `Ы` → `Д` → `Ф` → `Ж` → `Э` → `П` → `Р` → `Е` → `Н` → `К` → `Г` → `М` → `Ь` → `И` → `Т` → `С` → `Б` → `У` → `Ш` → `Ц` → `Щ` → `Ч` → `Ю` → `Я` → `Х` → `Й` → `З` → `Ъ` → `Ё` (32 levels covering 33 letters). Key groups follow the same pattern as English. To be checked against Russian touch-typing curricula.
+
+*Implemented (M2.4):* `content/languages/ru` (layout by the same physical codes as English, so the game works whatever the OS layout; Slash types `.` and `,` with Shift; Russian shifted digits), `content/campaign/ru.json` (the English view arc stretched over 32 letter levels, levels 1–4 pinned like English, then 7 key groups: Shift, `. ,`, `! ? " :`, digits 1–5 and 6–0, `- = ( ) ; %`, editing keys). In-level text (intro, crossroads, spoken lines, finger names, break screen) comes from the pack's `ui` strings; menus and template rules are still English (template rules are not read aloud in other languages).
 
 ## Proficiency tiers and benchmarks
 
