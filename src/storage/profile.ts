@@ -4,6 +4,7 @@ import type { AvatarCustomization } from '@/avatar/procedural';
 import { DEFAULT_CUSTOMIZATION } from '@/avatar/procedural';
 import type { LogEvent } from '@/sim/types';
 import type { Hash } from '@/core/hash';
+import type { LevelPlan } from '@/campaign/campaign';
 
 export interface Settings {
   reducedMotion: boolean;
@@ -80,6 +81,8 @@ export interface Segment {
   complete: boolean;
   stars: number;
   startedAt: number;
+  /** The level plan (template, letters, look) this segment was played with; absent in M1 segments. */
+  plan?: LevelPlan;
 }
 
 /** M1 stored its single profile under this key; migrateProfiles() moves it to its profileId. */

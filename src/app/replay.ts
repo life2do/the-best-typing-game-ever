@@ -1,6 +1,6 @@
 /** Re-simulating recorded segments (shared by the verify page and tests). */
 import { LevelSim } from '@/sim/level';
-import { campaignFor, levelSetup } from '@/campaign/setup';
+import { campaignFor, planSetup } from '@/campaign/setup';
 import { templateSim } from '@/sim/templates';
 import { timingCheck, type TimingVerdict } from '@/proof/timing';
 import type { Segment } from '@/storage/profile';
@@ -30,8 +30,11 @@ export interface SegmentVerdict {
   stageTimes: number[];
 }
 
+/** The plan a segment was played with: stored in the segment, or (M1 segments) the campaign's. */
+export const planOf = (camp: Campaign, seg: Segment) => seg.plan ?? camp.levels[seg.level - 1];
+
 export function simFor(camp: Campaign, seg: Segment, keepStates = false): LevelSim {
-  const setup = levelSetup(camp, seg.level, { tier: seg.tier, targetStars: seg.targetStars, collected: seg.collected, weakKeys: seg.weakKeys });
+  const setup = planSetup(camp.seed, camp.language, planOf(camp, seg), { tier: seg.tier, targetStars: seg.targetStars, collected: seg.collected, weakKeys: seg.weakKeys });
   return new LevelSim(setup, templateSim(setup.templateId), { keepStates });
 }
 
@@ -53,7 +56,7 @@ export function verifySegment(camp: Campaign, seg: Segment, currentBuild: string
   const timing = timingCheck(seg.log);
   return {
     level: seg.level,
-    letters: camp.levels[seg.level - 1]?.newKeys.filter((k) => k !== ' ').join('').toUpperCase() ?? '?',
+    letters: planOf(camp, seg)?.newKeys.filter((k) => k !== ' ').join('').toUpperCase() ?? '?',
     ok: snapshotsMatch && complete === seg.complete && sim.state.bestStars === seg.stars,
     snapshotsMatch,
     recorded: seg.snapshots.length,

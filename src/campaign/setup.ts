@@ -1,6 +1,6 @@
 /** Build a LevelSetup for a campaign level (shared by game, bot, tests, replay). */
 import { abilities, powerups, loadLanguage, templates, campaignRules, styles, palettes, havocs } from '@/content/registry';
-import { createCampaign, type Campaign } from './campaign';
+import { createCampaign, type Campaign, type LevelPlan } from './campaign';
 import type { LevelSetup } from '@/sim/types';
 import type { LanguagePack } from '@/content/types';
 
@@ -26,12 +26,22 @@ export interface SetupOptions {
 }
 
 export function levelSetup(camp: Campaign, levelIndex: number, o: SetupOptions): LevelSetup {
-  const lang = language(camp.language);
   const plan = camp.levels[levelIndex - 1];
   if (!plan) throw new Error(`No level ${levelIndex}`);
+  return planSetup(camp.seed, camp.language, plan, o);
+}
+
+/**
+ * Setup for a stored level plan. Segments keep the plan their level started with, so resuming and
+ * replaying use the same template, letters and look even after new content changes the campaign's
+ * seeded choices for that level.
+ */
+export function planSetup(seed: string, languageId: string, plan: LevelPlan, o: SetupOptions): LevelSetup {
+  const lang = language(languageId);
+  const levelIndex = plan.index;
   const tpl = templates.find((t) => t.id === plan.templateId)!;
   return {
-    seed: camp.seed,
+    seed,
     levelIndex,
     language: lang,
     letters: plan.letters,
