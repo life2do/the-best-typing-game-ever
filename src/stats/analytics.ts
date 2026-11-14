@@ -50,7 +50,8 @@ export interface PlayerStats {
 
 export function computeStats(profile: Profile, segments: Segment[]): PlayerStats {
   const seeds = profileSeeds(profile);
-  const mine = segments.filter((s) => seeds.includes(s.campaignSeed)).sort((a, b) => a.startedAt - b.startedAt || a.level - b.level);
+  // Hot-seat party levels (coop, side by side) are played on the party's seed and tagged with the profile.
+  const mine = segments.filter((s) => seeds.includes(s.campaignSeed) || s.profileId === profile.profileId).sort((a, b) => a.startedAt - b.startedAt || a.level - b.level);
   const camps = new Map<string, Campaign>();
   const levels: LevelStat[] = [];
   const keys = new Map<string, [number, number, number]>();

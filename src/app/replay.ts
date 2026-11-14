@@ -28,6 +28,8 @@ export interface SegmentVerdict {
   timing: TimingVerdict;
   durationMs: number;
   stageTimes: number[];
+  /** hot seat: the player's turn position in the party */
+  player?: number;
 }
 
 /** The plan a segment was played with: stored in the segment, or (M1 segments) the campaign's. */
@@ -67,6 +69,7 @@ export function verifySegment(camp: Campaign, seg: Segment, currentBuild: string
     timing,
     durationMs: seg.log.length ? seg.log[seg.log.length - 1].t : 0,
     stageTimes,
+    player: seg.player,
   };
 }
 

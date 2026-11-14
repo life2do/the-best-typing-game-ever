@@ -64,7 +64,7 @@ export function parseImport(text: string): { profile: Profile; segments: Segment
   const seeds = new Set([profile.campaign.seed, ...(Array.isArray(profile.pastSeeds) ? profile.pastSeeds : [])]);
   const segs = Array.isArray(data.segments) ? data.segments : [];
   const segments = segs.filter(
-    (s): s is Segment => isObj(s) && typeof s.key === 'string' && typeof s.campaignSeed === 'string' && seeds.has(s.campaignSeed) && Array.isArray(s.log),
+    (s): s is Segment => isObj(s) && typeof s.key === 'string' && typeof s.campaignSeed === 'string' && (seeds.has(s.campaignSeed) || s.profileId === profile.profileId) && Array.isArray(s.log), // + its hot-seat party levels
   );
   return { profile, segments };
 }

@@ -117,6 +117,20 @@ body.cb-patterns .kbd .key.known.f-lm, body.cb-patterns .kbd .key.known.f-rm { b
 .profile-tile { width: 132px; padding: 16px 8px; background: rgba(255, 255, 255, 0.08); display: flex; flex-direction: column; align-items: center; gap: 6px; font-weight: 600; }
 .profile-tile .art { font-size: 2.6em; line-height: 1.2; }
 .profile-tile .st { color: var(--gold); font-size: 0.85em; }
+.profile-tile.sel { background: #3a86ff; box-shadow: 0 0 0 3px var(--gold); }
+/* hot seat (M2.9) */
+.party-modes { display: flex; gap: 10px; margin: 14px 0; flex-wrap: wrap; justify-content: center; }
+.party-mode { flex: 1 1 200px; max-width: 260px; display: flex; flex-direction: column; gap: 4px; text-align: left; background: rgba(255, 255, 255, 0.1); font-weight: 400; }
+.party-mode b { font-size: 1.1em; }
+.party-mode.sel { background: #3a86ff; box-shadow: 0 0 0 3px var(--gold); }
+.party-swap { display: block; margin: 6px 0; }
+.handover-avatar { font-size: 4.5em; line-height: 1.1; animation: breathe 2.4s ease-in-out infinite; }
+body.reduced-motion .handover-avatar { animation: none; }
+.party-rows { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+.party-row { display: grid; grid-template-columns: 3em 1fr auto auto; gap: 14px; align-items: center; padding: 8px 14px; border-radius: 14px; background: rgba(255, 255, 255, 0.08); text-align: left; }
+.party-row .art { font-size: 2em; }
+.party-row .stars { color: var(--gold); font-size: 1.3em; }
+.party-row .grew { grid-column: 2 / -1; color: var(--gold); }
 .profile-tile.new { background: rgba(255, 255, 255, 0.04); border: 2px dashed rgba(255, 255, 255, 0.25); }
 .card .msg { color: var(--gold); } .card .msg.bad { color: var(--bad); }
 .pin-slots { display: flex; gap: 14px; justify-content: center; margin: 16px 0 20px; }

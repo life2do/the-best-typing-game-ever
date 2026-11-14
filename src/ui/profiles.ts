@@ -13,6 +13,8 @@ export interface PickerActions {
   onNew: () => void;
   onImport: (file: File) => void;
   onParents?: () => void;
+  /** Hot seat: shown when there are at least 2 players. */
+  onParty?: () => void;
 }
 
 /** "Who's playing?": one tile per profile (avatar theme icon, name, level), plus New player and Import. */
@@ -41,7 +43,7 @@ export function profilePicker(profiles: Profile[], scales: ComplexityScaleManife
       h('h1', {}, 'Who is playing?'),
       message ? h('p', { class: 'msg' }, message) : '',
       h('div', { class: 'profile-tiles' }, ...profiles.map(tile), h('button', { class: 'profile-tile new', onclick: a.onNew }, h('span', { class: 'art' }, '＋'), h('span', { class: 'nm' }, 'New player'))),
-      h('div', { class: 'row-btns' }, h('button', { class: 'secondary', onclick: () => file.click() }, '⬆ Import a player'), file, a.onParents ? h('button', { class: 'secondary', onclick: a.onParents }, '👪 Parents') : '', h('a', { href: './verify/', style: { color: 'white', alignSelf: 'center' } }, 'Replays')),
+      h('div', { class: 'row-btns' }, a.onParty ? h('button', { 'data-party': 'open', onclick: a.onParty }, '👥 Play together') : '', h('button', { class: 'secondary', onclick: () => file.click() }, '⬆ Import a player'), file, a.onParents ? h('button', { class: 'secondary', onclick: a.onParents }, '👪 Parents') : '', h('a', { href: './verify/', style: { color: 'white', alignSelf: 'center' } }, 'Replays')),
     ),
   );
 }

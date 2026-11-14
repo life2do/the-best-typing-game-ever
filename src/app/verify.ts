@@ -22,11 +22,22 @@ const canvas = document.getElementById('world') as HTMLCanvasElement;
 const host = new RenderHost(canvas);
 (window as any).__verify = { ui };
 
+/** Levels in order; in a hot-seat party, the players of a round in turn order. */
+const bySegment = (a: Segment, b: Segment) => a.level - b.level || (a.player ?? 0) - (b.player ?? 0);
+
+const runLabel = (r: RunFile) => {
+  const party = r.segments.some((s) => s.key.startsWith('party:'));
+  const players = new Set(r.segments.map((s) => s.profileId ?? '')).size;
+  return party
+    ? `Party ${r.campaign.seed.slice(0, 8)} — ${players} players, ${Math.max(...r.segments.map((s) => s.level))} round(s)`
+    : `Run ${r.campaign.seed.slice(0, 8)} — ${r.segments.length} level(s), up to level ${Math.max(...r.segments.map((s) => s.level))}`;
+};
+
 async function localRuns(): Promise<RunFile[]> {
   const segs = await allSegments().catch(() => [] as Segment[]);
   const by: Record<string, Segment[]> = {};
   for (const s of segs) (by[s.campaignSeed] ??= []).push(s);
-  return Object.entries(by).map(([seed, list]) => ({ format: 'tbtge-run/1', build: list[0].build, campaign: { language: list[0].language, seed }, segments: list.sort((a, b) => a.level - b.level) }));
+  return Object.entries(by).map(([seed, list]) => ({ format: 'tbtge-run/1', build: list[0].build, campaign: { language: list[0].language, seed }, segments: list.sort(bySegment) }));
 }
 
 function chooser(runs: RunFile[]): void {
@@ -45,7 +56,7 @@ function chooser(runs: RunFile[]): void {
       h('h1', {}, 'Verify & Re-play'),
       versionBadge(),
       h('p', {}, 'Pick a run saved on this device, or open a run file someone shared with you.'),
-      h('div', { class: 'runs' }, ...(runs.length ? runs.map((r) => h('button', { class: 'secondary', onclick: () => open(r) }, `Run ${r.campaign.seed.slice(0, 8)} — ${r.segments.length} level(s), up to level ${Math.max(...r.segments.map((s) => s.level))}`)) : [h('p', {}, 'No runs on this device yet.')])),
+      h('div', { class: 'runs' }, ...(runs.length ? runs.map((r) => h('button', { class: 'secondary', onclick: () => open(r) }, runLabel(r))) : [h('p', {}, 'No runs on this device yet.')])),
       h('p', {}, 'Open a run file: ', file),
       h('p', {}, h('a', { href: '../', style: { color: 'white' } }, '← Back to the game')),
     )),
@@ -60,13 +71,13 @@ function verdictView(v: SegmentVerdict[]): HTMLElement {
     h('div', { class: `verdict ${allOk ? 'ok' : 'bad'}` }, allOk ? '✅ Verified: every level re-simulates to the same fingerprints, stars and results.' : '❌ Mismatch: this run does not re-simulate to the recorded fingerprints.'),
     sus ? h('div', { class: 'verdict warn' }, '⚠️ Suspicious timing: keystrokes look machine-generated. (A hint only — see docs.)') : null,
     buildWarn ? h('div', { class: 'verdict warn' }, `ℹ️ Some levels were recorded on another build. Checked with this build (${BUILD.slice(0, 16)}).`) : null,
-    h('div', {}, ...v.map((x) => h('span', { style: { marginRight: '12px' } }, `${x.ok ? '✅' : '❌'} L${x.level} ${x.letters} ${'★'.repeat(x.stars)}`))),
+    h('div', {}, ...v.map((x) => h('span', { style: { marginRight: '12px' } }, `${x.ok ? '✅' : '❌'} L${x.level}${x.player !== undefined ? ` P${x.player + 1}` : ''} ${x.letters} ${'★'.repeat(x.stars)}`))),
   );
 }
 
 function open(run: RunFile): void {
   const camp = campaignOf(run);
-  const segs = run.segments.slice().sort((a, b) => a.level - b.level);
+  const segs = run.segments.slice().sort(bySegment);
   const verdicts = segs.map((s) => verifySegment(camp, s, BUILD));
   (window as any).__verify.verdicts = verdicts;
   const starts: number[] = [];

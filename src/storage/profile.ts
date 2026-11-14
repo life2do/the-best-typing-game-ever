@@ -95,6 +95,10 @@ export interface Segment {
   startedAt: number;
   /** The level plan (template, letters, look) this segment was played with; absent in M1 segments. */
   plan?: LevelPlan;
+  /** Hot seat (docs/06): the party this level was played in, the player's profile and turn position. */
+  partyId?: string;
+  profileId?: string;
+  player?: number;
 }
 
 /** M1 stored its single profile under this key; migrateProfiles() moves it to its profileId. */

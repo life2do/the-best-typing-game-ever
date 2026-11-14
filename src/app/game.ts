@@ -32,9 +32,32 @@ import {
   saveProfile, saveSegment, segmentKey, segmentsFor, startNewRun, totalStars, weakKeys,
   type Profile, type Segment, type Settings,
 } from '@/storage/profile';
-import { levelTargetWpmP, tierAcc } from '@/typing/tiers';
+import { creditLevel } from '@/campaign/progress';
+import { nextTurn, partyStarsKey, roundPlans, swapsAfter, type Party, type PartyPlayerPlan } from '@/party/party';
+import { handoverScreen, iconOf, partyResultsScreen, partySetupScreen, type PartyResultRow, type PartySetupResult } from '@/ui/party';
 import { BUILD } from './build-info';
 import { fingerName, homeKeys, keyName, tr } from '@/content/i18n';
+
+interface PartySlot {
+  profile: Profile;
+  camp: Campaign;
+  lang: string;
+  plan: LevelPlan;
+  pp: PartyPlayerPlan;
+  seg: Segment;
+  sim: LevelSim;
+  done: boolean;
+  /** this player's local clock origin (set on their first turn) */
+  segStart?: number;
+  grewTo?: string;
+}
+
+interface PartyRun {
+  party: Party;
+  profiles: Profile[];
+  slots: PartySlot[];
+  turn: number;
+}
 
 export class Game {
   readonly host: RenderHost;
@@ -52,7 +75,13 @@ export class Game {
   private nag: HTMLElement | null = null;
   private segStart = 0;
   private paused = false;
-  private pauseReason: 'menu' | 'hidden' | 'break' | 'session' | null = null;
+  private pauseReason: 'menu' | 'hidden' | 'break' | 'session' | 'handover' | null = null;
+  /** Hot-seat party in progress (docs/06): one slot per player, `turn` is the player typing now. */
+  private party: PartyRun | null = null;
+  /** Between turns: the handover overlay waits for F and J together (press times). */
+  private handover: { f: number; j: number } | null = null;
+  /** A stage just ended and the turn passes on shortly: keys wait. */
+  private swapPending = false;
   /** Play time in this session (parent area session limit), and minutes a grown-up added to the limit. */
   private sessionMs = 0;
   private sessionExtraMin = 0;
@@ -127,6 +156,7 @@ export class Game {
         onNew: () => this.showNewPlayer(true),
         onImport: (f) => void this.importProfile(f),
         onParents: () => this.setOverlay(adultCheck(() => void this.showParents(), () => void this.showProfiles())),
+        onParty: profiles.length >= 2 ? () => this.showPartySetup(profiles) : undefined,
       }, message),
     );
   }
@@ -246,6 +276,7 @@ export class Game {
   }
 
   private async play(p: Profile): Promise<void> {
+    this.party = null;
     p.lastPlayed = Date.now();
     // The session limit counts per player: it restarts only when a different player starts playing.
     if (this.sessionProfileId !== p.profileId) {
@@ -301,7 +332,7 @@ export class Game {
 
   private async exportProfile(p: Profile): Promise<void> {
     const seeds = profileSeeds(p);
-    const segments = (await allSegments()).filter((s) => seeds.includes(s.campaignSeed));
+    const segments = (await allSegments()).filter((s) => seeds.includes(s.campaignSeed) || s.profileId === p.profileId); // + hot-seat party levels
     const blob = new Blob([JSON.stringify(buildExport(p, segments, BUILD, Date.now()))], { type: 'application/json' });
     const safe = (p.name || 'player').replace(/[^\p{L}\p{N}_-]+/gu, '_');
     const a = h('a', { href: URL.createObjectURL(blob), download: `${safe}.tbtge-profile.json` });
@@ -448,10 +479,233 @@ export class Game {
     else showIntro();
   }
 
+  // ------------------------------------------------------------------ hot seat (docs/06)
+  private showPartySetup(profiles: Profile[]): void {
+    this.setOverlay(partySetupScreen(profiles, scales, (r) => this.unlockAll(r.players, () => void this.startParty(r)), () => void this.showProfiles()));
+  }
+
+  /** PINs are asked once, at party start (not at every swap). */
+  private unlockAll(players: Profile[], then: () => void): void {
+    const next = (i: number): void => (i >= players.length ? then() : this.unlock(players[i], () => next(i + 1)));
+    next(0);
+  }
+
+  async startParty(r: PartySetupResult): Promise<void> {
+    const party: Party = {
+      schemaVersion: 1, partyId: freshSeed(), mode: r.mode, seed: freshSeed(), language: r.players[0].campaign.language,
+      players: r.players.map((p) => p.profileId), round: 1, swap: r.swap, createdAt: Date.now(),
+    };
+    for (const p of r.players) {
+      p.lastPlayed = Date.now();
+      await saveProfile(p);
+    }
+    this.party = { party, profiles: r.players, slots: [], turn: 0 };
+    this.sessionProfileId = `party:${party.partyId}`;
+    this.sessionMs = 0;
+    this.sessionExtraMin = 0;
+    await this.startPartyRound(false);
+  }
+
+  /** One level per player: their own segment and sim (their own input stream), then the first turn. */
+  private async startPartyRound(transition: boolean): Promise<void> {
+    const run = this.party!;
+    const { party, profiles } = run;
+    const camps = profiles.map((p) => campaignFor(p.campaign.seed, p.campaign.language));
+    const partyCamp = campaignFor(party.seed, party.language);
+    const plans = roundPlans(party, profiles, camps, partyCamp);
+    run.slots = [];
+    for (const pp of plans) {
+      const p = profiles[pp.player];
+      const lang = party.mode === 'companions' ? p.campaign.language : party.language;
+      // Companions continue their own campaign level, resuming it if it was started earlier.
+      const existing = pp.advancesCampaign ? await loadSegment(pp.segKey) : undefined;
+      const resume = existing && !existing.complete ? existing : null;
+      const plan = resume?.plan ?? pp.plan;
+      const tags = { partyId: party.partyId, profileId: p.profileId, player: pp.player };
+      const seg: Segment = resume
+        ? { ...resume, ...tags }
+        : {
+            key: pp.segKey, build: BUILD, campaignSeed: pp.campaignSeed, language: lang, level: plan.index, tier: p.tier, targetStars: 1,
+            collected: [...p.collected], weakKeys: weakKeys(p.perKey), log: [], snapshots: [], complete: false, stars: 0, startedAt: Date.now(), plan, ...tags,
+          };
+      const setup = planSetup(seg.campaignSeed, lang, plan, { tier: seg.tier, targetStars: seg.targetStars, collected: seg.collected, weakKeys: seg.weakKeys });
+      const sim = new LevelSim(setup, templateSim(setup.templateId));
+      for (const e of seg.log) sim.feed(e);
+      if (sim.state.pauseAt >= 0) {
+        const e: LogEvent = { k: 'resume', t: seg.log[seg.log.length - 1].t };
+        seg.log.push(e);
+        sim.feed(e);
+      }
+      sim.on((e) => this.onSimEvent(e));
+      seg.snapshots = sim.snapshots.map((x) => x.hash);
+      await saveSegment(seg);
+      run.slots.push({ profile: p, camp: pp.advancesCampaign ? camps[pp.player] : partyCamp, lang, plan, pp, seg, sim, done: sim.state.phase === 'done' });
+    }
+    const first = run.slots.findIndex((x) => !x.done);
+    if (first < 0) return this.showPartyResults();
+    this.beginTurn(first, transition);
+  }
+
+  /** Make slot `i` the active player: their profile, keys, voice, world and avatar. */
+  private beginTurn(i: number, transition: boolean): void {
+    const run = this.party!;
+    run.turn = i;
+    const slot = run.slots[i];
+    Object.assign(this, { profile: slot.profile, camp: slot.camp, plan: slot.plan, seg: slot.seg, sim: slot.sim });
+    this.screen = 'level';
+    this.drill = null;
+    this.offer = null;
+    this.swapPending = false;
+    this.applySettings(slot.profile.settings, slot.profile);
+    const lang = language(slot.lang);
+    this.input.setLanguage(lang);
+    this.voice.setLanguage(lang.tts?.lang ?? 'en-US', lang.tts?.preferredVoices);
+    this.hud?.el.remove();
+    this.hud = new Hud(lang, slot.profile.settings);
+    this.ui.prepend(this.hud.el);
+    this.hud.keyboard.setKnown(slot.plan.letters);
+    const palette = palettes.find((p) => p.id === slot.plan.paletteId) ?? palettes[0];
+    const look = { templateId: slot.plan.templateId, view: slot.plan.view, styleId: slot.plan.styleId, palette, havocIds: slot.plan.havocIds, havocMaxP: slot.plan.havocMaxP };
+    this.host.setLevel(look, this.avatar(), slot.sim, performance.now(), transition);
+    this.wordArt.clear();
+    this.wordArt.setLanguage(lang);
+    this.wordArt.setPalette(palette);
+    this.stuckShown = false;
+    this.hintSpoken = -1;
+    this.lastCollect = -2;
+    slot.segStart ??= performance.now() - (slot.seg.log.length ? slot.seg.log[slot.seg.log.length - 1].t : 0) - 1;
+    this.segStart = slot.segStart;
+    const name = slot.profile.name || `Player ${i + 1}`;
+    const icon = iconOf(slot.profile, scales);
+    const [hf, hj] = homeKeys(lang);
+    if (slot.sim.state.phase === 'intro') {
+      // A player's first turn in the round: the level intro (F + J starts their level).
+      this.paused = false;
+      this.pauseReason = null;
+      this.setOverlay(null);
+      const show = () => {
+        if (this.sim !== slot.sim || slot.sim.state.phase !== 'intro') return;
+        const rules = templateViews[slot.plan.templateId]?.rules ?? [];
+        const scale = scales.find((s) => s.id === slot.profile.avatar.scale) ?? scales[0];
+        const tierName = scale.steps[slot.seg.tier - 1]?.name.en ?? `tier ${slot.seg.tier}`;
+        this.setOverlay(introScreen(lang, slot.plan, rules, tierName, `${icon} ${name}'s turn · round ${run.party.round}`));
+        this.voice.speak(`${name}'s turn. ${tr(lang, 'sayPress', `Put your fingers on ${hf} and ${hj}, then press them together.`)}`);
+      };
+      if (transition) this.afterTransition(show);
+      else show();
+    } else {
+      // Later turns: the world stays frozen until this player presses F and J together.
+      this.paused = true;
+      this.pauseReason = 'handover';
+      this.handover = { f: -1e9, j: -1e9 };
+      this.setOverlay(handoverScreen(slot.profile, icon, lang, slot.plan.letters, slot.plan.newKeys, run.party.round));
+      this.voice.speak(`${name}'s turn. ${tr(lang, 'sayPress', `Put your fingers on ${hf} and ${hj}, then press them together.`)}`);
+    }
+  }
+
+  /** Handover: F and J pressed within half a second of each other continue the game. */
+  private handoverKey(code: string): void {
+    const h = this.handover!;
+    const now = performance.now();
+    if (code === 'KeyF') h.f = now;
+    else if (code === 'KeyJ') h.j = now;
+    else return;
+    if (Math.abs(h.f - h.j) > 500) return;
+    this.handover = null;
+    this.paused = false;
+    this.pauseReason = null;
+    if (this.sim!.state.pauseAt >= 0) this.record({ k: 'resume', t: this.logT() });
+    else this.segStart = performance.now() - this.lastLoggedT() - 1;
+    this.party!.slots[this.party!.turn].segStart = this.segStart;
+    this.setOverlay(null);
+    this.voice.speak(tr(language(this.camp.language), 'sayGo', 'Go!'));
+  }
+
+  /** A stage ended: the turn passes on shortly (unless this was the last stage: the crossroads moves on). */
+  private queueSwap(sim: LevelSim): void {
+    this.swapPending = true;
+    setTimeout(() => {
+      if (this.party && this.sim === sim && sim.state.phase === 'play' && this.swapPending) this.endTurn();
+      else this.swapPending = false;
+    }, 900);
+  }
+
+  /** The active player's turn ends: freeze their level (a pause in their own stream) and hand over. */
+  private endTurn(): void {
+    const run = this.party!;
+    this.swapPending = false;
+    const done = run.slots.map((x) => x.done);
+    const next = nextTurn(run.turn, done);
+    if (next < 0) return void this.showPartyResults();
+    if (next === run.turn) return; // everyone else has finished: keep typing
+    const slot = run.slots[run.turn];
+    if (!slot.done && this.sim && !this.paused) this.record({ k: 'pause', t: this.logT() });
+    void this.persist();
+    this.beginTurn(next, false);
+  }
+
+  /** The active player finished their level: credit their own profile, then the next turn. */
+  private async partySlotDone(): Promise<void> {
+    const run = this.party!;
+    const slot = run.slots[run.turn];
+    const s = slot.sim.state;
+    slot.seg.complete = true;
+    slot.seg.stars = s.bestStars;
+    await this.persist();
+    const own = slot.pp.advancesCampaign;
+    const promoted = creditLevel(slot.profile, {
+      level: slot.plan.index, starsKey: own ? String(slot.plan.index) : partyStarsKey(run.party.partyId, run.party.round), tier: slot.seg.tier,
+      letters: slot.plan.letters.length, lastStage: slot.sim.setup.stageLengths.length - 1, state: s, advanceTo: own ? slot.plan.index + 1 : undefined,
+    });
+    if (promoted) {
+      const scale = scales.find((x) => x.id === slot.profile.avatar.scale) ?? scales[0];
+      slot.grewTo = scale.steps[promoted.to - 1]?.name.en;
+      this.celebratePromotion(slot.profile, promoted.to);
+    }
+    await saveProfile(slot.profile);
+    slot.done = true;
+    this.endTurn();
+  }
+
+  /** Everyone finished the round: the shared result screen. */
+  private showPartyResults(): void {
+    const run = this.party!;
+    this.screen = 'start';
+    this.sim = null;
+    this.paused = false;
+    this.pauseReason = null;
+    this.handover = null;
+    this.hud?.el.remove();
+    this.hud = null;
+    const rows: PartyResultRow[] = run.slots.map((slot) => {
+      const last = slot.sim.setup.stageLengths.length - 1;
+      const best = slot.sim.state.results.filter((r) => r.stage === last).sort((a, b) => b.stars - a.stars || b.wpmP - a.wpmP)[0];
+      return { profile: slot.profile, icon: iconOf(slot.profile, scales), stars: slot.sim.state.bestStars, wpmP: best?.wpmP ?? 0, accP: best?.accP ?? 0, complete: slot.done, grewTo: slot.grewTo };
+    });
+    this.audio.fanfare();
+    this.voice.speak(`Round ${run.party.round} done! Well played, everyone!`);
+    this.setOverlay(
+      partyResultsScreen(run.party, rows, () => {
+        run.party.round++;
+        void this.startPartyRound(true);
+      }, () => void this.endParty()),
+    );
+  }
+
+  private async endParty(): Promise<void> {
+    if (this.sim && this.seg) await this.persist();
+    this.party = null;
+    this.handover = null;
+    this.swapPending = false;
+    this.paused = false;
+    this.pauseReason = null;
+    await this.showProfiles();
+  }
+
   // ------------------------------------------------------------------ fix-it drill
   /** The weakest key worth a drill now, or null (at most one offer per level; docs/01 Weakness detection). */
   private drillCandidate(includeNewKeys: boolean): string | null {
-    if (this.drill || !this.profile || this.profile.drillOfferedAt === this.plan.index) return null;
+    if (this.party || this.drill || !this.profile || this.profile.drillOfferedAt === this.plan.index) return null;
     const letters = includeNewKeys ? this.plan.letters : this.plan.letters.filter((c) => !this.plan.newKeys.includes(c));
     return weakestKey(this.profile.perKey, weakKeys(this.profile.perKey), letters);
   }
@@ -591,6 +845,8 @@ export class Game {
       else if (code === 'KeyJ') this.offer.no();
       return;
     }
+    if (this.handover) return this.handoverKey(code);
+    if (this.swapPending) return; // the turn passes on in a moment
     if (this.drill && this.sim?.state.phase !== 'play' && this.sim?.state.phase !== 'intro') return; // drill is ending
     if (this.screen !== 'level' || !this.sim || this.paused || this.host.transitioning) return;
     const e: LogEvent = shift ? { k: 'key', t: this.logT(), code, shift: 1 } : { k: 'key', t: this.logT(), code };
@@ -607,6 +863,7 @@ export class Game {
   private togglePause(): void {
     if (this.screen !== 'level' || !this.sim || this.offer) return;
     if (this.pauseReason === 'session') return; // the session-over screen can't be skipped with Escape
+    if (this.pauseReason === 'handover' || this.swapPending) return;
     if (this.pauseReason === 'break') this.breakUi?.tryFinish(); // Escape can't skip the stretch break
     else if (this.paused) this.resume();
     else this.pause('menu');
@@ -647,7 +904,8 @@ export class Game {
           () => this.resume(),
           () => {
             void this.persist();
-            this.showStart(this.profile);
+            if (this.party) void this.endParty();
+            else this.showStart(this.profile);
           },
           () => void this.exportRun(),
           this.voiceRows(this.profile),
@@ -712,6 +970,7 @@ export class Game {
       case 'stage':
         this.audio.stage(e.result.stars);
         toast(this.ui, e.result.stars ? `Stage ${e.result.stage + 1}: ${'★'.repeat(e.result.stars)}` : `Stage ${e.result.stage + 1} done — keep going!`);
+        if (this.party && swapsAfter(this.party.party, 'stage')) this.queueSwap(sim);
         break;
       case 'powerup': {
         this.audio.powerup();
@@ -743,6 +1002,13 @@ export class Game {
           void this.endDrill();
           break;
         }
+        if (this.party) {
+          // In a party a player who reached their target moves on (logged like pressing J at the crossroads).
+          setTimeout(() => {
+            if (this.sim === sim && sim.state.phase === 'crossroads') this.record({ k: 'key', t: this.logT(), code: 'KeyJ' });
+          }, 300);
+          break;
+        }
         this.audio.fanfare();
         {
           const lang = language(this.camp.language);
@@ -756,7 +1022,7 @@ export class Game {
         break;
       case 'done':
         this.setOverlay(null);
-        void this.finishLevel();
+        void (this.party ? this.partySlotDone() : this.finishLevel());
         break;
       default:
         break;
@@ -771,20 +1037,11 @@ export class Game {
     this.seg.stars = s.bestStars;
     await this.persist();
     const p = this.profile;
-    const tierKey = String(this.seg.tier);
-    p.starsByTier[tierKey] ??= {};
-    p.starsByTier[tierKey][String(this.plan.index)] = Math.max(p.starsByTier[tierKey][String(this.plan.index)] ?? 0, s.bestStars);
-    const best = s.results.filter((r) => r.stage === sim.setup.stageLengths.length - 1).sort((a, b) => b.stars - a.stars || b.wpmP - a.wpmP)[0];
-    if (best) p.results.push({ level: this.plan.index, tier: this.seg.tier, stars: best.stars, wpmP: best.wpmP, accP: best.accP, letters: this.plan.letters.length });
-    for (const [k, v] of Object.entries(s.perKey)) {
-      const acc = (p.perKey[k] ??= [0, 0, 0]);
-      acc[0] += v[0];
-      acc[1] += v[1];
-      acc[2] += v[2];
-    }
-    p.collected = [...new Set([...p.collected, ...s.collected])];
-    this.maybePromote();
-    p.campaign.level = this.plan.index + 1;
+    const promoted = creditLevel(p, {
+      level: this.plan.index, starsKey: String(this.plan.index), tier: this.seg.tier, letters: this.plan.letters.length,
+      lastStage: sim.setup.stageLengths.length - 1, state: s, advanceTo: this.plan.index + 1,
+    });
+    if (promoted) this.celebratePromotion(p, promoted.to);
     await saveProfile(p);
     await this.startLevel(this.plan.index + 1, true);
   }
@@ -800,21 +1057,11 @@ export class Game {
     if (!prev || (golden && !prev.golden)) void saveProfile(p);
   }
 
-  /** Automatic promotion: >= 2 stars at the next tier's 1-star target for 2 levels in a row (docs/01). */
-  private maybePromote(): void {
-    const p = this.profile;
-    if (p.tier >= 7) return;
-    const next = p.tier + 1;
-    const last2 = p.results.slice(-2);
-    if (last2.length < 2) return;
-    const ok = last2.every((r) => r.accP >= tierAcc(next) && r.wpmP >= Math.floor((levelTargetWpmP(next, r.letters, false) * 12) / 10));
-    if (!ok) return;
-    p.tierHistory.push({ level: this.plan.index, from: p.tier, to: next });
-    p.tier = next;
+  private celebratePromotion(p: Profile, tier: number): void {
     const scale = scales.find((s) => s.id === p.avatar.scale) ?? scales[0];
-    const name = scale.steps[next - 1]?.name.en ?? '';
-    toast(this.ui, `🎉 You grew into a ${name}!`);
-    this.voice.speak(`Amazing! You grew into a ${name}!`, false);
+    const name = scale.steps[tier - 1]?.name.en ?? '';
+    toast(this.ui, `🎉 ${this.party ? `${p.name || 'Player'} grew` : 'You grew'} into a ${name}!`);
+    this.voice.speak(`Amazing! ${this.party && p.name ? `${p.name} grew` : 'You grew'} into a ${name}!`, false);
   }
 
   async persist(): Promise<void> {
