@@ -14,6 +14,8 @@ import { RenderHost, TRANSITION_MS } from '@/render/host';
 import { templateViews } from '@/render/registry';
 import { AvatarRig, clampToUnlocked, normalizeCustomization } from '@/avatar/procedural';
 import { avatarScreen } from '@/ui/avatarScreen';
+import { statsScreen } from '@/ui/statsScreen';
+import { computeStats } from '@/stats/analytics';
 import { Hud } from '@/ui/hud';
 import { h, toast } from '@/ui/dom';
 import { crossroadsScreen, drillOfferScreen, introScreen, nagScreen, pauseScreen, startScreen, wordBookScreen } from '@/ui/screens';
@@ -166,12 +168,19 @@ export class Game {
         await this.play(p);
       }, showBook, {
         onAvatar: () => this.showAvatar(stored),
+        onStats: () => void this.showStats(stored),
         onExport: () => void this.exportProfile(stored),
         onPin: () => this.changePin(stored),
         onSwitch: () => void this.showProfiles(),
         onDelete: () => void this.removeProfile(stored),
       }),
     );
+  }
+
+  private async showStats(p: Profile): Promise<void> {
+    const stats = computeStats(p, await allSegments());
+    const scale = scales.find((s) => s.id === p.avatar.scale) ?? scales[0];
+    this.setOverlay(statsScreen(p.name, language(p.campaign.language), stats, (t) => scale.steps[t - 1]?.name.en ?? `tier ${t}`, () => this.showStart(p)));
   }
 
   private showAvatar(p: Profile): void {
