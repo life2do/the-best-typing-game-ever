@@ -65,7 +65,7 @@ export function startScreen(scale: ComplexityScaleManifest, profile: Profile | u
 }
 
 /** Level intro: keyboard with finger colours, new key, hand position, rules (docs/03 Level structure). */
-export function introScreen(lang: LanguagePack, plan: LevelPlan, rules: { icon: string; text: string }[], tierName: string): HTMLElement {
+export function introScreen(lang: LanguagePack, plan: LevelPlan, rules: { icon: string; text: string }[], tierName: string, title?: string): HTMLElement {
   const kb = new KeyboardOverlay(lang);
   kb.setKnown(plan.letters, plan.newKeys);
   kb.el.style.position = 'static';
@@ -90,7 +90,7 @@ export function introScreen(lang: LanguagePack, plan: LevelPlan, rules: { icon: 
     h(
       'div',
       { class: 'card' },
-      h('h2', {}, `Level ${plan.index}: new ${newKeys.length > 1 ? 'keys' : 'key'}`, ...keyBadges),
+      h('h2', {}, title ?? `Level ${plan.index}: new ${newKeys.length > 1 ? 'keys' : 'key'}`, ...keyBadges),
       h('p', {}, fingerText, plan.newKeys.includes(' ') ? ' · Space — thumbs' : ''),
       keyboardWithHands(kb, lang, plan.newKeys),
       h('p', {}, 'Rest your fingers on the home row. Feel the little bumps on F and J. Keep your eyes on the screen.'),
@@ -155,6 +155,27 @@ export function pauseScreen(settings: Settings, onChange: (s: Settings) => void,
       row('Colour-blind key patterns', check('colorBlindPatterns')),
       row('Show FPS counter', check('showFps')),
       h('div', { class: 'row-btns' }, h('button', { onclick: onResume }, 'Resume (Esc)'), h('button', { class: 'secondary', onclick: onExport }, 'Save my run'), h('button', { class: 'secondary', onclick: onQuit }, 'Main menu')),
+    ),
+  );
+}
+
+/** Fix-it drill offer (docs/01 Weakness detection): F = train the weak key for a minute, J = not now. */
+export function drillOfferScreen(key: string, onYes: () => void, onNo: () => void): HTMLElement {
+  const K = key.toUpperCase();
+  return h(
+    'div',
+    { class: 'overlay drill-offer' },
+    h(
+      'div',
+      { class: 'card' },
+      h('h2', {}, `🛠️ ${K} is tricky`),
+      h('p', {}, `Train ${K} for one minute? A little practice helps your fingers remember.`),
+      h(
+        'div',
+        { class: 'choices' },
+        h('div', { class: 'choice', onclick: onYes }, h('b', {}, 'F'), h('div', {}, `Yes, train ${K}`)),
+        h('div', { class: 'choice', onclick: onNo }, h('b', {}, 'J'), h('div', {}, 'Not now')),
+      ),
     ),
   );
 }

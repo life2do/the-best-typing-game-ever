@@ -12,7 +12,7 @@ Scope:
 - Deterministic simulation: seeded RNG, fixed-step ticks, serialisable state, snapshots, input log.
 - **Intro overlay** (keyboard, hand position, rules, TTS) and **HUD** (rhythm frame, fading keyboard overlay).
 - **Camera rig** with 2D → isometric → 3D dive/flatten transitions.
-- **4 levels, 3 genres**: L1 pulse runner (2D), L2 side platformer (2D), L3 → dive into isometric tower defence, L4 third-person runner/racer (3D). Stages, stars, crossroads, slow-mo + shield power-ups, 1 word ability (`ask`/`flask` easter egg).
+- **4 levels, 3 genres**: L1 pulse runner (2D), L2 side platformer (2D), L3 → dive into isometric tower defence, L4 third-person runner/racer (3D). Stages, stars, crossroads, slow-mo + shield power-ups, 1 word ability (`ask`/`flask` easter egg — its letters are all known from level 6, so it first appears there; see Status).
 - 2 render styles + 3 palettes, 2 havocs.
 - 1 complexity scale (random theme picker with at least 3 scale definitions; avatar for 1 theme with ≥ 8 slots).
 - One profile (no PIN yet), seeded campaign, save/resume.
@@ -24,7 +24,7 @@ Acceptance (full test matrix in [10 §6](10-simulation-and-test-harness.md#6-mil
 - 60 fps at "medium" quality on a mid-range laptop; the quality scaler steps up and down.
 - The dive transition has no visible snap (Playwright visual check).
 
-### Status (implemented on branch `claude/milestone-1-vertical-slice`)
+### Status (on `main`)
 
 | Item | Status |
 |---|---|
@@ -33,14 +33,16 @@ Acceptance (full test matrix in [10 §6](10-simulation-and-test-harness.md#6-mil
 | Typing core, layout-mismatch hint, metrics, weakness model | ✅ |
 | Deterministic simulation, snapshots, input log, fast-forward | ✅ |
 | Intro overlay, HUD (rhythm frame, fading keyboard), TTS | ✅ |
-| Camera rig with dive/flatten transitions | ✅ (continuity unit test) |
+| Camera rig with dive/flatten transitions | ✅ (continuity unit test + Playwright frame-by-frame visual check; the world swap is hidden by a short fade) |
 | 4 levels / 3 genres: pulse runner, platformer, iso tower defence, 3D racer | ✅ (+ levels 5–26 reuse them via seeded slots) |
-| Stages, stars, crossroads, slow-mo/shield/reveal power-ups, word abilities | ✅ (`ability.home-row-secret` appears from level 6; `jump`, `shield`, `slow` later) |
+| Stages, stars, crossroads, slow-mo/shield/reveal power-ups, word abilities | ✅ — deviation: the `ask`/`flask` easter egg (`ability.home-row-secret`) needs S and L, so it can't appear in levels 1–4 (F J D K); it appears from level 6. `jump`, `shield`, `slow` come later |
 | 2 render styles, 3 palettes, 2 havocs | ✅ |
 | 5 complexity scales, random picker, procedural avatars with 8 customisation slots in data | ✅ (customisation UI comes in M2) |
 | One profile, seeded campaign, exact save/resume | ✅ |
+| Weakness model + fix-it drill (D9) | ✅ weak keys weighted up in text; one-minute drill offered at most once per level ([01](01-pedagogy.md#weakness-detection)) |
 | `/verify` page: verify + replay with speed controls and a letter-marked seek bar | ✅ |
-| Cross-browser hash test | ✅ Chromium locally; Firefox and WebKit run in CI |
+| Cross-browser hash test | ✅ Chromium, Firefox and WebKit in CI |
+| Dive transition: no visible snap | ✅ `e2e/diveTransition.spec.ts` (all 3 browsers in CI) |
 | "60 fps at medium on a mid-range laptop" | ⏳ needs a check on real hardware (CI only has software WebGL) |
 
 ## Milestone 2 — Breadth & proofs

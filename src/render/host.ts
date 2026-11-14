@@ -31,6 +31,8 @@ interface Mounted {
 
 export const TRANSITION_MS = 2400;
 const SWAP_AT = 0.42;
+/** Half-width (fraction of the transition) of the fade that hides the swap of the old and new worlds. */
+const SWAP_FADE = 0.12;
 
 export class RenderHost {
   readonly renderer: THREE.WebGLRenderer;
@@ -127,6 +129,7 @@ export class RenderHost {
       this.outgoing = null;
       this.pending = null;
       this.tStart = -1;
+      this.canvas.style.opacity = '';
       this.current = this.mount(look, avatar, sim);
       this.rig.setPose(this.current.inst.pose(sim));
       this.bg.copy(this.current.kit.background);
@@ -155,6 +158,11 @@ export class RenderHost {
       const k = Math.min(1, (now - this.tStart) / TRANSITION_MS);
       this.bg.copy(this.bgFrom).lerp(this.bgTo, ease(k));
       this.applyBg();
+      // The worlds swap at SWAP_AT; fading the world out just before and back in just after hides the
+      // swap (labels and sprites don't flatten, so they would otherwise pop). The page background keeps
+      // blending underneath.
+      const fade = Math.min(1, Math.abs(k - SWAP_AT) / SWAP_FADE);
+      this.canvas.style.opacity = k >= 1 ? '' : String(ease(fade));
       if (this.outgoing) {
         // Flatten the outgoing world into a sheet.
         const f = Math.min(1, k / SWAP_AT);

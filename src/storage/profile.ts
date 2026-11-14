@@ -50,6 +50,8 @@ export interface Profile {
   collected: string[];
   /** Word book: words whose pictures were revealed (docs/07 Word art). */
   wordBook?: Record<string, { golden: boolean; count: number; first: number }>;
+  /** Level at which a fix-it drill was last offered (offered at most once per level). */
+  drillOfferedAt?: number;
   perKey: Record<string, [number, number, number]>;
   settings: Settings;
   createdAt: number;

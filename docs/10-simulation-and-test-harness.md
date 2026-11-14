@@ -245,6 +245,8 @@ Output: a JSON summary (stars, WPM, accuracy, steadiness, simulated duration, sn
 | Star ceiling | Node | `star3` at tier 4 gets 3★ on at least one level |
 | No false completion | Node | `struggle` at tiers 1, 4, 7 never completes; stuck flow fires |
 | Robustness | Node | `masher` at all 4 levels: no exceptions; minimum visibility respected |
+| Fix-it drill | Node | A drill is one stage that ends whatever the stars; the weak key is the most frequent letter; deterministic |
+| Dive transition | Playwright | 2D → isometric transition stepped frame by frame at 60 fps: no frame changes ≥ 3× the median of the 4 frames on either side (`e2e/diveTransition.spec.ts`) |
 | Lint | CI | No forbidden globals in simulation paths |
 
 ---
