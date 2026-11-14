@@ -7,7 +7,7 @@ import { displayGlyph } from '@/content/glyphs';
 import { fingerName, homeKeys, tr } from '@/content/i18n';
 import { keyboardWithHands } from './hands';
 import { TIER_WPM } from '@/typing/tiers';
-import type { Profile, Settings } from '@/storage/profile';
+import { fontOf, type Profile, type Settings } from '@/storage/profile';
 import { versionBadge } from '@/app/build-info';
 import { languages } from '@/content/registry';
 
@@ -30,6 +30,8 @@ export interface StartExtras {
   onImport?: (file: File) => void;
   onAvatar?: () => void;
   onStats?: () => void;
+  onSettings?: () => void;
+  onParents?: () => void;
 }
 
 export function startScreen(scale: ComplexityScaleManifest, profile: Profile | undefined, onChoose: (c: StartChoice) => void, onWordBook?: () => void, extras: StartExtras = {}): HTMLElement {
@@ -83,6 +85,8 @@ export function startScreen(scale: ComplexityScaleManifest, profile: Profile | u
     small('← Back', extras.onBack),
     small('🎨 Avatar', extras.onAvatar),
     small('📊 Stats', extras.onStats),
+    small('⚙ Settings', extras.onSettings),
+    small('👪 Parents', extras.onParents),
     small('👥 Switch player', extras.onSwitch),
     small('⬇ Export player', extras.onExport),
     small(profile?.pinHash ? '🔓 Remove PIN' : '🔒 Set PIN', extras.onPin),
@@ -183,23 +187,48 @@ export function crossroadsScreen(stars: number, lang?: LanguagePack): HTMLElemen
   );
 }
 
-export function pauseScreen(settings: Settings, onChange: (s: Settings) => void, onResume: () => void, onQuit: () => void, onExport: () => void): HTMLElement {
+/** Accessibility and sound settings (docs/07 Accessibility); shared by the pause menu and the player home. */
+export function settingsRows(settings: Settings, onChange: (s: Settings) => void): HTMLElement[] {
+  let cur = { ...settings };
+  const change = (patch: Partial<Settings>) => {
+    cur = { ...cur, ...patch };
+    onChange(cur);
+  };
   const row = (label: string, input: HTMLElement) => h('label', {}, label, input);
   const check = (key: keyof Settings) => {
-    const i = h('input', { type: 'checkbox' });
+    const i = h('input', { type: 'checkbox', 'data-setting': key });
     i.checked = settings[key] as boolean;
-    i.addEventListener('change', () => onChange({ ...settings, [key]: i.checked }));
+    i.addEventListener('change', () => change({ [key]: i.checked }));
     return i;
   };
-  const range = (key: 'musicVolume' | 'sfxVolume') => {
-    const i = h('input', { type: 'range', min: 0, max: 1, step: 0.05, value: settings[key] });
-    i.addEventListener('input', () => onChange({ ...settings, [key]: Number(i.value) }));
+  const range = (key: 'musicVolume' | 'sfxVolume' | 'voiceVolume') => {
+    const i = h('input', { type: 'range', min: 0, max: 1, step: 0.05, value: settings[key] ?? 1, 'data-setting': key });
+    i.addEventListener('input', () => change({ [key]: Number(i.value) }));
     return i;
   };
-  const kb = h('select', {}, ...(['auto', 'always', 'off'] as const).map((v) => h('option', { value: v, selected: settings.keyboard === v }, v)));
-  kb.addEventListener('change', () => onChange({ ...settings, keyboard: kb.value as Settings['keyboard'] }));
-  const text = h('input', { type: 'range', min: 0.8, max: 1.6, step: 0.1, value: settings.textScale });
-  text.addEventListener('input', () => onChange({ ...settings, textScale: Number(text.value) }));
+  const select = <K extends keyof Settings>(key: K, options: [Settings[K], string][], value: Settings[K]) => {
+    const sel = h('select', { 'data-setting': key }, ...options.map(([v, label]) => h('option', { value: String(v), selected: v === value }, label)));
+    sel.addEventListener('change', () => change({ [key]: options.find(([v]) => String(v) === sel.value)?.[0] } as Partial<Settings>));
+    return sel;
+  };
+  const text = h('input', { type: 'range', min: 0.8, max: 1.6, step: 0.1, value: settings.textScale, 'data-setting': 'textScale' });
+  text.addEventListener('input', () => change({ textScale: Number(text.value) }));
+  return [
+    row('Reduced motion', check('reducedMotion')),
+    row('Voice', check('voice')),
+    row('Voice volume', range('voiceVolume')),
+    row('Music volume', range('musicVolume')),
+    row('Effects volume', range('sfxVolume')),
+    row('Keyboard helper', select('keyboard', [['auto', 'auto (fades as you improve)'], ['always', 'always on'], ['off', 'off (expert)']], settings.keyboard)),
+    row('Text size', text),
+    row('Font', select('font', [['legible', 'Atkinson Hyperlegible (easy to read)'], ['dyslexic', 'OpenDyslexic (dyslexia-friendly)'], ['system', 'System font']], fontOf(settings))),
+    row('High contrast', check('highContrast')),
+    row('Colour-blind key patterns', check('colorBlindPatterns')),
+    row('Show FPS counter', check('showFps')),
+  ];
+}
+
+export function pauseScreen(settings: Settings, onChange: (s: Settings) => void, onResume: () => void, onQuit: () => void, onExport: () => void): HTMLElement {
   return h(
     'div',
     { class: 'overlay pause' },
@@ -207,19 +236,15 @@ export function pauseScreen(settings: Settings, onChange: (s: Settings) => void,
       'div',
       { class: 'card settings' },
       h('h2', {}, '⏸ Paused'),
-      row('Reduced motion', check('reducedMotion')),
-      row('Voice', check('voice')),
-      row('Music volume', range('musicVolume')),
-      row('Effects volume', range('sfxVolume')),
-      row('Keyboard helper', kb),
-      row('Text size', text),
-      row('Dyslexia-friendly font', check('dyslexicFont')),
-      row('High contrast', check('highContrast')),
-      row('Colour-blind key patterns', check('colorBlindPatterns')),
-      row('Show FPS counter', check('showFps')),
+      ...settingsRows(settings, onChange),
       h('div', { class: 'row-btns' }, h('button', { onclick: onResume }, 'Resume (Esc)'), h('button', { class: 'secondary', onclick: onExport }, 'Save my run'), h('button', { class: 'secondary', onclick: onQuit }, 'Main menu')),
     ),
   );
+}
+
+/** Settings from the player home (same rows as the pause menu). */
+export function settingsScreen(settings: Settings, onChange: (s: Settings) => void, onClose: () => void): HTMLElement {
+  return h('div', { class: 'overlay settings-screen' }, h('div', { class: 'card settings' }, h('h2', {}, '⚙ Settings'), ...settingsRows(settings, onChange), h('div', { class: 'row-btns' }, h('button', { onclick: onClose }, 'Done'))));
 }
 
 /** Fix-it drill offer (docs/01 Weakness detection): F = train the weak key for a minute, J = not now. */

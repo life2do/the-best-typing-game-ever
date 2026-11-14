@@ -18,15 +18,16 @@ import { statsScreen } from '@/ui/statsScreen';
 import { computeStats } from '@/stats/analytics';
 import { Hud } from '@/ui/hud';
 import { h, toast } from '@/ui/dom';
-import { crossroadsScreen, drillOfferScreen, introScreen, nagScreen, pauseScreen, startScreen, wordBookScreen } from '@/ui/screens';
+import { crossroadsScreen, drillOfferScreen, introScreen, nagScreen, settingsScreen, pauseScreen, startScreen, wordBookScreen } from '@/ui/screens';
 import { WordArt } from '@/ui/wordArt';
 import { pinPad, profilePicker } from '@/ui/profiles';
+import { adultCheck, parentScreen, sessionOverScreen } from '@/ui/parents';
 import { buildExport, checkPin, parseImport, pinHash } from '@/storage/profileIO';
 import { StretchBreak } from '@/ui/stretchBreak';
 import { KeyboardInput } from '@/input/keyboard';
 import { AudioEngine, Voice } from '@/audio/audio';
 import {
-  DEFAULT_SETTINGS, allSegments, deleteProfile, freshSeed, listProfiles, loadProfileById, loadSegment, migrateProfiles, newProfile, profileSeeds,
+  DEFAULT_SETTINGS, allSegments, deleteProfile, fontOf, freshSeed, listProfiles, loadProfileById, loadSegment, migrateProfiles, newProfile, profileSeeds,
   saveProfile, saveSegment, segmentKey, segmentsFor, startNewRun, totalStars, weakKeys,
   type Profile, type Segment, type Settings,
 } from '@/storage/profile';
@@ -50,7 +51,11 @@ export class Game {
   private nag: HTMLElement | null = null;
   private segStart = 0;
   private paused = false;
-  private pauseReason: 'menu' | 'hidden' | 'break' | null = null;
+  private pauseReason: 'menu' | 'hidden' | 'break' | 'session' | null = null;
+  /** Play time in this session (parent area session limit), and minutes a grown-up added to the limit. */
+  private sessionMs = 0;
+  private sessionExtraMin = 0;
+  private sessionProfileId = '';
   private lastSave = 0;
   private playMs = 0;
   private lastFrame = 0;
@@ -120,6 +125,7 @@ export class Game {
         onPick: (p) => this.unlock(p, () => this.showStart(p)),
         onNew: () => this.showNewPlayer(true),
         onImport: (f) => void this.importProfile(f),
+        onParents: () => this.setOverlay(adultCheck(() => void this.showParents(), () => void this.showProfiles())),
       }, message),
     );
   }
@@ -169,10 +175,50 @@ export class Game {
       }, showBook, {
         onAvatar: () => this.showAvatar(stored),
         onStats: () => void this.showStats(stored),
+        onSettings: () => this.showSettings(stored),
+        onParents: () => this.setOverlay(adultCheck(() => void this.showParents(stored), () => this.showStart(stored))),
         onExport: () => void this.exportProfile(stored),
         onPin: () => this.changePin(stored),
         onSwitch: () => void this.showProfiles(),
         onDelete: () => void this.removeProfile(stored),
+      }),
+    );
+  }
+
+  private showSettings(p: Profile): void {
+    this.setOverlay(
+      settingsScreen(p.settings, (s) => {
+        p.settings = s;
+        this.applySettings(s);
+        void saveProfile(p);
+      }, () => this.showStart(p)),
+    );
+  }
+
+  /** Parent area: limits for `current` (if any) and management of every player on this device. */
+  private async showParents(current?: Profile): Promise<void> {
+    const players = await listProfiles();
+    const back = () => (current ? this.showStart(current) : void this.showProfiles());
+    this.setOverlay(
+      parentScreen(current, players, {
+        onSettings: (s) => {
+          if (!current) return;
+          current.settings = s;
+          void saveProfile(current);
+        },
+        onRemovePin: (p) => {
+          p.pinHash = undefined;
+          void saveProfile(p).then(() => this.showParents(current));
+        },
+        onDelete: (p) => {
+          if (!confirm(`Delete ${p.name || 'this player'} and their progress on this device?`)) return;
+          void deleteProfile(p).then(async () => {
+            // Deleted the current player, or nobody is left: back to the start (new-player form if empty).
+            if ((current && p.profileId === current.profileId) || !(await listProfiles()).length) return this.showProfiles();
+            await this.showParents(current);
+          });
+        },
+        onClose: back,
       }),
     );
   }
@@ -200,6 +246,12 @@ export class Game {
 
   private async play(p: Profile): Promise<void> {
     p.lastPlayed = Date.now();
+    // The session limit counts per player: it restarts only when a different player starts playing.
+    if (this.sessionProfileId !== p.profileId) {
+      this.sessionProfileId = p.profileId;
+      this.sessionMs = 0;
+      this.sessionExtraMin = 0;
+    }
     this.profile = p;
     this.applySettings(p.settings);
     await saveProfile(p);
@@ -281,7 +333,10 @@ export class Game {
     this.audio.setVolumes(s.musicVolume, s.sfxVolume);
     this.voice.enabled = s.voice;
     document.body.classList.toggle('reduced-motion', s.reducedMotion);
-    document.body.classList.toggle('dyslexic', s.dyslexicFont);
+    const font = fontOf(s);
+    document.body.classList.toggle('font-dyslexic', font === 'dyslexic');
+    document.body.classList.toggle('font-system', font === 'system');
+    this.voice.volume = s.voiceVolume ?? 1;
     document.body.classList.toggle('high-contrast', s.highContrast);
     document.body.classList.toggle('cb-patterns', s.colorBlindPatterns);
     document.documentElement.style.setProperty('--text-scale', String(s.textScale));
@@ -369,7 +424,7 @@ export class Game {
       } else if (sim.state.phase === 'crossroads') this.setOverlay(crossroadsScreen(sim.state.bestStars, lang));
       else this.setOverlay(null);
     });
-    if (transition) setTimeout(showIntro, TRANSITION_MS * 0.8);
+    if (transition) this.afterTransition(showIntro);
     else showIntro();
   }
 
@@ -446,7 +501,7 @@ export class Game {
       this.setOverlay(introScreen(lang, { ...this.plan, letters: setup.letters, newKeys: [key] }, rules, `${K} practice`, `Fix-it drill: ${K}`));
       this.voice.speak(`Fix-it drill. Type ${K} with your ${fingerName(lang, lang.layout[lang.codeOf[key]]?.finger ?? 'li')}. ${tr(lang, 'sayPress', 'Put your fingers on F and J, then press them together.')}`);
     });
-    setTimeout(show, TRANSITION_MS * 0.8);
+    this.afterTransition(show);
   }
 
   private async endDrill(): Promise<void> {
@@ -469,6 +524,16 @@ export class Game {
     this.voice.speak(`Great practice! Back to level ${d.level}.`, false);
     this.drill = null;
     await this.startLevel(d.level, true);
+  }
+
+  /**
+   * Run `fn` once the level transition has finished. Keys are ignored while the host is transitioning, so
+   * the intro ("press F and J") must not appear before that: it used to show at 80% of the transition,
+   * and presses in the remaining time (longer on slow machines or with reduced motion) did nothing.
+   */
+  private afterTransition(fn: () => void): void {
+    const check = () => (this.host.transitioning ? setTimeout(check, 50) : fn());
+    setTimeout(check, TRANSITION_MS * 0.8);
   }
 
   private victory(): void {
@@ -521,17 +586,19 @@ export class Game {
 
   private togglePause(): void {
     if (this.screen !== 'level' || !this.sim || this.offer) return;
+    if (this.pauseReason === 'session') return; // the session-over screen can't be skipped with Escape
     if (this.pauseReason === 'break') this.breakUi?.tryFinish(); // Escape can't skip the stretch break
     else if (this.paused) this.resume();
     else this.pause('menu');
   }
 
-  private pause(reason: 'menu' | 'hidden' | 'break'): void {
+  private pause(reason: 'menu' | 'hidden' | 'break' | 'session'): void {
     if (!this.sim || this.paused) return;
     this.paused = true;
     this.pauseReason = reason;
     this.record({ k: 'pause', t: this.logT() });
     void this.persist();
+    if (reason === 'session') return this.showSessionOver();
     if (reason === 'break') {
       const lang = language(this.camp.language);
       const s = this.profile.settings;
@@ -565,6 +632,25 @@ export class Game {
           () => void this.exportRun(),
         ),
       );
+  }
+
+  /** Session limit reached: only a grown-up (adult check) can add 15 minutes; otherwise back to the menu. */
+  private showSessionOver(): void {
+    this.setOverlay(
+      sessionOverScreen(
+        () => this.showStart(this.profile),
+        () =>
+          this.setOverlay(
+            adultCheck(
+              () => {
+                this.sessionExtraMin += 15;
+                this.resume();
+              },
+              () => this.showSessionOver(),
+            ),
+          ),
+      ),
+    );
   }
 
   /** Start a stretch break now (also used by e2e tests with a short duration). */
@@ -725,7 +811,10 @@ export class Game {
       if (sim.state.phase !== 'done' && t >= this.lastLoggedT()) sim.advanceTo(t);
       if (sim.state.phase === 'play') {
         this.playMs += dt;
-        if (this.playMs > this.profile.settings.breakMinutes * 60_000) {
+        this.sessionMs += dt;
+        const limitMin = this.profile.settings.sessionMinutes ?? 0;
+        if (limitMin > 0 && this.sessionMs > (limitMin + this.sessionExtraMin) * 60_000) this.pause('session');
+        else if (this.playMs > this.profile.settings.breakMinutes * 60_000) {
           this.playMs = 0;
           this.pause('break');
         }

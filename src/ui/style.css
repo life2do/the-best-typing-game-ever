@@ -1,3 +1,9 @@
+/* Bundled interface fonts (SIL OFL 1.1): Atkinson Hyperlegible (default) and OpenDyslexic (setting). Latin only;
+   Cyrillic falls back to the system font. */
+@import '@fontsource/atkinson-hyperlegible/latin-400.css';
+@import '@fontsource/atkinson-hyperlegible/latin-700.css';
+@import '@fontsource/opendyslexic/latin-400.css';
+@import '@fontsource/opendyslexic/latin-700.css';
 :root {
   --f-lp: #9b5de5; --f-lr: #3a86ff; --f-lm: #2ec4b6; --f-li: #ff9f1c;
   --f-ri: #ff9f1c; --f-rm: #2ec4b6; --f-rr: #3a86ff; --f-rp: #9b5de5; --f-lt: #8d99ae; --f-rt: #8d99ae;
@@ -8,8 +14,16 @@
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; overflow: hidden; background: var(--world-bg, #050814); color: var(--ink); font-family: var(--font); font-size: calc(16px * var(--text-scale)); }
-body.dyslexic { --font: 'OpenDyslexic', 'Comic Sans MS', var(--font); }
-body.high-contrast { --panel: rgba(0, 0, 0, 0.95); }
+/* (An earlier rule set --font from var(--font) itself: a cycle that made it invalid.) */
+body.font-dyslexic { --font: 'OpenDyslexic', 'Comic Sans MS', 'Segoe UI', system-ui, sans-serif; letter-spacing: 0.02em; word-spacing: 0.1em; }
+body.font-system { --font: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif; }
+/* High contrast: opaque black panels, pure white text, white outlines on cards, keys and the prompt. */
+body.high-contrast { --panel: rgba(0, 0, 0, 0.97); --ink: #ffffff; }
+body.high-contrast .card, body.high-contrast .prompt { border: 2px solid #ffffff; }
+body.high-contrast .kbd .key { outline: 1px solid rgba(255, 255, 255, 0.85); color: #ffffff; }
+body.high-contrast .kbd .key.known { color: #000000; }
+body.high-contrast .prompt .typed { color: #9a9a9a; }
+body.high-contrast button.secondary { border: 2px solid #ffffff; }
 #world { position: fixed; inset: 0; width: 100%; height: 100%; display: block; transition: filter 0.25s; }
 #ui { position: fixed; inset: 0; pointer-events: none; }
 #ui > * { pointer-events: auto; }
@@ -259,6 +273,9 @@ body.reduced-motion .sparkle { display: none; }
 @keyframes tick { 0% { transform: scale(1.18); } 100% { transform: scale(1); } }
 .break-step { font-size: 1.4em; font-weight: 700; min-height: 1.5em; }
 .break-nudge { min-height: 1.6em; margin-top: 8px; color: #ffd6a5; font-weight: 600; }
+/* Fixed-width digits and a minimum width: the countdown label changes every second and must not make the button jitter. */
+.break-button { min-width: 12em; font-variant-numeric: tabular-nums; }
+.break-count { font-variant-numeric: tabular-nums; }
 .break-button.waiting { background: rgba(255, 255, 255, 0.16); }
 .shake { animation: shake-x 0.45s ease; }
 @keyframes shake-x { 20% { transform: translateX(-8px) rotate(-2deg); } 40% { transform: translateX(8px) rotate(2deg); } 60% { transform: translateX(-5px); } 80% { transform: translateX(5px); } }
