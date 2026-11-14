@@ -188,7 +188,9 @@ export class RenderHost {
         if (cur) cur.root.scale.set(1, 1, 1);
       }
     }
-    if (cur && sim) {
+    // A world only draws state from its own game: while a level of another game is being set up, the game
+    // can already hold the new sim (a save happens before the new world is mounted).
+    if (cur && sim && sim.setup.templateId === cur.look.templateId) {
       if (cur.root.visible) cur.inst.update(sim, alpha, now);
       if (!this.rig.transitioning) {
         const p = cur.inst.pose(sim);

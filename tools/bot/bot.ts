@@ -56,7 +56,23 @@ export function budgetFor(tier: number): number {
   return (tier <= 3 ? 20 : 12) * 60_000;
 }
 
+/** A bot typing one level, one action per step(): lets hot-seat tests interleave several bots. */
+export interface BotTypist {
+  sim: LevelSim;
+  log: LogEvent[];
+  /** one action (a key press or waiting); false once the level is done or the time budget is used up */
+  step(): boolean;
+  /** ends the log and returns the run */
+  finish(): BotRun;
+}
+
 export function runBot(setup: LevelSetup, template: TemplateSim, o: BotRunOptions): BotRun {
+  const bot = createBot(setup, template, o);
+  while (bot.step());
+  return bot.finish();
+}
+
+export function createBot(setup: LevelSetup, template: TemplateSim, o: BotRunOptions): BotTypist {
   const sim = new LevelSim(setup, template, o);
   const rng = Rng.fromSeed(`${o.botSeed}:bot:${o.profile}:${setup.tier}:${setup.levelIndex}`);
   const pp = profileParams(o.profile, setup.tier);
@@ -114,30 +130,35 @@ export function runBot(setup: LevelSetup, template: TemplateSim, o: BotRunOption
   };
 
   // Intro: hands on F and J, press both.
-  t += 800;
-  press('KeyF');
-  t += 40;
-  press('KeyJ');
-
+  let started = false;
   let afterError = false;
-  while (sim.state.phase !== 'done' && t < budget) {
+  const step = (): boolean => {
+    if (!started) {
+      started = true;
+      t += 800;
+      press('KeyF');
+      t += 40;
+      press('KeyJ');
+      return true;
+    }
+    if (sim.state.phase === 'done' || t >= budget) return false;
     observe();
     if (sim.state.phase === 'crossroads') {
       t += 900;
       press('KeyJ');
-      continue;
+      return true;
     }
     const expected = sim.expectedChars();
     if (!expected.length) {
       // Nothing to type (should not happen); let time pass.
       t += 1000;
       sim.advanceTo(t);
-      continue;
+      return true;
     }
     if (pp.mash) {
       t += jitter();
       press(rng.pick(codes));
-      continue;
+      return true;
     }
     const ch = expected[0];
     const code = setup.language.codeOf[ch];
@@ -158,15 +179,19 @@ export function runBot(setup: LevelSetup, template: TemplateSim, o: BotRunOption
     if (pp.errP && rng.chance(errP)) {
       press(wrongCode(expected));
       afterError = true;
-      continue;
+      return true;
     }
     afterError = false;
     press(code, !!setup.language.needsShift[ch]); // capitals, ?, !, ( … need Shift held
-  }
-  observe();
-  log.push({ k: 'end', t });
-  sim.feed({ k: 'end', t });
-  return { log, sim, completed: sim.state.phase === 'done', simulatedMs: t, stuckAtMs, idleHintSeen, minVisibility };
+    return true;
+  };
+  const finish = (): BotRun => {
+    observe();
+    log.push({ k: 'end', t });
+    sim.feed({ k: 'end', t });
+    return { log, sim, completed: sim.state.phase === 'done', simulatedMs: t, stuckAtMs, idleHintSeen, minVisibility };
+  };
+  return { sim, log, step, finish };
 }
 
 /** Replay a log on a fresh simulation (the verifier path). */
