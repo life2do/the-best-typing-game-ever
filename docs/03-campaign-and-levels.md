@@ -58,6 +58,8 @@ For longer alphabets (Russian), bands stretch proportionally.
 | 25 | Q | Zero gravity | 3D | everything floats |
 | 26 | Z | Artifact chamber: tesseract unfolds through every past style | 4D | all |
 
+*Implemented (M2.3):* 15 level templates — pulse runner, platformer, brick-breaker, maze snake, bubble-popper (targeting) and garden grower in 2D; tower defence (targeting), word city (targeting), marble run and dungeon crawler in isometric; racer, beat-wave surfing and climbing tower in 3D; crystal gallery (targeting) and space tunnel in first person. The seed fills every slot from the templates that fit its view band and letter count, never repeating a template within 3 levels. Each level's plan is stored in its run segment, so a level keeps its template when later content changes the campaign's choices (resume and replay use the stored plan).
+
 Then the key-group levels (Shift = "giant mode", punctuation, digits = racing gear shifts, symbols, editing keys). Each adds an outer shell to the artifact.
 
 ## Level structure

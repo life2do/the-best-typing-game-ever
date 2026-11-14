@@ -389,7 +389,7 @@
     }
   ],
   "constraints": {
-    "noTemplateRepeatWithin": 1,
+    "noTemplateRepeatWithin": 3,
     "noStyleTwice": false,
     "dictatedShare": 0.6
   },
