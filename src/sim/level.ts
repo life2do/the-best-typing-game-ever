@@ -417,9 +417,13 @@ export class LevelSim {
   }
 
   /** Keyboard overlay opacity, permille: brightens as accuracy drops. */
+  /**
+   * Keyboard overlay opacity (permille): fully opaque at ≤ 85% recent accuracy, fading to 60% at 100%,
+   * so accurate typists rely on it less but can still read it (it was 25% before, too faint to read).
+   */
   keyboardOpacity(): number {
     const acc = recentAccP(this.state.win);
-    return clamp(1000 - floorDiv((acc - 800) * 7, 2), 250, 1000);
+    return clamp(1000 - floorDiv((acc - 850) * 8, 3), 600, 1000);
   }
 
   steadinessP(): number {

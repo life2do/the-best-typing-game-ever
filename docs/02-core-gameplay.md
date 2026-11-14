@@ -25,7 +25,7 @@ Campaign mix target: about 60% dictated, 40% targeting.
 |---|---|---|
 | **Accuracy** | rolling accuracy over the last 30 keys | Reveal: colour saturation, fog distance, light radius. There is a **minimum visibility** (never below 35%). |
 | **Rhythm steadiness** | 1 − (mean absolute deviation ÷ median) of the last 12 intervals between correct keys, using the player's *own* tempo (integer formula in [10 §4.4](10-simulation-and-test-harness.md#44-rhythm-steadiness)) | **World speed multiplier** 0.6×–2.0×. Music layers are added as steadiness rises. |
-| **Mistake** | wrong key | No tick, a short "stumble" (momentum loss), a small temporary fog increase, and the correct key is highlighted on the keyboard overlay. **The keyboard overlay brightens** as accuracy falls. |
+| **Mistake** | wrong key | No tick, a short "stumble" (momentum loss), a small temporary fog increase, and the correct key is highlighted on the keyboard overlay. **The keyboard overlay brightens** as accuracy falls (fully opaque at ≤ 85% recent accuracy, never below 60% opacity). |
 | **Speed** | net WPM | Stars, super-speed visuals at ≥ 70 WPM |
 
 ### Rhythm frame (HUD)
