@@ -64,6 +64,10 @@ a.version:hover { opacity: 1; text-decoration: underline; }
 .kbd .row.top { margin-left: 22px; } .kbd .row.home { margin-left: 34px; } .kbd .row.bottom { margin-left: 56px; } .kbd .row.space { justify-content: center; }
 .kbd .key { width: 42px; height: 40px; border-radius: 8px; display: grid; place-items: center; font-weight: 700; font-size: 1.05em; background: #2a3150; color: rgba(255, 255, 255, 0.7); position: relative; border-bottom: 4px solid rgba(255, 255, 255, 0.14); }
 .kbd .key.space { width: 300px; }
+.kbd .key.wide { width: 64px; }
+.kbd .key.shift { width: 78px; }
+.kbd .key.f-lp.known.shift, .kbd .key.f-rp.known.shift { background: var(--f-lp); }
+.kbd.full .key { width: 36px; height: 34px; font-size: 0.9em; } .kbd.full .key.wide { width: 54px; } .kbd.full .key.shift { width: 66px; } .kbd.full .key.space { width: 260px; }
 .kbd .key.known { color: #111; }
 .kbd .key.f-lp.known, .kbd .key.f-rp.known { background: var(--f-lp); } .kbd .key.f-lr.known, .kbd .key.f-rr.known { background: var(--f-lr); }
 .kbd .key.f-lm.known, .kbd .key.f-rm.known { background: var(--f-lm); } .kbd .key.f-li.known, .kbd .key.f-ri.known { background: var(--f-li); }
@@ -86,7 +90,7 @@ body.cb-patterns .kbd .key.known.f-lm, body.cb-patterns .kbd .key.known.f-rm { b
 .rules { display: flex; gap: 18px; justify-content: center; margin: 16px 0; flex-wrap: wrap; }
 .rules div { width: 210px; background: rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 14px; }
 .rules .ic { font-size: 2.2em; display: block; }
-.newkey { display: inline-grid; place-items: center; width: 74px; height: 74px; font-size: 2.6em; font-weight: 800; border-radius: 16px; color: #111; margin: 0 6px; animation: hint 1.2s ease-in-out infinite; }
+.newkey { display: inline-grid; place-items: center; min-width: 74px; padding: 0 12px; box-sizing: border-box; height: 74px; white-space: nowrap; font-size: 2.6em; font-weight: 800; border-radius: 16px; color: #111; margin: 0 6px; animation: hint 1.2s ease-in-out infinite; }
 .press { margin-top: 12px; font-size: 1.25em; font-weight: 700; color: var(--gold); }
 .scale { display: flex; gap: 10px; justify-content: center; margin: 18px 0; flex-wrap: wrap; }
 .scale button { width: 104px; padding: 12px 6px; background: rgba(255, 255, 255, 0.08); display: flex; flex-direction: column; align-items: center; gap: 4px; font-weight: 600; }

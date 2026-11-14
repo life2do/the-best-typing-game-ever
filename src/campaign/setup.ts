@@ -45,8 +45,12 @@ export function levelSetup(camp: Campaign, levelIndex: number, o: SetupOptions):
     powerups: powerups.slice().sort((a, b) => (a.id < b.id ? -1 : 1)),
     collected: o.collected ?? [],
     weakKeys: o.weakKeys ?? [],
+    groupChars: plan.groupChars,
   };
 }
+
+/** Key-group characters among ad-hoc letters: everything that isn't a lowercase letter or `;`. */
+export const adHocGroupChars = (letters: string[]) => letters.filter((c) => c !== ' ' && c !== ';' && !/\p{Ll}/u.test(c));
 
 /** Setup for an arbitrary letter set (dev preview, fix-it drills). */
 export function adHocSetup(seed: string, templateId: string, letters: string[], o: SetupOptions, languageId = 'en'): LevelSetup {
@@ -58,6 +62,6 @@ export function adHocSetup(seed: string, templateId: string, letters: string[], 
     templateId, inputMode: tpl.inputMode, stageLengths: STAGE_LENGTHS,
     abilities: abilities.slice().sort((a, b) => (a.id < b.id ? -1 : 1)),
     powerups: powerups.slice().sort((a, b) => (a.id < b.id ? -1 : 1)),
-    collected: o.collected ?? [], weakKeys: o.weakKeys ?? [],
+    collected: o.collected ?? [], weakKeys: o.weakKeys ?? [], groupChars: adHocGroupChars(letters),
   };
 }

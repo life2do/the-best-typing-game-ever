@@ -26,7 +26,11 @@ export function keyboardWithHands(kb: KeyboardOverlay, lang: LanguagePack, newKe
   wrap.className = 'hands-wrap';
   const svg = el('svg', { class: 'hands', 'aria-hidden': 'true' });
   wrap.append(kb.el, svg);
-  const newFingers = newKeys.map((k) => lang.codeOf[k]).filter(Boolean).map((code) => ({ code, finger: lang.layout[code].finger }));
+  // New keys are characters, or the Shift key codes (which aren't in the layout).
+  const SHIFT: Record<string, Finger> = { ShiftLeft: 'lp', ShiftRight: 'rp' };
+  const newFingers = newKeys
+    .map((k) => (SHIFT[k] ? { code: k, finger: SHIFT[k] } : lang.codeOf[k] ? { code: lang.codeOf[k], finger: lang.layout[lang.codeOf[k]].finger } : null))
+    .filter((x): x is { code: string; finger: Finger } => !!x);
   const draw = () => {
     const box = wrap.getBoundingClientRect();
     if (!box.width) return;

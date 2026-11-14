@@ -73,8 +73,8 @@ export function runBot(setup: LevelSetup, template: TemplateSim, o: BotRunOption
   let idleHintSeen = false;
   let minVisibility = 1000;
 
-  const press = (code: string) => {
-    const e: LogEvent = { k: 'key', t, code };
+  const press = (code: string, shift = false) => {
+    const e: LogEvent = shift ? { k: 'key', t, code, shift: 1 } : { k: 'key', t, code };
     log.push(e);
     sim.feed(e);
     keys++;
@@ -161,7 +161,7 @@ export function runBot(setup: LevelSetup, template: TemplateSim, o: BotRunOption
       continue;
     }
     afterError = false;
-    press(code);
+    press(code, !!setup.language.needsShift[ch]); // capitals, ?, !, ( … need Shift held
   }
   observe();
   log.push({ k: 'end', t });

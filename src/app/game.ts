@@ -323,8 +323,12 @@ export class Game {
         const tierName = scale.steps[this.seg.tier - 1]?.name.en ?? `tier ${this.seg.tier}`;
         this.setOverlay(introScreen(lang, this.plan, rules, tierName));
         const nk = this.plan.newKeys.filter((k) => k !== ' ');
-        const finger = nk.map((k) => `${k.toUpperCase()}, with your ${FINGER_NAMES[lang.layout[lang.codeOf[k]]?.finger ?? 'li']}`).join('. ');
-        this.voice.speak(`Level ${index}. New key: ${finger}. ${rules.map((r) => r.text).join(' ')} Put your fingers on F and J, then press them together.`);
+        const spoken: Record<string, string> = { '\b': 'Backspace', '\n': 'Enter', '\t': 'Tab' };
+        const what = this.plan.keyGroup?.keys.includes('Shift')
+          ? 'Capitals: hold Shift with the little finger of the other hand'
+          : nk.map((k) => `${spoken[k] ?? k.toUpperCase()}, with your ${FINGER_NAMES[lang.layout[lang.codeOf[k]]?.finger ?? 'li']}`).join('. ');
+        const intro = this.plan.keyGroup ? `Level ${index}: ${this.plan.keyGroup.name}. ${what}.` : `Level ${index}. New key: ${what}.`;
+        this.voice.speak(`${intro} ${rules.map((r) => r.text).join(' ')} Put your fingers on F and J, then press them together.`);
       } else if (sim.state.phase === 'crossroads') this.setOverlay(crossroadsScreen(sim.state.bestStars));
       else this.setOverlay(null);
     });

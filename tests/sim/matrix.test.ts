@@ -9,11 +9,13 @@ import { campaignFor } from '@/campaign/setup';
 const LEVELS = [1, 2, 3, 4];
 
 describe('campaign', () => {
-  it('pins M1 templates for levels 1-4 and covers all 26 letters', () => {
+  it('pins M1 templates for levels 1-4, covers all 26 letters, then the 7 key groups', () => {
     const c = campaignFor('any');
     expect(c.levels.slice(0, 4).map((l) => l.templateId)).toEqual(['template.pulse-runner', 'template.platformer', 'template.tower-defence', 'template.racer']);
-    expect(c.levels.length).toBe(26);
+    expect(c.levels.length).toBe(33); // 26 letter levels + 7 key-group levels (M2.2)
     expect(c.levels[25].letters.length).toBe(27); // 26 letters + ';'
+    expect(c.levels[25].keyGroup).toBeUndefined();
+    expect(c.levels[26].keyGroup?.id).toBe('shift');
   });
   it('is seeded: same seed same plan, different seed different later levels', () => {
     expect(campaignFor('a')).toEqual(campaignFor('a'));

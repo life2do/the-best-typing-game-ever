@@ -3,6 +3,7 @@ import type { ComplexityScaleManifest, LanguagePack } from '@/content/types';
 import type { LevelPlan } from '@/campaign/campaign';
 import { h, FINGER_NAMES } from './dom';
 import { KeyboardOverlay } from './keyboard';
+import { displayGlyph } from '@/content/glyphs';
 import { keyboardWithHands } from './hands';
 import { TIER_WPM } from '@/typing/tiers';
 import type { Profile, Settings } from '@/storage/profile';
@@ -98,27 +99,34 @@ export function introScreen(lang: LanguagePack, plan: LevelPlan, rules: { icon: 
   kb.el.style.transform = 'none';
   kb.el.style.margin = '0';
   kb.el.style.display = 'inline-flex';
-  const newKeys = plan.newKeys.filter((k) => k !== ' ');
-  const keyBadges = newKeys.map((k) => {
-    const code = lang.codeOf[k];
-    const finger = code ? lang.layout[code].finger : 'li';
-    return h('span', { class: 'newkey', style: { background: `var(--f-${finger})` } }, k.toUpperCase());
-  });
-  const fingerText = newKeys
-    .map((k) => {
-      const code = lang.codeOf[k];
-      return code ? `${k.toUpperCase()} — ${FINGER_NAMES[lang.layout[code].finger]}` : '';
-    })
-    .join(' · ');
+  // Key-group levels introduce Shift (all capitals at once) or a few symbols / editing keys.
+  const shiftGroup = !!plan.keyGroup?.keys.includes('Shift');
+  const newKeys = shiftGroup ? [] : plan.newKeys.filter((k) => k !== ' ');
+  const badge = (label: string, finger: string) => h('span', { class: 'newkey', style: { background: `var(--f-${finger})` } }, label);
+  const keyBadges = shiftGroup
+    ? [badge('⇧ Shift', 'lp')]
+    : newKeys.map((k) => {
+        const code = lang.codeOf[k];
+        return badge(displayGlyph(k).toUpperCase(), code ? lang.layout[code].finger : 'li');
+      });
+  const fingerText = shiftGroup
+    ? 'Shift — the little finger of the other hand, while the letter finger types (A → right Shift, J → left Shift)'
+    : newKeys
+        .map((k) => {
+          const code = lang.codeOf[k];
+          return code ? `${displayGlyph(k).toUpperCase()} — ${FINGER_NAMES[lang.layout[code].finger]}${lang.needsShift[k] ? ' + Shift' : ''}` : '';
+        })
+        .join(' · ');
+  const heading = plan.keyGroup ? `Level ${plan.index}: ${plan.keyGroup.name}` : `Level ${plan.index}: new ${newKeys.length > 1 ? 'keys' : 'key'}`;
   return h(
     'div',
     { class: 'overlay intro' },
     h(
       'div',
       { class: 'card' },
-      h('h2', {}, title ?? `Level ${plan.index}: new ${newKeys.length > 1 ? 'keys' : 'key'}`, ...keyBadges),
+      h('h2', {}, title ?? heading, ...keyBadges),
       h('p', {}, fingerText, plan.newKeys.includes(' ') ? ' · Space — thumbs' : ''),
-      keyboardWithHands(kb, lang, plan.newKeys),
+      keyboardWithHands(kb, lang, shiftGroup ? ['ShiftLeft', 'ShiftRight'] : plan.newKeys),
       h('p', {}, 'Rest your fingers on the home row. Feel the little bumps on F and J. Keep your eyes on the screen.'),
       h('div', { class: 'rules' }, ...rules.map((r) => h('div', {}, h('span', { class: 'ic' }, r.icon), r.text))),
       h('div', { class: 'press' }, 'Put your fingers on F and J — then press them together'),

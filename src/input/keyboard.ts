@@ -38,7 +38,8 @@ export class KeyboardInput {
     if (!this.enabled) return;
     if (e.repeat || e.isComposing || e.key === 'Dead' || e.key === 'Process' || MODIFIER.test(e.code) || /^F\d+$/.test(e.code)) return;
     if (e.ctrlKey || e.metaKey || e.altKey) return; // browser shortcuts are never game input
-    if (e.code === 'Space' || e.code === 'Tab' || e.code === 'Backspace' || e.code === 'Quote' || e.code === 'Slash') e.preventDefault();
+    // Keys the browser would otherwise act on (scroll, focus, back, find, activate a button).
+    if (e.code === 'Space' || e.code === 'Tab' || e.code === 'Backspace' || e.code === 'Enter' || e.code === 'NumpadEnter' || e.code === 'Quote' || e.code === 'Slash') e.preventDefault();
     this.checkLayout(e);
     for (const h of this.handlers) h({ code: e.code, shift: e.shiftKey });
   }

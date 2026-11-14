@@ -336,7 +336,7 @@ export class LevelSim {
       for (const w of ab.triggerWords[lang.id.replace(/^lang\./, '')] ?? []) if (typeable(w, letters)) specials.push({ word: w, ability: ab.id });
     }
     const txt = generateStageText(new Rng(s.rng.text), {
-      letters, newKeys: this.setup.newKeys, weakKeys: this.setup.weakKeys,
+      letters, newKeys: this.setup.newKeys, weakKeys: this.setup.weakKeys, groupChars: this.setup.groupChars ?? [],
       stageIndex: s.stage, stageCount: L.length, length: L[Math.min(s.stage, L.length - 1)],
       words, specials, blockWords: lang.blockWords, blockSubstrings: lang.blockSubstrings,
     });
