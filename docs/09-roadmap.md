@@ -56,6 +56,34 @@ Acceptance (full test matrix in [10 §6](10-simulation-and-test-harness.md#6-mil
 - Accessibility settings complete; break reminder; parent area.
 - Voice effects as collectibles.
 
+### Plan (one pull request per step, in this order)
+
+Each step ends with `npm run check`, the e2e suite and an update of this table. Every new game is its own
+commit with its own `template (<id>)` CI job (D64). Steps are ordered by dependency: profiles before hot seat,
+key groups before the full campaign, all games and languages before the artifact.
+
+| Step | Scope | Acceptance |
+|---|---|---|
+| **M2.0 Per-change CI** | `plan` job runs only what a change affects; one CI job per game; changed-file lint; dependency audit (D64) | Docs-only PR runs no tests; a one-template PR runs only that template's job; main runs everything |
+| **M2.1 Profiles** | Several profiles per device, profile picker, colour + shape PIN pad (lock, not security), export/import (JSON with run segments), storage schema v2 + migration from M1 saves | Two profiles keep separate campaigns, stats and settings; a PIN-locked profile asks for its PIN; export → import on a fresh browser restores profile + runs, and the runs verify; M1 saves load unchanged |
+| **M2.2 Key groups** | Shift/capitals ("giant mode"), `. ,`, `' / ? !`, digits 1–5, 6–0, symbols `- = ( ) : "`, `Backspace Enter Tab` as levels 27–33; input capture for Shift and editing keys; campaign slots for all 33 English levels | `pass` bot completes levels 27–33 at tiers 1/4/7; `validate` checks every key group is typeable; Backspace only becomes trainable in its own level |
+| **M2.3 Genre library** | 11 new templates to reach 15 genres, following the reference arc ([03](03-campaign-and-levels.md)): brick-breaker, maze snake, bubble-popper (targeting), garden grower, word city (iso), marble run (iso), dungeon crawler (iso), beat-wave surfing (3D), crystal-zapper gallery (FPV, targeting), space-tunnel flight (FPV), climbing tower (3D) | Each template passes its own suite (`pass` 1/4/7 ≥ 1★, `struggle`, `masher`, determinism) and its browser smoke test in every view; campaign fills levels 5–26 without repeating a template within 3 slots |
+| **M2.4 Russian** | ЙЦУКЕН language pack (layout by physical code, key order + variants, words, blocklist, UI and TTS strings), Russian campaign with the view arc stretched to 33 letters, language picker with layout-mismatch hint | `validate` passes for `ru`; `pass` bot completes Russian levels 1–4; the same physical keys work under an English OS layout |
+| **M2.5 Scales and avatars** | All 13 complexity scales; avatar customisation screen with ≥ 8 slots and ≥ 50 options per theme, value ranges unlocked by stars | Every scale validates; customisation changes the in-game avatar and persists; locked options show their star requirement |
+| **M2.6 Analytics** | Local stats screen: WPM/accuracy over time, steadiness trend, keyboard heatmap (error rate + latency per key), stars per tier, tier history, time played, words and abilities | Numbers match the stored segments; included in profile export |
+| **M2.7 Accessibility + parent area** | Reduced motion everywhere, colour-blind patterns, dyslexia / high-legibility fonts, text size, high contrast, volume sliders; parent area behind an adult check (break interval, session limit, profile management) | Each setting has a visible effect and persists; the adult check gates the parent area |
+| **M2.8 Voice effects** | Collectible voice effects (voice, pitch, speed presets such as chipmunk and giant) unlocked by the `voice` word and similar | Collected effects appear in settings and change TTS; fallback text + icon when no voice exists |
+| **M2.9 Hot seat** | Party setup (2–4 profiles, PINs asked at start), Coop, Side by side and Companions modes, handover overlay, per-player input streams, shared result screen | Each mode completes with 2 bot players; stats go to each profile; party runs replay and verify |
+| **M2.10 Artifact and proofs** | Tesseract renderer with scratch reveal per letter, fingerprint → visual traits, code ring encode/decode, proof bundle embedded in the PNG (iTXt), full verifier that loads each segment on its own build | A finished run renders its artifact; the PNG re-verifies on `/verify`; the code ring decodes to the fingerprint; old segments replay on their recorded build |
+
+### M2 status
+
+| Step | Status |
+|---|---|
+| M2.0 Per-change CI | ✅ |
+| M2.1 Profiles | ✅ |
+| M2.2 – M2.10 | planned |
+
 ## Milestone 3 — Depth
 - Fix-it training drills tuned with real play data (local only).
 - More havocs, styles and palettes; remix and boss-rush levels; projection shuffle.
