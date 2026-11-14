@@ -80,10 +80,18 @@ test(`capitals with Shift (${forced.replace('template.', '')}) and editing keys 
   await expect(page.locator('.intro h2')).toContainText('Level 33: Editing keys');
   await startLevel(page);
   const url = page.url();
+  // Diagnostics: record every mistake the game judges (what was expected vs typed), so a failure says why.
+  await page.evaluate(() => {
+    const g = (window as any).__game;
+    (window as any).__mistakes = [];
+    g.sim.on((e: any) => {
+      if (e.type === 'error') (window as any).__mistakes.push({ typed: e.char, expected: e.expected, frame: e.frame, template: g.sim.setup.templateId, targets: g.sim.state.targets.map((t: any) => `${JSON.stringify(t.text)}@${t.progress}`), locked: g.sim.state.lockedTarget });
+    });
+  });
   const typed33 = await typeExpected(page, 400, (c) => /[\b\n\t]/.test(c));
   expect(typed33.some((c) => /[\b\n\t]/.test(c))).toBe(true);
   const s33 = await totals();
-  expect(s33.errors).toBe(0);
+  expect(s33.errors, `mistakes judged in level 33: ${JSON.stringify(await page.evaluate(() => (window as any).__mistakes))}`).toBe(0);
   expect(page.url()).toBe(url);
   expect(await page.evaluate(() => document.activeElement === document.body || document.activeElement === null)).toBe(true);
   expect(errors).toEqual([]);
