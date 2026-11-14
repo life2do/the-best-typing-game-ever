@@ -58,3 +58,4 @@
 - **Keyboard heatmap**: error rate and latency per key
 - Stars per tier, tier history, time played, words and abilities collected
 - Everything stays local and is included in profile export
+- *Implemented (M2.6):* 📊 Stats on the player home. All numbers are derived by replaying the player's saved run segments (`src/stats/analytics.ts`), so they match the stored runs and the export. Headline tiles (levels finished, stars, best WPM, typing time, words found, abilities); one single-series line chart per measure (speed, accuracy, steady rhythm — never two scales on one chart) with a hover tooltip per level and a table view; a keyboard heatmap of error rate (5-step one-hue ramp, tooltip with latency and count, untyped keys marked); stars per tier, tier history and abilities.
