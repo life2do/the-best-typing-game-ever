@@ -10,6 +10,7 @@ import { TIER_WPM } from '@/typing/tiers';
 import { fontOf, type Profile, type Settings } from '@/storage/profile';
 import { versionBadge } from '@/app/build-info';
 import { languages } from '@/content/registry';
+import { NORMAL_VOICE, type VoiceEffectChoice } from '@/audio/voiceEffects';
 
 export interface StartChoice {
   action: 'new' | 'continue';
@@ -188,7 +189,15 @@ export function crossroadsScreen(stars: number, lang?: LanguagePack): HTMLElemen
 }
 
 /** Accessibility and sound settings (docs/07 Accessibility); shared by the pause menu and the player home. */
-export function settingsRows(settings: Settings, onChange: (s: Settings) => void): HTMLElement[] {
+/** Collected voice effects for the Settings rows (M2.8). */
+export interface VoiceEffectRows {
+  effects: VoiceEffectChoice[];
+  /** false when the device has no speech voice: effects are listed by icon and name only */
+  available: boolean;
+  onPreview: (id: string) => void;
+}
+
+export function settingsRows(settings: Settings, onChange: (s: Settings) => void, voices?: VoiceEffectRows): HTMLElement[] {
   let cur = { ...settings };
   const change = (patch: Partial<Settings>) => {
     cur = { ...cur, ...patch };
@@ -217,6 +226,7 @@ export function settingsRows(settings: Settings, onChange: (s: Settings) => void
     row('Reduced motion', check('reducedMotion')),
     row('Voice', check('voice')),
     row('Voice volume', range('voiceVolume')),
+    ...(voices ? [voiceEffectRow(voices, settings.voiceEffect ?? '', (id) => change({ voiceEffect: id }))] : []),
     row('Music volume', range('musicVolume')),
     row('Effects volume', range('sfxVolume')),
     row('Keyboard helper', select('keyboard', [['auto', 'auto (fades as you improve)'], ['always', 'always on'], ['off', 'off (expert)']], settings.keyboard)),
@@ -228,7 +238,29 @@ export function settingsRows(settings: Settings, onChange: (s: Settings) => void
   ];
 }
 
-export function pauseScreen(settings: Settings, onChange: (s: Settings) => void, onResume: () => void, onQuit: () => void, onExport: () => void): HTMLElement {
+/**
+ * Voice style picker: the normal voice plus every collected effect, as icon buttons (so it works without
+ * reading and without a speech voice). Picking one previews it; with no effects collected yet a hint says how.
+ */
+function voiceEffectRow(v: VoiceEffectRows, chosen: string, pick: (id: string) => void): HTMLElement {
+  const wrap = h('div', { class: 'voice-effects', role: 'radiogroup', 'aria-label': 'Voice style' });
+  const paint = (sel: string) =>
+    wrap.replaceChildren(
+      ...[NORMAL_VOICE, ...v.effects].map((e) =>
+        h('button', {
+          type: 'button', class: `voice-effect${e.id === sel ? ' sel' : ''}`, role: 'radio', 'aria-checked': e.id === sel ? 'true' : 'false',
+          'data-voice-effect': e.id || 'normal', title: e.name,
+          onclick: () => { pick(e.id); paint(e.id); v.onPreview(e.id); },
+        }, h('span', { class: 'icon' }, e.icon), h('span', { class: 'nm' }, e.name)),
+      ),
+      v.effects.length ? '' : h('span', { class: 'hint' }, 'Type special words like “voice” fast to collect funny voices!'),
+      v.available ? '' : h('span', { class: 'hint', 'data-no-voice': '' }, 'No speech voice on this device — your voices are saved for when there is one.'),
+    );
+  paint(v.effects.some((e) => e.id === chosen) ? chosen : '');
+  return h('div', { class: 'setting-row' }, h('span', {}, 'Voice style'), wrap);
+}
+
+export function pauseScreen(settings: Settings, onChange: (s: Settings) => void, onResume: () => void, onQuit: () => void, onExport: () => void, voices?: VoiceEffectRows): HTMLElement {
   return h(
     'div',
     { class: 'overlay pause' },
@@ -236,15 +268,15 @@ export function pauseScreen(settings: Settings, onChange: (s: Settings) => void,
       'div',
       { class: 'card settings' },
       h('h2', {}, '⏸ Paused'),
-      ...settingsRows(settings, onChange),
+      ...settingsRows(settings, onChange, voices),
       h('div', { class: 'row-btns' }, h('button', { onclick: onResume }, 'Resume (Esc)'), h('button', { class: 'secondary', onclick: onExport }, 'Save my run'), h('button', { class: 'secondary', onclick: onQuit }, 'Main menu')),
     ),
   );
 }
 
 /** Settings from the player home (same rows as the pause menu). */
-export function settingsScreen(settings: Settings, onChange: (s: Settings) => void, onClose: () => void): HTMLElement {
-  return h('div', { class: 'overlay settings-screen' }, h('div', { class: 'card settings' }, h('h2', {}, '⚙ Settings'), ...settingsRows(settings, onChange), h('div', { class: 'row-btns' }, h('button', { onclick: onClose }, 'Done'))));
+export function settingsScreen(settings: Settings, onChange: (s: Settings) => void, onClose: () => void, voices?: VoiceEffectRows): HTMLElement {
+  return h('div', { class: 'overlay settings-screen' }, h('div', { class: 'card settings' }, h('h2', {}, '⚙ Settings'), ...settingsRows(settings, onChange, voices), h('div', { class: 'row-btns' }, h('button', { onclick: onClose }, 'Done'))));
 }
 
 /** Fix-it drill offer (docs/01 Weakness detection): F = train the weak key for a minute, J = not now. */

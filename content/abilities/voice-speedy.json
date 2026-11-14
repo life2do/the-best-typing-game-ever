@@ -1,0 +1,23 @@
+{
+  "kind": "ability",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "id": "ability.voice-speedy",
+  "description": "Collectible: typing 'zoom' or 'speedy' quickly collects the Speedy voice effect for the speech voice.",
+  "prompt": "A collectible word that unlocks the 'Speedy' voice effect (A fast, bright voice that zips through every sentence.). Trigger words per language must be kid-safe, from the curated vocabulary, and typeable once their letters are learned.",
+  "type": "collectible",
+  "triggerWords": {
+    "en": [
+      "zoom",
+      "speedy"
+    ],
+    "ru": [
+      "шустрый"
+    ]
+  },
+  "rigHook": "celebrate",
+  "voiceEffect": "voice.speedy@1"
+}

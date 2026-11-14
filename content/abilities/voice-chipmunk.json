@@ -1,0 +1,24 @@
+{
+  "kind": "ability",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "id": "ability.voice-chipmunk",
+  "description": "Collectible: typing 'voice' or 'squeak' quickly collects the Chipmunk voice effect for the speech voice.",
+  "prompt": "A collectible word that unlocks the 'Chipmunk' voice effect (A tiny, quick, very high voice.). Trigger words per language must be kid-safe, from the curated vocabulary, and typeable once their letters are learned.",
+  "type": "collectible",
+  "triggerWords": {
+    "en": [
+      "voice",
+      "squeak"
+    ],
+    "ru": [
+      "голос",
+      "писк"
+    ]
+  },
+  "rigHook": "celebrate",
+  "voiceEffect": "voice.chipmunk@1"
+}

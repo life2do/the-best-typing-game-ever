@@ -1,0 +1,22 @@
+{
+  "kind": "ability",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "id": "ability.voice-giant",
+  "description": "Collectible: typing 'giant' quickly collects the Giant voice effect for the speech voice.",
+  "prompt": "A collectible word that unlocks the 'Giant' voice effect (A deep, slow, booming voice.). Trigger words per language must be kid-safe, from the curated vocabulary, and typeable once their letters are learned.",
+  "type": "collectible",
+  "triggerWords": {
+    "en": [
+      "giant"
+    ],
+    "ru": [
+      "великан"
+    ]
+  },
+  "rigHook": "celebrate",
+  "voiceEffect": "voice.giant@1"
+}

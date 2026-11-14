@@ -6,9 +6,22 @@ import { fromQ, Pool } from '@/render/util';
 import { makeLabel, setLabel } from '@/render/labels';
 import { TOP, type Bubble, type BubbleState } from './sim';
 
-const COL_X = [-4.5, -1.5, 1.5, 4.5];
-const FLOOR = -4.5;
-const LABEL_H = 0.9;
+// Columns spread across the (zoomed-out) width so neighbouring word labels don't overlap.
+export const COL_X = [-7.2, -2.4, 2.4, 7.2];
+export const FLOOR = -4.5;
+const SEABED = 9;
+/**
+ * Framing: the bottom ~38% of the screen holds the typing prompt and the keyboard, so the camera is aimed
+ * below the play area and zoomed out a little — the sea floor sits just above the prompt and every bubble,
+ * from the floor to the surface, stays in view.
+ */
+export const FRAME_HEIGHT = 18.5;
+export const CAMERA_Y = FLOOR + 0.12 * FRAME_HEIGHT; // floor at 62% of the screen height
+export const LABEL_H = 1.2;
+/** How far a bubble rises from the floor to the surface (world units). */
+const RISE = 7;
+/** Lowest and highest points a bubble (ball and label) reaches, in world units. */
+export const BUBBLE_SPAN = { bottom: FLOOR + 0.8 - 0.75, top: FLOOR + 0.8 + RISE + 1.15 + LABEL_H * 1.35 / 2 };
 
 const view: TemplateView = {
   id: 'template.bubble-popper',
@@ -18,15 +31,17 @@ const view: TemplateView = {
     { icon: '✨', text: 'Pop them all for stars — bubbles never hurt anyone.' },
   ],
   create({ root, style, avatar }) {
-    const water = new THREE.Mesh(new THREE.PlaneGeometry(16, 12), style.material('sky'));
-    water.position.z = -1;
+    // The water and the seabed reach well below the floor line: the camera keeps the bubbles above the
+    // typing prompt and keyboard, and the seabed fills the screen behind them.
+    const water = new THREE.Mesh(new THREE.PlaneGeometry(48, 30), style.material('sky'));
+    water.position.set(0, -2.5, -1);
     root.add(water);
-    const floor = new THREE.Mesh(new THREE.BoxGeometry(16, 0.6, 1), style.material('ground'));
-    floor.position.set(0, FLOOR - 0.3, 0);
+    const floor = new THREE.Mesh(new THREE.BoxGeometry(48, SEABED, 1), style.material('ground'));
+    floor.position.set(0, FLOOR - SEABED / 2, 0);
     root.add(floor);
     for (let i = 0; i < 5; i++) {
       const weed = new THREE.Mesh(new THREE.ConeGeometry(0.25, 1.2 + (i % 3) * 0.4, 6), style.material('prop'));
-      weed.position.set(-6 + i * 3.1, FLOOR + 0.5, -0.5);
+      weed.position.set(-9.6 + i * 4.8, FLOOR + 0.5, -0.5);
       root.add(weed);
     }
     avatar.root.scale.setScalar(0.7);
@@ -50,7 +65,7 @@ const view: TemplateView = {
     });
     let lastPops = 0;
     return {
-      pose: () => presetPose('2d', 11, new THREE.Vector3(0, 0.3, 0)),
+      pose: () => presetPose('2d', FRAME_HEIGHT, new THREE.Vector3(0, CAMERA_Y, 0)),
       update(sim, _alpha, now) {
         const s = sim.state.tpl as BubbleState;
         const map = pool.sync(s.bubbles.map((b: Bubble) => b.id));
@@ -58,7 +73,7 @@ const view: TemplateView = {
         const wobble = sim.state.frame - s.stumble < 20 ? 0.12 : 0.04;
         for (const b of s.bubbles) {
           const g = map.get(b.id)!;
-          const y = FLOOR + 0.8 + (fromQ(b.y) / fromQ(TOP)) * 8;
+          const y = FLOOR + 0.8 + (fromQ(b.y) / fromQ(TOP)) * RISE;
           g.position.set(COL_X[b.col] + Math.sin(now / 500 + b.id) * 0.25, y, 0);
           const ball = g.getObjectByName('ball')!;
           const ring = g.getObjectByName('ring') as THREE.Mesh;
