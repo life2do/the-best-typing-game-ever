@@ -59,9 +59,25 @@ sim.on((e) => {
     hud.markError(e.frame);
   }
 });
-(window as any).__preview = { sim, host, wordArt };
+// Test hooks: `stop()` freezes the live loop, `dive()` starts a level transition to another template and
+// `renderAt(now)` renders one frame at a chosen time, so a test can step through a transition frame by frame.
+let manual = false;
+let shown: LevelSim = sim;
+(window as any).__preview = {
+  sim, host, wordArt,
+  stop: () => (manual = true),
+  dive(toTemplate: string, view: string | undefined, now: number) {
+    const id = `template.${toTemplate.replace(/^template\./, '')}`;
+    const t = templates.find((x) => x.id === id)!;
+    const s2 = new LevelSim(adHocSetup(seed, id, letters, { tier }), templateSim(id));
+    host.setLevel({ templateId: id, view: (view as any) ?? t.views[0], styleId, palette, havocIds: [], havocMaxP: 0 }, new AvatarRig(scale, tier), s2, now, true);
+    shown = s2;
+  },
+  renderAt: (now: number) => host.render(shown, 0, now),
+};
 function frame(now: number) {
   requestAnimationFrame(frame);
+  if (manual) return;
   const t = Math.round(now - start);
   if (botLog) while (botIdx < botLog.length && botLog[botIdx].t <= t && botLog[botIdx].k !== 'end') sim.feed(botLog[botIdx++]);
   if (sim.state.phase !== 'done' && t >= sim.state.simT) sim.advanceTo(t);

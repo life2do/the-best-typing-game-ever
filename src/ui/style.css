@@ -96,9 +96,11 @@ body.cb-patterns .kbd .key.known.f-lm, body.cb-patterns .kbd .key.known.f-rm { b
 .scale button.sel { background: #3a86ff; box-shadow: 0 0 0 3px var(--gold); }
 .row-btns { display: flex; gap: 12px; justify-content: center; margin-top: 18px; flex-wrap: wrap; }
 input[type=text] { font: inherit; padding: 0.6em 0.9em; border-radius: 12px; border: 2px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.3); color: white; }
-.crossroads .choices { display: flex; gap: 22px; justify-content: center; margin-top: 18px; }
-.crossroads .choice { background: rgba(255, 255, 255, 0.07); border-radius: 18px; padding: 18px 26px; min-width: 220px; }
-.crossroads .choice b { display: inline-grid; place-items: center; width: 52px; height: 52px; border-radius: 12px; background: var(--f-li); color: #111; font-size: 1.6em; margin-bottom: 8px; }
+:is(.crossroads, .drill-offer) .choices { display: flex; gap: 22px; justify-content: center; margin-top: 18px; }
+:is(.crossroads, .drill-offer) .choice { background: rgba(255, 255, 255, 0.07); border-radius: 18px; padding: 18px 26px; min-width: 220px; }
+.drill-offer .choice { cursor: pointer; }
+.drill-offer .choice:nth-child(2) b { background: var(--f-ri); }
+:is(.crossroads, .drill-offer) .choice b { display: inline-grid; place-items: center; width: 52px; height: 52px; border-radius: 12px; background: var(--f-li); color: #111; font-size: 1.6em; margin-bottom: 8px; }
 .toast { position: fixed; top: 64px; left: 50%; transform: translateX(-50%); background: var(--panel); padding: 10px 18px; border-radius: 14px; font-weight: 700; animation: toast 2.4s ease forwards; pointer-events: none !important; }
 @keyframes toast { 0% { opacity: 0; transform: translate(-50%, -10px); } 10%, 80% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; } }
 .nag { position: fixed; right: 18px; top: 60px; max-width: 320px; }

@@ -28,6 +28,9 @@ test('play level 1, choose the next world, then verify the run', async ({ page }
   await page.locator('button', { hasText: 'Start' }).click();
   await expect(page.locator('.intro')).toBeVisible();
   await expect(page.locator('.intro .newkey')).toHaveText(['F', 'J']);
+  // See-through hands over the intro keyboard: 10 fingers; the pointer fingers (F, J) and a thumb (Space) glow.
+  await expect(page.locator('.intro .hands .finger')).toHaveCount(10);
+  await expect(page.locator('.intro .hands .finger.active')).toHaveCount(3);
   await startLevel(page);
   await expect(page.locator('.intro')).toHaveCount(0);
   await expect(page.locator('.prompt')).toBeVisible();
@@ -89,3 +92,36 @@ async function typeUntilCount(page: Page, n: number): Promise<void> {
     await page.waitForTimeout(90);
   }
 }
+
+test('fix-it drill: offer, one-minute practice, then back to the level', async ({ page }) => {
+  test.setTimeout(150_000);
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.goto('/');
+  await page.locator('.scale button').nth(0).click();
+  await page.locator('button', { hasText: 'Start' }).click();
+  await expect(page.locator('.intro')).toBeVisible();
+  await page.evaluate(() => (window as any).__game.offerDrill('j'));
+  await expect(page.locator('.drill-offer')).toContainText('J is tricky');
+  await page.keyboard.press('KeyF'); // F = yes
+  await expect(page.locator('.intro h2')).toContainText('Fix-it drill: J', { timeout: 10_000 });
+  await startLevel(page);
+  // Type the drill until it ends (it has no star target, so one stage finishes it).
+  const end = Date.now() + 100_000;
+  for (let i = 0; Date.now() < end; i++) {
+    const st = await page.evaluate(() => {
+      const g = (window as any).__game;
+      return g.drill ? { phase: g.sim.state.phase, exp: g.sim.expectedChars() } : null;
+    });
+    if (!st) break;
+    if (st.phase === 'play' && st.exp.length) await page.keyboard.press(CODE[st.exp[0]] ?? 'KeyF');
+    await page.waitForTimeout(40 + ((i * 37) % 50));
+  }
+  // The drill ends by itself and the level's own intro comes back (the offer isn't repeated).
+  await expect(page.locator('.intro h2')).toContainText('Level 1', { timeout: 15_000 });
+  await expect(page.locator('.drill-offer')).toHaveCount(0);
+  const p = await page.evaluate(() => (window as any).__game.profile);
+  expect(p.drillOfferedAt).toBe(1);
+  expect(p.perKey.j[0]).toBeGreaterThan(0);
+  expect(errors).toEqual([]);
+});

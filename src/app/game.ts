@@ -6,15 +6,16 @@
 import { LevelSim } from '@/sim/level';
 import type { LogEvent, SimEvent } from '@/sim/types';
 import { campaignFor, language, levelSetup } from '@/campaign/setup';
+import { drillSetup, weakestKey } from '@/campaign/drill';
 import type { Campaign, LevelPlan } from '@/campaign/campaign';
 import { templateSim } from '@/sim/templates';
-import { palettes, scales, abilities, illustrations } from '@/content/registry';
+import { palettes, scales, abilities, illustrations, templates } from '@/content/registry';
 import { RenderHost, TRANSITION_MS } from '@/render/host';
 import { templateViews } from '@/render/registry';
 import { AvatarRig } from '@/avatar/procedural';
 import { Hud } from '@/ui/hud';
 import { h, toast } from '@/ui/dom';
-import { crossroadsScreen, introScreen, nagScreen, pauseScreen, startScreen, wordBookScreen } from '@/ui/screens';
+import { crossroadsScreen, drillOfferScreen, introScreen, nagScreen, pauseScreen, startScreen, wordBookScreen } from '@/ui/screens';
 import { WordArt } from '@/ui/wordArt';
 import { StretchBreak } from '@/ui/stretchBreak';
 import { KeyboardInput } from '@/input/keyboard';
@@ -55,6 +56,10 @@ export class Game {
   private lastKeyAt = 0;
   private wordArt: WordArt;
   private breakUi: StretchBreak | null = null;
+  /** A fix-it drill is running (practice for one weak key; not saved as a segment). */
+  private drill: { key: string; level: number } | null = null;
+  /** A fix-it drill offer is on screen: F accepts, J declines. */
+  private offer: { yes: () => void; no: () => void } | null = null;
 
   constructor(canvas: HTMLCanvasElement, ui: HTMLElement) {
     this.ui = ui;
@@ -145,6 +150,8 @@ export class Game {
   async startLevel(index: number, transition: boolean): Promise<void> {
     if (index > this.camp.levels.length) return this.victory();
     this.screen = 'level';
+    this.drill = null;
+    this.offer = null;
     this.plan = this.camp.levels[index - 1];
     const key = segmentKey(this.camp.seed, index);
     const existing = await loadSegment(key);
@@ -191,6 +198,9 @@ export class Game {
     const showIntro = (this.showIntro = () => {
       if (this.sim !== sim) return;
       if (sim.state.phase === 'intro') {
+        // A fresh level may first offer a fix-it drill for a weak key learned in earlier levels.
+        const drillKey = this.seg.log.some((e) => e.k === 'key') ? null : this.drillCandidate(false);
+        if (drillKey) return this.offerDrill(drillKey, showIntro);
         const rules = templateViews[this.plan.templateId]?.rules ?? [];
         const scale = scales.find((s) => s.id === this.profile.avatar.scale) ?? scales[0];
         const tierName = scale.steps[this.seg.tier - 1]?.name.en ?? `tier ${this.seg.tier}`;
@@ -203,6 +213,104 @@ export class Game {
     });
     if (transition) setTimeout(showIntro, TRANSITION_MS * 0.8);
     else showIntro();
+  }
+
+  // ------------------------------------------------------------------ fix-it drill
+  /** The weakest key worth a drill now, or null (at most one offer per level; docs/01 Weakness detection). */
+  private drillCandidate(includeNewKeys: boolean): string | null {
+    if (this.drill || !this.profile || this.profile.drillOfferedAt === this.plan.index) return null;
+    const letters = includeNewKeys ? this.plan.letters : this.plan.letters.filter((c) => !this.plan.newKeys.includes(c));
+    return weakestKey(this.profile.perKey, weakKeys(this.profile.perKey), letters);
+  }
+
+  /** Offer a one-minute drill for `key` (public for e2e tests). A level in play is paused meanwhile. */
+  offerDrill(key: string, onDecline: () => void = () => this.showIntro()): void {
+    if (!this.sim || this.drill || this.screen !== 'level') return;
+    this.profile.drillOfferedAt = this.plan.index;
+    void saveProfile(this.profile);
+    const wasPlaying = this.sim.state.phase === 'play' && !this.paused;
+    if (wasPlaying) {
+      this.paused = true;
+      this.record({ k: 'pause', t: this.logT() });
+      void this.persist();
+    }
+    const K = key.toUpperCase();
+    this.voice.speak(`${K} is tricky. Train it for one minute? Press F for yes, or J for not now.`);
+    const yes = () => void this.startDrill(key);
+    const no = () => {
+      this.offer = null;
+      this.setOverlay(null);
+      if (wasPlaying && this.sim) {
+        this.paused = false;
+        this.record({ k: 'resume', t: this.logT() });
+      }
+      onDecline();
+    };
+    this.offer = { yes, no };
+    this.setOverlay(drillOfferScreen(key, yes, no));
+  }
+
+  private async startDrill(key: string): Promise<void> {
+    this.offer = null;
+    await this.persist(); // the level (at its intro, or paused) continues after the drill
+    const level = this.plan.index;
+    const lang = language(this.camp.language);
+    const known = this.plan.letters.filter((c) => !this.plan.newKeys.includes(c));
+    const setup = drillSetup(this.camp.seed, level, known.length >= 2 ? known : this.plan.letters, key, this.profile.tier, this.profile.collected);
+    this.drill = { key, level };
+    this.seg = {
+      key: `drill:${level}`, build: BUILD, campaignSeed: this.camp.seed, language: this.camp.language, level, tier: setup.tier,
+      targetStars: 0, collected: setup.collected, weakKeys: [key], log: [], snapshots: [], complete: false, stars: 0, startedAt: Date.now(),
+    };
+    const sim = new LevelSim(setup, templateSim(setup.templateId));
+    sim.on((e) => this.onSimEvent(e));
+    this.sim = sim;
+    this.segStart = performance.now();
+    this.paused = false;
+    this.pauseReason = null;
+    this.stuckShown = true; // practice: no stuck nag inside a drill
+    this.hintSpoken = -1;
+    this.hud?.keyboard.setKnown(setup.letters);
+    const tpl = templates.find((t) => t.id === setup.templateId)!;
+    const palette = palettes.find((p) => p.id === this.plan.paletteId) ?? palettes[0];
+    this.host.setLevel({ templateId: setup.templateId, view: tpl.views[0], styleId: this.plan.styleId, palette, havocIds: [], havocMaxP: 0 }, this.avatar(), sim, performance.now(), true);
+    this.wordArt.clear();
+    this.audio.whoosh();
+    const K = key.toUpperCase();
+    const rules = [
+      { icon: '🛠️', text: `One minute of ${K}. Every ${K} you type makes it stronger.` },
+      ...(templateViews[setup.templateId]?.rules ?? []).slice(0, 1),
+      { icon: '🔙', text: `Then you go back to level ${level}.` },
+    ];
+    const show = (this.showIntro = () => {
+      if (this.sim !== sim) return;
+      if (sim.state.phase !== 'intro') return this.setOverlay(null);
+      this.setOverlay(introScreen(lang, { ...this.plan, letters: setup.letters, newKeys: [key] }, rules, `${K} practice`, `Fix-it drill: ${K}`));
+      this.voice.speak(`Fix-it drill. Type ${K} with your ${FINGER_NAMES[lang.layout[lang.codeOf[key]]?.finger ?? 'li']}. Put your fingers on F and J, then press them together.`);
+    });
+    setTimeout(show, TRANSITION_MS * 0.8);
+  }
+
+  private async endDrill(): Promise<void> {
+    const d = this.drill;
+    const sim = this.sim;
+    if (!d || !sim) return;
+    const p = this.profile;
+    // Practice counts toward the per-key stats, so a key that got better stops being "weak".
+    for (const [k, v] of Object.entries(sim.state.perKey)) {
+      const acc = (p.perKey[k] ??= [0, 0, 0]);
+      acc[0] += v[0];
+      acc[1] += v[1];
+      acc[2] += v[2];
+    }
+    await saveProfile(p);
+    const [ok, slips] = sim.state.perKey[d.key] ?? [0, 0];
+    const K = d.key.toUpperCase();
+    this.audio.fanfare();
+    toast(this.ui, `🛠️ ${K} practice done: ${ok} right${slips ? `, ${slips} slips` : ', no slips'}!`);
+    this.voice.speak(`Great practice! Back to level ${d.level}.`, false);
+    this.drill = null;
+    await this.startLevel(d.level, true);
   }
 
   private victory(): void {
@@ -235,6 +343,12 @@ export class Game {
   private onKey(code: string, shift: boolean): void {
     this.audio.unlock();
     this.lastKeyAt = performance.now();
+    if (this.offer) {
+      if (code === 'KeyF') this.offer.yes();
+      else if (code === 'KeyJ') this.offer.no();
+      return;
+    }
+    if (this.drill && this.sim?.state.phase !== 'play' && this.sim?.state.phase !== 'intro') return; // drill is ending
     if (this.screen !== 'level' || !this.sim || this.paused || this.host.transitioning) return;
     const e: LogEvent = shift ? { k: 'key', t: this.logT(), code, shift: 1 } : { k: 'key', t: this.logT(), code };
     const before = this.sim.state.phase;
@@ -248,7 +362,7 @@ export class Game {
   }
 
   private togglePause(): void {
-    if (this.screen !== 'level' || !this.sim) return;
+    if (this.screen !== 'level' || !this.sim || this.offer) return;
     if (this.pauseReason === 'break') this.breakUi?.tryFinish(); // Escape can't skip the stretch break
     else if (this.paused) this.resume();
     else this.pause('menu');
@@ -348,6 +462,10 @@ export class Game {
         break;
       }
       case 'crossroads':
+        if (this.drill) {
+          void this.endDrill();
+          break;
+        }
         this.audio.fanfare();
         this.setOverlay(crossroadsScreen(sim.state.bestStars));
         this.voice.speak('You did it! Press F to stay for more stars, or J to go to the next world.');
@@ -419,7 +537,7 @@ export class Game {
   }
 
   async persist(): Promise<void> {
-    if (!this.sim || !this.seg) return;
+    if (!this.sim || !this.seg || this.drill) return; // drills are practice: never saved as a run segment
     this.lastSave = performance.now();
     this.seg.snapshots = this.sim.snapshots.map((s) => s.hash);
     await saveSegment(this.seg);
@@ -480,6 +598,13 @@ export class Game {
   }
 
   private showStuckNag(): void {
+    // Stuck (docs/02 Getting stuck): first offer a fix-it drill for the weakest key, then the easier goal.
+    const k = this.drillCandidate(true);
+    if (k) return this.offerDrill(k, () => this.showTierNag());
+    this.showTierNag();
+  }
+
+  private showTierNag(): void {
     const p = this.profile;
     this.nag?.remove();
     if (p.tier <= 1) {
