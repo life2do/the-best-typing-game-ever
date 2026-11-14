@@ -17,6 +17,8 @@
     "check": "npm run lint && npm run typecheck && npm run validate && npm test"
   },
   "dependencies": {
+    "@fontsource/atkinson-hyperlegible": "^5.3.0",
+    "@fontsource/opendyslexic": "^5.3.0",
     "@noble/hashes": "^2.4.0",
     "three": "^0.187.0"
   },

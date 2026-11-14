@@ -203,6 +203,7 @@ export class Voice {
   enabled = true;
   pitch = 1;
   rate = 1;
+  volume = 1;
   constructor(public lang = 'en-US', private preferred: string[] = []) {}
 
   /** Speak in another language (the campaign's language pack). */
@@ -218,6 +219,7 @@ export class Voice {
     u.lang = this.lang;
     u.pitch = this.pitch;
     u.rate = this.rate;
+    u.volume = this.volume;
     const voices = speechSynthesis.getVoices().filter((v) => v.lang.startsWith(this.lang.slice(0, 2)));
     u.voice = voices.find((v) => this.preferred.includes(v.name)) ?? voices[0] ?? null;
     speechSynthesis.speak(u);

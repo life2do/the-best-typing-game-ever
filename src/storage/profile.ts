@@ -21,12 +21,22 @@ export interface Settings {
   /** length of the stretch break */
   breakSeconds: number;
   showFps: boolean;
+  /** 0..1 (M2.7) */
+  voiceVolume?: number;
+  /** Interface font (M2.7): Atkinson Hyperlegible (default), OpenDyslexic, or the system font. */
+  font?: 'legible' | 'dyslexic' | 'system';
+  /** Maximum play time per session in minutes, 0 = no limit (parent area). */
+  sessionMinutes?: number;
 }
+
+/** The font to use; saves from before M2.7 only had the dyslexicFont switch. */
+export const fontOf = (s: Settings): 'legible' | 'dyslexic' | 'system' => s.font ?? (s.dyslexicFont ? 'dyslexic' : 'legible');
 
 export const DEFAULT_SETTINGS: Settings = {
   reducedMotion: typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches,
   musicVolume: 0.35, sfxVolume: 0.6, voice: true, keyboard: 'auto', quality: 'auto', textScale: 1,
   dyslexicFont: false, highContrast: false, colorBlindPatterns: false, breakMinutes: 20, breakSeconds: 120, showFps: true,
+  voiceVolume: 1, font: 'legible', sessionMinutes: 0,
 };
 
 export interface LevelResult {

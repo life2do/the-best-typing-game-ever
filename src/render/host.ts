@@ -43,6 +43,8 @@ export class RenderHost {
   readonly rig = new CameraRig();
   readonly quality: QualityScaler;
   reducedMotion = false;
+  /** Duration of the transition in progress (longer with reduced motion). */
+  private tDur = TRANSITION_MS;
   private current: Mounted | null = null;
   private outgoing: Mounted | null = null;
   private pending: { look: LevelLook; avatar: AvatarRig } | null = null;
@@ -147,7 +149,9 @@ export class RenderHost {
     this.current = next;
     this.bgTo = next.kit.background.clone();
     const pose = next.inst.pose(sim);
-    this.rig.transition(pose, TRANSITION_MS, now);
+    // Reduced motion: a slower camera move and no flatten/extrude of the worlds (only the cross-fade).
+    this.tDur = this.reducedMotion ? TRANSITION_MS * 1.5 : TRANSITION_MS;
+    this.rig.transition(pose, this.tDur, now);
   }
 
   render(sim: LevelSim | null, alpha: number, now: number): void {
@@ -155,7 +159,7 @@ export class RenderHost {
     this.quality.tick(now);
     const cur = this.current;
     if (this.tStart >= 0) {
-      const k = Math.min(1, (now - this.tStart) / TRANSITION_MS);
+      const k = Math.min(1, (now - this.tStart) / this.tDur);
       this.bg.copy(this.bgFrom).lerp(this.bgTo, ease(k));
       this.applyBg();
       // The worlds swap at SWAP_AT; fading the world out just before and back in just after hides the
@@ -166,7 +170,7 @@ export class RenderHost {
       if (this.outgoing) {
         // Flatten the outgoing world into a sheet.
         const f = Math.min(1, k / SWAP_AT);
-        this.outgoing.root.scale.set(1, 1 - 0.6 * ease(f), Math.max(0.02, 1 - ease(f)));
+        if (!this.reducedMotion) this.outgoing.root.scale.set(1, 1 - 0.6 * ease(f), Math.max(0.02, 1 - ease(f)));
         if (k >= SWAP_AT) {
           this.unmount(this.outgoing);
           this.outgoing = null;
@@ -176,7 +180,7 @@ export class RenderHost {
         // Extrude the new world out of the sheet.
         const g = (k - SWAP_AT) / (1 - SWAP_AT);
         cur.root.visible = true;
-        cur.root.scale.set(1, 0.4 + 0.6 * ease(g), Math.max(0.02, ease(g)));
+        if (!this.reducedMotion) cur.root.scale.set(1, 0.4 + 0.6 * ease(g), Math.max(0.02, ease(g)));
       }
       if (k >= 1) {
         this.tStart = -1;
