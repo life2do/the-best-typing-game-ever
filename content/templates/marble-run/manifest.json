@@ -1,0 +1,31 @@
+{
+  "id": "template.marble-run",
+  "kind": "level-template",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "PROMPT.md",
+  "description": "Isometric marble run: each correct key lays the next track tile and the marble rolls onto it; words add a bell that rings as the marble passes.",
+  "tags": [
+    "iso",
+    "dictated",
+    "calm"
+  ],
+  "genre": "marble-run",
+  "minLetters": 9,
+  "inputMode": "dictated",
+  "views": [
+    "iso"
+  ],
+  "stages": {
+    "min": 3,
+    "max": 3
+  },
+  "supportsHavocs": [
+    "havoc.map-rotate"
+  ],
+  "multiplayer": [],
+  "entry": "sim.ts"
+}

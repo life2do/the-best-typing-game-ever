@@ -5,7 +5,7 @@
  */
 import { LevelSim } from '@/sim/level';
 import type { LogEvent, SimEvent } from '@/sim/types';
-import { campaignFor, language, levelSetup } from '@/campaign/setup';
+import { campaignFor, language, planSetup } from '@/campaign/setup';
 import { drillSetup, weakestKey } from '@/campaign/drill';
 import type { Campaign, LevelPlan } from '@/campaign/campaign';
 import { templateSim } from '@/sim/templates';
@@ -269,16 +269,18 @@ export class Game {
     this.screen = 'level';
     this.drill = null;
     this.offer = null;
-    this.plan = this.camp.levels[index - 1];
     const key = segmentKey(this.camp.seed, index);
     const existing = await loadSegment(key);
     const resume = existing && !existing.complete ? existing : null;
+    // A level keeps the plan it started with (template, letters, look), even if newer content changes the
+    // campaign's seeded choice for that level.
+    this.plan = resume?.plan ?? this.camp.levels[index - 1];
     this.seg = resume ?? {
       key, build: BUILD, campaignSeed: this.camp.seed, language: this.camp.language, level: index,
       tier: this.profile.tier, targetStars: 1, collected: [...this.profile.collected], weakKeys: weakKeys(this.profile.perKey),
-      log: [], snapshots: [], complete: false, stars: 0, startedAt: Date.now(),
+      log: [], snapshots: [], complete: false, stars: 0, startedAt: Date.now(), plan: this.plan,
     };
-    const setup = levelSetup(this.camp, index, { tier: this.seg.tier, targetStars: this.seg.targetStars, collected: this.seg.collected, weakKeys: this.seg.weakKeys });
+    const setup = planSetup(this.camp.seed, this.camp.language, this.plan, { tier: this.seg.tier, targetStars: this.seg.targetStars, collected: this.seg.collected, weakKeys: this.seg.weakKeys });
     const sim = new LevelSim(setup, templateSim(setup.templateId));
     for (const e of this.seg.log) sim.feed(e); // exact resume (deterministic replay of the saved log)
     sim.on((e) => this.onSimEvent(e));

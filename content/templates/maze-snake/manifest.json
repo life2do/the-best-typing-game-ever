@@ -1,0 +1,31 @@
+{
+  "id": "template.maze-snake",
+  "kind": "level-template",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "PROMPT.md",
+  "description": "Top-down maze snake: each correct key moves the snake one cell along the hedge maze path; it grows longer as you type and eats glowing berries.",
+  "tags": [
+    "2d",
+    "dictated",
+    "calm"
+  ],
+  "genre": "snake",
+  "minLetters": 4,
+  "inputMode": "dictated",
+  "views": [
+    "2d"
+  ],
+  "stages": {
+    "min": 3,
+    "max": 3
+  },
+  "supportsHavocs": [
+    "havoc.map-rotate"
+  ],
+  "multiplayer": [],
+  "entry": "sim.ts"
+}

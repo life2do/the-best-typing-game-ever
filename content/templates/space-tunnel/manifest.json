@@ -1,0 +1,29 @@
+{
+  "id": "template.space-tunnel",
+  "kind": "level-template",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "PROMPT.md",
+  "description": "First-person space-tunnel flight: glide through a tunnel of glowing rings; the next letters float ahead and every correct key carries you forward through them.",
+  "tags": [
+    "fpv",
+    "dictated",
+    "flight"
+  ],
+  "genre": "flight",
+  "minLetters": 14,
+  "inputMode": "dictated",
+  "views": [
+    "fpv"
+  ],
+  "stages": {
+    "min": 3,
+    "max": 3
+  },
+  "supportsHavocs": [],
+  "multiplayer": [],
+  "entry": "sim.ts"
+}

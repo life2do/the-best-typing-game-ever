@@ -6,7 +6,7 @@
 import '@/ui/style.css';
 import { h } from '@/ui/dom';
 import { allSegments, type Segment } from '@/storage/profile';
-import { campaignOf, simAt, verifySegment, type RunFile, type SegmentVerdict } from './replay';
+import { campaignOf, planOf, simAt, verifySegment, type RunFile, type SegmentVerdict } from './replay';
 import { RenderHost } from '@/render/host';
 import { palettes, scales } from '@/content/registry';
 import { AvatarRig } from '@/avatar/procedural';
@@ -133,7 +133,7 @@ class Player {
   }
 
   private mount(i: number, transition: boolean): void {
-    const plan = this.camp.levels[this.segs[i].level - 1];
+    const plan = planOf(this.camp, this.segs[i]);
     const palette = palettes.find((p) => p.id === plan.paletteId) ?? palettes[0];
     const avatar = new AvatarRig(scales[0], this.segs[i].tier);
     host.setLevel({ templateId: plan.templateId, view: plan.view, styleId: plan.styleId, palette, havocIds: plan.havocIds, havocMaxP: plan.havocMaxP }, avatar, this.sim!, performance.now(), transition);

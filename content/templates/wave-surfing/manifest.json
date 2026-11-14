@@ -1,0 +1,31 @@
+{
+  "id": "template.wave-surfing",
+  "kind": "level-template",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "PROMPT.md",
+  "description": "3D beat-wave surfing: every correct key paddles the surfer forward and builds the wave; a steady rhythm makes a big rolling wave to ride.",
+  "tags": [
+    "3d",
+    "dictated",
+    "rhythm"
+  ],
+  "genre": "surfing",
+  "minLetters": 12,
+  "inputMode": "dictated",
+  "views": [
+    "3d"
+  ],
+  "stages": {
+    "min": 3,
+    "max": 3
+  },
+  "supportsHavocs": [
+    "havoc.gravity-tilt"
+  ],
+  "multiplayer": [],
+  "entry": "sim.ts"
+}

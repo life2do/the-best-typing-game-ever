@@ -1,0 +1,31 @@
+{
+  "id": "template.bubble-popper",
+  "kind": "level-template",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "PROMPT.md",
+  "description": "Vertical bubble-popper (targeting): bubbles carrying words float up from the sea floor; type a bubble's word and Space to pop it into sparkles.",
+  "tags": [
+    "2d",
+    "targeting",
+    "calm"
+  ],
+  "genre": "bubble-popper",
+  "minLetters": 5,
+  "inputMode": "targeting",
+  "views": [
+    "2d"
+  ],
+  "stages": {
+    "min": 3,
+    "max": 3
+  },
+  "supportsHavocs": [
+    "havoc.gravity-tilt"
+  ],
+  "multiplayer": [],
+  "entry": "sim.ts"
+}

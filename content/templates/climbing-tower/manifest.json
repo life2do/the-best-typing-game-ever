@@ -1,0 +1,31 @@
+{
+  "id": "template.climbing-tower",
+  "kind": "level-template",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "PROMPT.md",
+  "description": "3D climbing tower: the climber spirals up a tall tower; each correct key is the next handhold, and every finished word reaches a flag.",
+  "tags": [
+    "3d",
+    "dictated",
+    "climbing"
+  ],
+  "genre": "climbing",
+  "minLetters": 18,
+  "inputMode": "dictated",
+  "views": [
+    "3d"
+  ],
+  "stages": {
+    "min": 3,
+    "max": 3
+  },
+  "supportsHavocs": [
+    "havoc.gravity-tilt"
+  ],
+  "multiplayer": [],
+  "entry": "sim.ts"
+}

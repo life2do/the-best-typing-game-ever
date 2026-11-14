@@ -17,6 +17,15 @@ describe('campaign', () => {
     expect(c.levels[25].keyGroup).toBeUndefined();
     expect(c.levels[26].keyGroup?.id).toBe('shift');
   });
+  it('never repeats a template within 3 levels and uses the whole genre library (M2.3)', () => {
+    const used = new Set<string>();
+    for (let i = 0; i < 20; i++) {
+      const ids = campaignFor(`seed-${i}`).levels.map((l) => l.templateId);
+      ids.forEach((t) => used.add(t));
+      for (let l = 1; l < ids.length; l++) expect(ids.slice(Math.max(0, l - 3), l), `seed-${i} level ${l + 1}`).not.toContain(ids[l]);
+    }
+    expect(used.size).toBeGreaterThanOrEqual(15);
+  });
   it('is seeded: same seed same plan, different seed different later levels', () => {
     expect(campaignFor('a')).toEqual(campaignFor('a'));
     const a = campaignFor('a').levels.map((l) => l.templateId + l.styleId + l.paletteId).join();

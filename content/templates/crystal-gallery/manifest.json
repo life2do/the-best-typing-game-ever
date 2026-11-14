@@ -1,0 +1,29 @@
+{
+  "id": "template.crystal-gallery",
+  "kind": "level-template",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "PROMPT.md",
+  "description": "First-person crystal gallery (targeting): singing crystals drift toward you through a glowing cave; type a crystal's word and Space to make it chime and sparkle.",
+  "tags": [
+    "fpv",
+    "targeting",
+    "music"
+  ],
+  "genre": "gallery",
+  "minLetters": 13,
+  "inputMode": "targeting",
+  "views": [
+    "fpv"
+  ],
+  "stages": {
+    "min": 3,
+    "max": 3
+  },
+  "supportsHavocs": [],
+  "multiplayer": [],
+  "entry": "sim.ts"
+}
