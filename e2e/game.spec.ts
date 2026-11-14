@@ -105,6 +105,8 @@ test('fix-it drill: offer, one-minute practice, then back to the level', async (
   await expect(page.locator('.drill-offer')).toContainText('J is tricky');
   await page.keyboard.press('KeyF'); // F = yes
   await expect(page.locator('.intro h2')).toContainText('Fix-it drill: J', { timeout: 10_000 });
+  // The intro only appears once the transition is over: keys are ignored while it runs.
+  expect(await page.evaluate(() => (window as any).__game.host.transitioning)).toBe(false);
   await startLevel(page);
   // Type the drill until it ends (it has no star target, so one stage finishes it).
   const end = Date.now() + 100_000;

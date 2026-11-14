@@ -424,7 +424,7 @@ export class Game {
       } else if (sim.state.phase === 'crossroads') this.setOverlay(crossroadsScreen(sim.state.bestStars, lang));
       else this.setOverlay(null);
     });
-    if (transition) setTimeout(showIntro, TRANSITION_MS * 0.8);
+    if (transition) this.afterTransition(showIntro);
     else showIntro();
   }
 
@@ -501,7 +501,7 @@ export class Game {
       this.setOverlay(introScreen(lang, { ...this.plan, letters: setup.letters, newKeys: [key] }, rules, `${K} practice`, `Fix-it drill: ${K}`));
       this.voice.speak(`Fix-it drill. Type ${K} with your ${fingerName(lang, lang.layout[lang.codeOf[key]]?.finger ?? 'li')}. ${tr(lang, 'sayPress', 'Put your fingers on F and J, then press them together.')}`);
     });
-    setTimeout(show, TRANSITION_MS * 0.8);
+    this.afterTransition(show);
   }
 
   private async endDrill(): Promise<void> {
@@ -524,6 +524,16 @@ export class Game {
     this.voice.speak(`Great practice! Back to level ${d.level}.`, false);
     this.drill = null;
     await this.startLevel(d.level, true);
+  }
+
+  /**
+   * Run `fn` once the level transition has finished. Keys are ignored while the host is transitioning, so
+   * the intro ("press F and J") must not appear before that: it used to show at 80% of the transition,
+   * and presses in the remaining time (longer on slow machines or with reduced motion) did nothing.
+   */
+  private afterTransition(fn: () => void): void {
+    const check = () => (this.host.transitioning ? setTimeout(check, 50) : fn());
+    setTimeout(check, TRANSITION_MS * 0.8);
   }
 
   private victory(): void {
