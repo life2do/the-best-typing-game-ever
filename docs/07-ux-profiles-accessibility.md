@@ -18,6 +18,7 @@
 
 - The theme comes from a complexity scale. Its model **evolves with the tier** (seed → bouquet).
 - **≥ 8 customisation slots** per theme (primary colour, secondary colour, pattern, size, accessory, trail, aura, idle style). Value ranges unlock with stars (e.g. size 1–3 free, 4–7 at 20★, 8–10 at 60★). That gives ≥ 50 options.
+- *Implemented (M2.5):* 13 themes (robot, human, flowers, dragon, vehicles, cosmos, ocean, light, buildings, cats, music, ships, weather), each with a procedural model per tier and English/Russian step names. 🎨 Avatar on the player home: live 3D preview, theme picker, and 8 slots × 10 values (main/second colour, pattern, size, accessory, trail, aura, idle dance) = 80 options per theme. Values 1–3 are free, 4–7 need 20★, 8–10 need 60★ (stars summed over all tiers and levels); each slot's default is always free. Locked options show their price and can't be picked; locked values in an edited save fall back to defaults in game.
 - Abilities change the avatar visibly (collecting `jump` adds the jump animation; `fly` adds wings/jets/updraft, interpreted per theme).
 
 ## HUD

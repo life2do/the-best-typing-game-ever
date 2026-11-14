@@ -1,0 +1,336 @@
+{
+  "id": "scale.vehicles",
+  "kind": "complexity-scale",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "PROMPT.md",
+  "description": "Vehicles scale: from a tricycle to a starship.",
+  "icon": "🚲",
+  "name": {
+    "en": "Vehicles",
+    "ru": "Транспорт"
+  },
+  "steps": [
+    {
+      "tier": 1,
+      "name": {
+        "en": "tricycle",
+        "ru": "трёхколёсник"
+      },
+      "tts": {
+        "en": "You are a tricycle!",
+        "ru": "Ты — трёхколёсник!"
+      },
+      "model": "procedural:vehicles-1",
+      "icon": "🛺"
+    },
+    {
+      "tier": 2,
+      "name": {
+        "en": "bicycle",
+        "ru": "велосипед"
+      },
+      "tts": {
+        "en": "You are a bicycle!",
+        "ru": "Ты — велосипед!"
+      },
+      "model": "procedural:vehicles-2",
+      "icon": "🚲"
+    },
+    {
+      "tier": 3,
+      "name": {
+        "en": "scooter",
+        "ru": "скутер"
+      },
+      "tts": {
+        "en": "You are a scooter!",
+        "ru": "Ты — скутер!"
+      },
+      "model": "procedural:vehicles-3",
+      "icon": "🛵"
+    },
+    {
+      "tier": 4,
+      "name": {
+        "en": "car",
+        "ru": "машина"
+      },
+      "tts": {
+        "en": "You are a car!",
+        "ru": "Ты — машина!"
+      },
+      "model": "procedural:vehicles-4",
+      "icon": "🚗"
+    },
+    {
+      "tier": 5,
+      "name": {
+        "en": "race car",
+        "ru": "гоночная машина"
+      },
+      "tts": {
+        "en": "You are a race car!",
+        "ru": "Ты — гоночная машина!"
+      },
+      "model": "procedural:vehicles-5",
+      "icon": "🏎️"
+    },
+    {
+      "tier": 6,
+      "name": {
+        "en": "jet",
+        "ru": "самолёт"
+      },
+      "tts": {
+        "en": "You are a jet!",
+        "ru": "Ты — самолёт!"
+      },
+      "model": "procedural:vehicles-6",
+      "icon": "✈️"
+    },
+    {
+      "tier": 7,
+      "name": {
+        "en": "starship",
+        "ru": "звездолёт"
+      },
+      "tts": {
+        "en": "You are a starship!",
+        "ru": "Ты — звездолёт!"
+      },
+      "model": "procedural:vehicles-7",
+      "icon": "🚀"
+    }
+  ],
+  "rigHooks": {
+    "idle": "procedural:idle-vehicles",
+    "move": "procedural:move-vehicles",
+    "jump": "procedural:jump-vehicles",
+    "land": "procedural:land-vehicles",
+    "stumble": "procedural:stumble-vehicles",
+    "celebrate": "procedural:celebrate-vehicles",
+    "powerup": "procedural:powerup-vehicles"
+  },
+  "customization": [
+    {
+      "slot": "primary-color",
+      "kind": "color",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "secondary-color",
+      "kind": "color",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "pattern",
+      "kind": "pattern",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "size",
+      "kind": "size",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "accessory",
+      "kind": "accessory",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "trail",
+      "kind": "trail",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "aura",
+      "kind": "aura",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "idle-style",
+      "kind": "idle-style",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    }
+  ]
+}

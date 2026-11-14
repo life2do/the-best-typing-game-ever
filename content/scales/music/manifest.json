@@ -1,0 +1,336 @@
+{
+  "id": "scale.music",
+  "kind": "complexity-scale",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "PROMPT.md",
+  "description": "Music scale: from a note to a cosmic choir.",
+  "icon": "🎵",
+  "name": {
+    "en": "Music",
+    "ru": "Музыка"
+  },
+  "steps": [
+    {
+      "tier": 1,
+      "name": {
+        "en": "note",
+        "ru": "нотка"
+      },
+      "tts": {
+        "en": "You are a note!",
+        "ru": "Ты — нотка!"
+      },
+      "model": "procedural:music-1",
+      "icon": "🎵"
+    },
+    {
+      "tier": 2,
+      "name": {
+        "en": "drum",
+        "ru": "барабан"
+      },
+      "tts": {
+        "en": "You are a drum!",
+        "ru": "Ты — барабан!"
+      },
+      "model": "procedural:music-2",
+      "icon": "🥁"
+    },
+    {
+      "tier": 3,
+      "name": {
+        "en": "guitar",
+        "ru": "гитара"
+      },
+      "tts": {
+        "en": "You are a guitar!",
+        "ru": "Ты — гитара!"
+      },
+      "model": "procedural:music-3",
+      "icon": "🎸"
+    },
+    {
+      "tier": 4,
+      "name": {
+        "en": "band",
+        "ru": "группа"
+      },
+      "tts": {
+        "en": "You are a band!",
+        "ru": "Ты — группа!"
+      },
+      "model": "procedural:music-4",
+      "icon": "🎤"
+    },
+    {
+      "tier": 5,
+      "name": {
+        "en": "orchestra",
+        "ru": "оркестр"
+      },
+      "tts": {
+        "en": "You are a orchestra!",
+        "ru": "Ты — оркестр!"
+      },
+      "model": "procedural:music-5",
+      "icon": "🎻"
+    },
+    {
+      "tier": 6,
+      "name": {
+        "en": "stadium",
+        "ru": "стадион"
+      },
+      "tts": {
+        "en": "You are a stadium!",
+        "ru": "Ты — стадион!"
+      },
+      "model": "procedural:music-6",
+      "icon": "🏟️"
+    },
+    {
+      "tier": 7,
+      "name": {
+        "en": "cosmic choir",
+        "ru": "космический хор"
+      },
+      "tts": {
+        "en": "You are a cosmic choir!",
+        "ru": "Ты — космический хор!"
+      },
+      "model": "procedural:music-7",
+      "icon": "🌌"
+    }
+  ],
+  "rigHooks": {
+    "idle": "procedural:idle-music",
+    "move": "procedural:move-music",
+    "jump": "procedural:jump-music",
+    "land": "procedural:land-music",
+    "stumble": "procedural:stumble-music",
+    "celebrate": "procedural:celebrate-music",
+    "powerup": "procedural:powerup-music"
+  },
+  "customization": [
+    {
+      "slot": "primary-color",
+      "kind": "color",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "secondary-color",
+      "kind": "color",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "pattern",
+      "kind": "pattern",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "size",
+      "kind": "size",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "accessory",
+      "kind": "accessory",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "trail",
+      "kind": "trail",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "aura",
+      "kind": "aura",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "idle-style",
+      "kind": "idle-style",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    }
+  ]
+}

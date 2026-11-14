@@ -1,0 +1,336 @@
+{
+  "id": "scale.cats",
+  "kind": "complexity-scale",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "PROMPT.md",
+  "description": "Cats scale: from a kitten to a sphinx.",
+  "icon": "🐱",
+  "name": {
+    "en": "Cats",
+    "ru": "Кошки"
+  },
+  "steps": [
+    {
+      "tier": 1,
+      "name": {
+        "en": "kitten",
+        "ru": "котёнок"
+      },
+      "tts": {
+        "en": "You are a kitten!",
+        "ru": "Ты — котёнок!"
+      },
+      "model": "procedural:cats-1",
+      "icon": "🐱"
+    },
+    {
+      "tier": 2,
+      "name": {
+        "en": "house cat",
+        "ru": "домашний кот"
+      },
+      "tts": {
+        "en": "You are a house cat!",
+        "ru": "Ты — домашний кот!"
+      },
+      "model": "procedural:cats-2",
+      "icon": "🐈"
+    },
+    {
+      "tier": 3,
+      "name": {
+        "en": "lynx",
+        "ru": "рысь"
+      },
+      "tts": {
+        "en": "You are a lynx!",
+        "ru": "Ты — рысь!"
+      },
+      "model": "procedural:cats-3",
+      "icon": "🐈‍⬛"
+    },
+    {
+      "tier": 4,
+      "name": {
+        "en": "leopard",
+        "ru": "леопард"
+      },
+      "tts": {
+        "en": "You are a leopard!",
+        "ru": "Ты — леопард!"
+      },
+      "model": "procedural:cats-4",
+      "icon": "🐆"
+    },
+    {
+      "tier": 5,
+      "name": {
+        "en": "lion",
+        "ru": "лев"
+      },
+      "tts": {
+        "en": "You are a lion!",
+        "ru": "Ты — лев!"
+      },
+      "model": "procedural:cats-5",
+      "icon": "🦁"
+    },
+    {
+      "tier": 6,
+      "name": {
+        "en": "tiger",
+        "ru": "тигр"
+      },
+      "tts": {
+        "en": "You are a tiger!",
+        "ru": "Ты — тигр!"
+      },
+      "model": "procedural:cats-6",
+      "icon": "🐯"
+    },
+    {
+      "tier": 7,
+      "name": {
+        "en": "sphinx",
+        "ru": "сфинкс"
+      },
+      "tts": {
+        "en": "You are a sphinx!",
+        "ru": "Ты — сфинкс!"
+      },
+      "model": "procedural:cats-7",
+      "icon": "🗿"
+    }
+  ],
+  "rigHooks": {
+    "idle": "procedural:idle-cats",
+    "move": "procedural:move-cats",
+    "jump": "procedural:jump-cats",
+    "land": "procedural:land-cats",
+    "stumble": "procedural:stumble-cats",
+    "celebrate": "procedural:celebrate-cats",
+    "powerup": "procedural:powerup-cats"
+  },
+  "customization": [
+    {
+      "slot": "primary-color",
+      "kind": "color",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "secondary-color",
+      "kind": "color",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "pattern",
+      "kind": "pattern",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "size",
+      "kind": "size",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "accessory",
+      "kind": "accessory",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "trail",
+      "kind": "trail",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "aura",
+      "kind": "aura",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "idle-style",
+      "kind": "idle-style",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    }
+  ]
+}

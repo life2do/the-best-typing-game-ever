@@ -1,0 +1,336 @@
+{
+  "id": "scale.ocean",
+  "kind": "complexity-scale",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "PROMPT.md",
+  "description": "Ocean scale: from a plankton to a kraken.",
+  "icon": "🐟",
+  "name": {
+    "en": "Ocean",
+    "ru": "Океан"
+  },
+  "steps": [
+    {
+      "tier": 1,
+      "name": {
+        "en": "plankton",
+        "ru": "планктон"
+      },
+      "tts": {
+        "en": "You are a plankton!",
+        "ru": "Ты — планктон!"
+      },
+      "model": "procedural:ocean-1",
+      "icon": "🦠"
+    },
+    {
+      "tier": 2,
+      "name": {
+        "en": "shrimp",
+        "ru": "креветка"
+      },
+      "tts": {
+        "en": "You are a shrimp!",
+        "ru": "Ты — креветка!"
+      },
+      "model": "procedural:ocean-2",
+      "icon": "🦐"
+    },
+    {
+      "tier": 3,
+      "name": {
+        "en": "fish",
+        "ru": "рыбка"
+      },
+      "tts": {
+        "en": "You are a fish!",
+        "ru": "Ты — рыбка!"
+      },
+      "model": "procedural:ocean-3",
+      "icon": "🐟"
+    },
+    {
+      "tier": 4,
+      "name": {
+        "en": "dolphin",
+        "ru": "дельфин"
+      },
+      "tts": {
+        "en": "You are a dolphin!",
+        "ru": "Ты — дельфин!"
+      },
+      "model": "procedural:ocean-4",
+      "icon": "🐬"
+    },
+    {
+      "tier": 5,
+      "name": {
+        "en": "shark",
+        "ru": "акула"
+      },
+      "tts": {
+        "en": "You are a shark!",
+        "ru": "Ты — акула!"
+      },
+      "model": "procedural:ocean-5",
+      "icon": "🦈"
+    },
+    {
+      "tier": 6,
+      "name": {
+        "en": "whale",
+        "ru": "кит"
+      },
+      "tts": {
+        "en": "You are a whale!",
+        "ru": "Ты — кит!"
+      },
+      "model": "procedural:ocean-6",
+      "icon": "🐋"
+    },
+    {
+      "tier": 7,
+      "name": {
+        "en": "kraken",
+        "ru": "кракен"
+      },
+      "tts": {
+        "en": "You are a kraken!",
+        "ru": "Ты — кракен!"
+      },
+      "model": "procedural:ocean-7",
+      "icon": "🐙"
+    }
+  ],
+  "rigHooks": {
+    "idle": "procedural:idle-ocean",
+    "move": "procedural:move-ocean",
+    "jump": "procedural:jump-ocean",
+    "land": "procedural:land-ocean",
+    "stumble": "procedural:stumble-ocean",
+    "celebrate": "procedural:celebrate-ocean",
+    "powerup": "procedural:powerup-ocean"
+  },
+  "customization": [
+    {
+      "slot": "primary-color",
+      "kind": "color",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "secondary-color",
+      "kind": "color",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "pattern",
+      "kind": "pattern",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "size",
+      "kind": "size",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "accessory",
+      "kind": "accessory",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "trail",
+      "kind": "trail",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "aura",
+      "kind": "aura",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "idle-style",
+      "kind": "idle-style",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    }
+  ]
+}

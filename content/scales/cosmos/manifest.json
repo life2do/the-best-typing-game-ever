@@ -9,14 +9,20 @@
   "prompt": "PROMPT.md",
   "description": "Cosmos scale: from a pebble to a galaxy.",
   "icon": "🪐",
+  "name": {
+    "en": "Cosmos",
+    "ru": "Космос"
+  },
   "steps": [
     {
       "tier": 1,
       "name": {
-        "en": "pebble"
+        "en": "pebble",
+        "ru": "камешек"
       },
       "tts": {
-        "en": "You are a pebble!"
+        "en": "You are a pebble!",
+        "ru": "Ты — камешек!"
       },
       "model": "procedural:cosmos-1",
       "icon": "🪨"
@@ -24,10 +30,12 @@
     {
       "tier": 2,
       "name": {
-        "en": "asteroid"
+        "en": "asteroid",
+        "ru": "астероид"
       },
       "tts": {
-        "en": "You are a asteroid!"
+        "en": "You are a asteroid!",
+        "ru": "Ты — астероид!"
       },
       "model": "procedural:cosmos-2",
       "icon": "☄️"
@@ -35,10 +43,12 @@
     {
       "tier": 3,
       "name": {
-        "en": "moon"
+        "en": "moon",
+        "ru": "луна"
       },
       "tts": {
-        "en": "You are a moon!"
+        "en": "You are a moon!",
+        "ru": "Ты — луна!"
       },
       "model": "procedural:cosmos-3",
       "icon": "🌙"
@@ -46,10 +56,12 @@
     {
       "tier": 4,
       "name": {
-        "en": "planet"
+        "en": "planet",
+        "ru": "планета"
       },
       "tts": {
-        "en": "You are a planet!"
+        "en": "You are a planet!",
+        "ru": "Ты — планета!"
       },
       "model": "procedural:cosmos-4",
       "icon": "🪐"
@@ -57,10 +69,12 @@
     {
       "tier": 5,
       "name": {
-        "en": "star"
+        "en": "star",
+        "ru": "звезда"
       },
       "tts": {
-        "en": "You are a star!"
+        "en": "You are a star!",
+        "ru": "Ты — звезда!"
       },
       "model": "procedural:cosmos-5",
       "icon": "⭐"
@@ -68,10 +82,12 @@
     {
       "tier": 6,
       "name": {
-        "en": "nebula"
+        "en": "nebula",
+        "ru": "туманность"
       },
       "tts": {
-        "en": "You are a nebula!"
+        "en": "You are a nebula!",
+        "ru": "Ты — туманность!"
       },
       "model": "procedural:cosmos-6",
       "icon": "🌌"
@@ -79,10 +95,12 @@
     {
       "tier": 7,
       "name": {
-        "en": "galaxy"
+        "en": "galaxy",
+        "ru": "галактика"
       },
       "tts": {
-        "en": "You are a galaxy!"
+        "en": "You are a galaxy!",
+        "ru": "Ты — галактика!"
       },
       "model": "procedural:cosmos-7",
       "icon": "🌀"

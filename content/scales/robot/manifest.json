@@ -9,14 +9,20 @@
   "prompt": "PROMPT.md",
   "description": "Robot scale: from a simple robot to a complex transformer.",
   "icon": "🤖",
+  "name": {
+    "en": "Robots",
+    "ru": "Роботы"
+  },
   "steps": [
     {
       "tier": 1,
       "name": {
-        "en": "simple robot"
+        "en": "simple robot",
+        "ru": "простой робот"
       },
       "tts": {
-        "en": "You are a simple robot!"
+        "en": "You are a simple robot!",
+        "ru": "Ты — простой робот!"
       },
       "model": "procedural:robot-1",
       "icon": "🔩"
@@ -24,10 +30,12 @@
     {
       "tier": 2,
       "name": {
-        "en": "helper bot"
+        "en": "helper bot",
+        "ru": "робот-помощник"
       },
       "tts": {
-        "en": "You are a helper bot!"
+        "en": "You are a helper bot!",
+        "ru": "Ты — робот-помощник!"
       },
       "model": "procedural:robot-2",
       "icon": "🤖"
@@ -35,10 +43,12 @@
     {
       "tier": 3,
       "name": {
-        "en": "rover"
+        "en": "rover",
+        "ru": "луноход"
       },
       "tts": {
-        "en": "You are a rover!"
+        "en": "You are a rover!",
+        "ru": "Ты — луноход!"
       },
       "model": "procedural:robot-3",
       "icon": "🛰️"
@@ -46,10 +56,12 @@
     {
       "tier": 4,
       "name": {
-        "en": "mech"
+        "en": "mech",
+        "ru": "мех"
       },
       "tts": {
-        "en": "You are a mech!"
+        "en": "You are a mech!",
+        "ru": "Ты — мех!"
       },
       "model": "procedural:robot-4",
       "icon": "🦾"
@@ -57,10 +69,12 @@
     {
       "tier": 5,
       "name": {
-        "en": "android"
+        "en": "android",
+        "ru": "андроид"
       },
       "tts": {
-        "en": "You are a android!"
+        "en": "You are a android!",
+        "ru": "Ты — андроид!"
       },
       "model": "procedural:robot-5",
       "icon": "🦿"
@@ -68,10 +82,12 @@
     {
       "tier": 6,
       "name": {
-        "en": "megabot"
+        "en": "megabot",
+        "ru": "мегабот"
       },
       "tts": {
-        "en": "You are a megabot!"
+        "en": "You are a megabot!",
+        "ru": "Ты — мегабот!"
       },
       "model": "procedural:robot-6",
       "icon": "🚀"
@@ -79,10 +95,12 @@
     {
       "tier": 7,
       "name": {
-        "en": "transformer"
+        "en": "transformer",
+        "ru": "трансформер"
       },
       "tts": {
-        "en": "You are a transformer!"
+        "en": "You are a transformer!",
+        "ru": "Ты — трансформер!"
       },
       "model": "procedural:robot-7",
       "icon": "🛸"

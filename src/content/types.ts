@@ -110,6 +110,8 @@ export interface PowerupManifest extends ItemBase {
 }
 
 export interface ComplexityScaleManifest extends ItemBase {
+  /** Theme name per language (M2.5). */
+  name?: Record<string, string>;
   kind: 'complexity-scale';
   icon?: string;
   steps: { tier: number; name: Record<string, string>; tts?: Record<string, string>; model: string; icon?: string }[];

@@ -37,7 +37,7 @@ Acceptance (full test matrix in [10 §6](10-simulation-and-test-harness.md#6-mil
 | 4 levels / 3 genres: pulse runner, platformer, iso tower defence, 3D racer | ✅ (+ levels 5–26 reuse them via seeded slots) |
 | Stages, stars, crossroads, slow-mo/shield/reveal power-ups, word abilities | ✅ — deviation: the `ask`/`flask` easter egg (`ability.home-row-secret`) needs S and L, so it can't appear in levels 1–4 (F J D K); it appears from level 6. `jump`, `shield`, `slow` come later |
 | 2 render styles, 3 palettes, 2 havocs | ✅ |
-| 5 complexity scales, random picker, procedural avatars with 8 customisation slots in data | ✅ (customisation UI comes in M2) |
+| 5 complexity scales, random picker, procedural avatars with 8 customisation slots in data | ✅ (13 scales and the customisation screen arrived in M2.5) |
 | One profile, seeded campaign, exact save/resume | ✅ |
 | Weakness model + fix-it drill (D9) | ✅ weak keys weighted up in text; one-minute drill offered at most once per level ([01](01-pedagogy.md#weakness-detection)) |
 | `/verify` page: verify + replay with speed controls and a letter-marked seek bar | ✅ |
@@ -85,7 +85,8 @@ key groups before the full campaign, all games and languages before the artifact
 | M2.2 Key groups | ✅ |
 | M2.3 Genre library | ✅ (15 templates) |
 | M2.4 Russian | ✅ |
-| M2.5 – M2.10 | planned |
+| M2.5 Scales and avatars | ✅ |
+| M2.6 – M2.10 | planned |
 
 ## Milestone 3 — Depth
 - Fix-it training drills tuned with real play data (local only).

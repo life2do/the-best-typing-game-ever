@@ -1,0 +1,336 @@
+{
+  "id": "scale.weather",
+  "kind": "complexity-scale",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "PROMPT.md",
+  "description": "Weather scale: from a dewdrop to a aurora.",
+  "icon": "⛅",
+  "name": {
+    "en": "Weather",
+    "ru": "Погода"
+  },
+  "steps": [
+    {
+      "tier": 1,
+      "name": {
+        "en": "dewdrop",
+        "ru": "росинка"
+      },
+      "tts": {
+        "en": "You are a dewdrop!",
+        "ru": "Ты — росинка!"
+      },
+      "model": "procedural:weather-1",
+      "icon": "💧"
+    },
+    {
+      "tier": 2,
+      "name": {
+        "en": "raindrop",
+        "ru": "капля дождя"
+      },
+      "tts": {
+        "en": "You are a raindrop!",
+        "ru": "Ты — капля дождя!"
+      },
+      "model": "procedural:weather-2",
+      "icon": "🌧️"
+    },
+    {
+      "tier": 3,
+      "name": {
+        "en": "cloud",
+        "ru": "облако"
+      },
+      "tts": {
+        "en": "You are a cloud!",
+        "ru": "Ты — облако!"
+      },
+      "model": "procedural:weather-3",
+      "icon": "☁️"
+    },
+    {
+      "tier": 4,
+      "name": {
+        "en": "shower",
+        "ru": "ливень"
+      },
+      "tts": {
+        "en": "You are a shower!",
+        "ru": "Ты — ливень!"
+      },
+      "model": "procedural:weather-4",
+      "icon": "🌦️"
+    },
+    {
+      "tier": 5,
+      "name": {
+        "en": "storm",
+        "ru": "гроза"
+      },
+      "tts": {
+        "en": "You are a storm!",
+        "ru": "Ты — гроза!"
+      },
+      "model": "procedural:weather-5",
+      "icon": "⛈️"
+    },
+    {
+      "tier": 6,
+      "name": {
+        "en": "tornado",
+        "ru": "торнадо"
+      },
+      "tts": {
+        "en": "You are a tornado!",
+        "ru": "Ты — торнадо!"
+      },
+      "model": "procedural:weather-6",
+      "icon": "🌪️"
+    },
+    {
+      "tier": 7,
+      "name": {
+        "en": "aurora",
+        "ru": "северное сияние"
+      },
+      "tts": {
+        "en": "You are a aurora!",
+        "ru": "Ты — северное сияние!"
+      },
+      "model": "procedural:weather-7",
+      "icon": "🌌"
+    }
+  ],
+  "rigHooks": {
+    "idle": "procedural:idle-weather",
+    "move": "procedural:move-weather",
+    "jump": "procedural:jump-weather",
+    "land": "procedural:land-weather",
+    "stumble": "procedural:stumble-weather",
+    "celebrate": "procedural:celebrate-weather",
+    "powerup": "procedural:powerup-weather"
+  },
+  "customization": [
+    {
+      "slot": "primary-color",
+      "kind": "color",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "secondary-color",
+      "kind": "color",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "pattern",
+      "kind": "pattern",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "size",
+      "kind": "size",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "accessory",
+      "kind": "accessory",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "trail",
+      "kind": "trail",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "aura",
+      "kind": "aura",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "idle-style",
+      "kind": "idle-style",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    }
+  ]
+}

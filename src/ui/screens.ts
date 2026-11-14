@@ -28,6 +28,7 @@ export interface StartExtras {
   onSwitch?: () => void;
   onDelete?: () => void;
   onImport?: (file: File) => void;
+  onAvatar?: () => void;
 }
 
 export function startScreen(scale: ComplexityScaleManifest, profile: Profile | undefined, onChoose: (c: StartChoice) => void, onWordBook?: () => void, extras: StartExtras = {}): HTMLElement {
@@ -79,6 +80,7 @@ export function startScreen(scale: ComplexityScaleManifest, profile: Profile | u
     'div',
     { class: 'row-btns more' },
     small('← Back', extras.onBack),
+    small('🎨 Avatar', extras.onAvatar),
     small('👥 Switch player', extras.onSwitch),
     small('⬇ Export player', extras.onExport),
     small(profile?.pinHash ? '🔓 Remove PIN' : '🔒 Set PIN', extras.onPin),

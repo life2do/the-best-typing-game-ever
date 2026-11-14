@@ -1,0 +1,336 @@
+{
+  "id": "scale.light",
+  "kind": "complexity-scale",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "PROMPT.md",
+  "description": "Light scale: from a spark to a supernova.",
+  "icon": "🔥",
+  "name": {
+    "en": "Light",
+    "ru": "Свет"
+  },
+  "steps": [
+    {
+      "tier": 1,
+      "name": {
+        "en": "spark",
+        "ru": "искорка"
+      },
+      "tts": {
+        "en": "You are a spark!",
+        "ru": "Ты — искорка!"
+      },
+      "model": "procedural:light-1",
+      "icon": "✨"
+    },
+    {
+      "tier": 2,
+      "name": {
+        "en": "candle",
+        "ru": "свеча"
+      },
+      "tts": {
+        "en": "You are a candle!",
+        "ru": "Ты — свеча!"
+      },
+      "model": "procedural:light-2",
+      "icon": "🕯️"
+    },
+    {
+      "tier": 3,
+      "name": {
+        "en": "lantern",
+        "ru": "фонарик"
+      },
+      "tts": {
+        "en": "You are a lantern!",
+        "ru": "Ты — фонарик!"
+      },
+      "model": "procedural:light-3",
+      "icon": "🏮"
+    },
+    {
+      "tier": 4,
+      "name": {
+        "en": "bonfire",
+        "ru": "костёр"
+      },
+      "tts": {
+        "en": "You are a bonfire!",
+        "ru": "Ты — костёр!"
+      },
+      "model": "procedural:light-4",
+      "icon": "🔥"
+    },
+    {
+      "tier": 5,
+      "name": {
+        "en": "lightning",
+        "ru": "молния"
+      },
+      "tts": {
+        "en": "You are a lightning!",
+        "ru": "Ты — молния!"
+      },
+      "model": "procedural:light-5",
+      "icon": "⚡"
+    },
+    {
+      "tier": 6,
+      "name": {
+        "en": "sun",
+        "ru": "солнце"
+      },
+      "tts": {
+        "en": "You are a sun!",
+        "ru": "Ты — солнце!"
+      },
+      "model": "procedural:light-6",
+      "icon": "☀️"
+    },
+    {
+      "tier": 7,
+      "name": {
+        "en": "supernova",
+        "ru": "сверхновая"
+      },
+      "tts": {
+        "en": "You are a supernova!",
+        "ru": "Ты — сверхновая!"
+      },
+      "model": "procedural:light-7",
+      "icon": "💥"
+    }
+  ],
+  "rigHooks": {
+    "idle": "procedural:idle-light",
+    "move": "procedural:move-light",
+    "jump": "procedural:jump-light",
+    "land": "procedural:land-light",
+    "stumble": "procedural:stumble-light",
+    "celebrate": "procedural:celebrate-light",
+    "powerup": "procedural:powerup-light"
+  },
+  "customization": [
+    {
+      "slot": "primary-color",
+      "kind": "color",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "secondary-color",
+      "kind": "color",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "pattern",
+      "kind": "pattern",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "size",
+      "kind": "size",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "accessory",
+      "kind": "accessory",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "trail",
+      "kind": "trail",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "aura",
+      "kind": "aura",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "idle-style",
+      "kind": "idle-style",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    }
+  ]
+}

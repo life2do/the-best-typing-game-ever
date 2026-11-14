@@ -9,14 +9,20 @@
   "prompt": "PROMPT.md",
   "description": "Human scale: from a toddler to an old wise kung-fu master.",
   "icon": "🧒",
+  "name": {
+    "en": "People",
+    "ru": "Люди"
+  },
   "steps": [
     {
       "tier": 1,
       "name": {
-        "en": "toddler"
+        "en": "toddler",
+        "ru": "малыш"
       },
       "tts": {
-        "en": "You are a toddler!"
+        "en": "You are a toddler!",
+        "ru": "Ты — малыш!"
       },
       "model": "procedural:human-1",
       "icon": "👶"
@@ -24,10 +30,12 @@
     {
       "tier": 2,
       "name": {
-        "en": "kid"
+        "en": "kid",
+        "ru": "ребёнок"
       },
       "tts": {
-        "en": "You are a kid!"
+        "en": "You are a kid!",
+        "ru": "Ты — ребёнок!"
       },
       "model": "procedural:human-2",
       "icon": "🧒"
@@ -35,10 +43,12 @@
     {
       "tier": 3,
       "name": {
-        "en": "teen"
+        "en": "teen",
+        "ru": "подросток"
       },
       "tts": {
-        "en": "You are a teen!"
+        "en": "You are a teen!",
+        "ru": "Ты — подросток!"
       },
       "model": "procedural:human-3",
       "icon": "🧑"
@@ -46,10 +56,12 @@
     {
       "tier": 4,
       "name": {
-        "en": "athlete"
+        "en": "athlete",
+        "ru": "спортсмен"
       },
       "tts": {
-        "en": "You are a athlete!"
+        "en": "You are a athlete!",
+        "ru": "Ты — спортсмен!"
       },
       "model": "procedural:human-4",
       "icon": "🏃"
@@ -57,10 +69,12 @@
     {
       "tier": 5,
       "name": {
-        "en": "ninja"
+        "en": "ninja",
+        "ru": "ниндзя"
       },
       "tts": {
-        "en": "You are a ninja!"
+        "en": "You are a ninja!",
+        "ru": "Ты — ниндзя!"
       },
       "model": "procedural:human-5",
       "icon": "🥷"
@@ -68,10 +82,12 @@
     {
       "tier": 6,
       "name": {
-        "en": "master"
+        "en": "master",
+        "ru": "мастер"
       },
       "tts": {
-        "en": "You are a master!"
+        "en": "You are a master!",
+        "ru": "Ты — мастер!"
       },
       "model": "procedural:human-6",
       "icon": "🧘"
@@ -79,10 +95,12 @@
     {
       "tier": 7,
       "name": {
-        "en": "wise kung-fu master"
+        "en": "wise kung-fu master",
+        "ru": "мудрый мастер кунг-фу"
       },
       "tts": {
-        "en": "You are a wise kung-fu master!"
+        "en": "You are a wise kung-fu master!",
+        "ru": "Ты — мудрый мастер кунг-фу!"
       },
       "model": "procedural:human-7",
       "icon": "🧙"

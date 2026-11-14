@@ -1,0 +1,336 @@
+{
+  "id": "scale.ships",
+  "kind": "complexity-scale",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "PROMPT.md",
+  "description": "Ships scale: from a raft to a sky airship.",
+  "icon": "⛵",
+  "name": {
+    "en": "Ships",
+    "ru": "Корабли"
+  },
+  "steps": [
+    {
+      "tier": 1,
+      "name": {
+        "en": "raft",
+        "ru": "плот"
+      },
+      "tts": {
+        "en": "You are a raft!",
+        "ru": "Ты — плот!"
+      },
+      "model": "procedural:ships-1",
+      "icon": "🪵"
+    },
+    {
+      "tier": 2,
+      "name": {
+        "en": "canoe",
+        "ru": "каноэ"
+      },
+      "tts": {
+        "en": "You are a canoe!",
+        "ru": "Ты — каноэ!"
+      },
+      "model": "procedural:ships-2",
+      "icon": "🛶"
+    },
+    {
+      "tier": 3,
+      "name": {
+        "en": "sailboat",
+        "ru": "парусник"
+      },
+      "tts": {
+        "en": "You are a sailboat!",
+        "ru": "Ты — парусник!"
+      },
+      "model": "procedural:ships-3",
+      "icon": "⛵"
+    },
+    {
+      "tier": 4,
+      "name": {
+        "en": "brigantine",
+        "ru": "бригантина"
+      },
+      "tts": {
+        "en": "You are a brigantine!",
+        "ru": "Ты — бригантина!"
+      },
+      "model": "procedural:ships-4",
+      "icon": "🚤"
+    },
+    {
+      "tier": 5,
+      "name": {
+        "en": "galleon",
+        "ru": "галеон"
+      },
+      "tts": {
+        "en": "You are a galleon!",
+        "ru": "Ты — галеон!"
+      },
+      "model": "procedural:ships-5",
+      "icon": "🚢"
+    },
+    {
+      "tier": 6,
+      "name": {
+        "en": "flagship",
+        "ru": "флагман"
+      },
+      "tts": {
+        "en": "You are a flagship!",
+        "ru": "Ты — флагман!"
+      },
+      "model": "procedural:ships-6",
+      "icon": "⚓"
+    },
+    {
+      "tier": 7,
+      "name": {
+        "en": "sky airship",
+        "ru": "небесный дирижабль"
+      },
+      "tts": {
+        "en": "You are a sky airship!",
+        "ru": "Ты — небесный дирижабль!"
+      },
+      "model": "procedural:ships-7",
+      "icon": "🎈"
+    }
+  ],
+  "rigHooks": {
+    "idle": "procedural:idle-ships",
+    "move": "procedural:move-ships",
+    "jump": "procedural:jump-ships",
+    "land": "procedural:land-ships",
+    "stumble": "procedural:stumble-ships",
+    "celebrate": "procedural:celebrate-ships",
+    "powerup": "procedural:powerup-ships"
+  },
+  "customization": [
+    {
+      "slot": "primary-color",
+      "kind": "color",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "secondary-color",
+      "kind": "color",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "pattern",
+      "kind": "pattern",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "size",
+      "kind": "size",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "accessory",
+      "kind": "accessory",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "trail",
+      "kind": "trail",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "aura",
+      "kind": "aura",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "idle-style",
+      "kind": "idle-style",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    }
+  ]
+}
