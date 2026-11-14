@@ -17,23 +17,67 @@ permissions:
   contents: read
 
 jobs:
+  # Decide what to run from the files the change touches (tools/affected.mjs, D64). Pull requests run
+  # only what their changes can affect; pushes to main run everything before deploying.
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      lint: ${{ steps.plan.outputs.lint }}
+      lintFiles: ${{ steps.plan.outputs.lintFiles }}
+      typecheck: ${{ steps.plan.outputs.typecheck }}
+      validate: ${{ steps.plan.outputs.validate }}
+      unit: ${{ steps.plan.outputs.unit }}
+      templates: ${{ steps.plan.outputs.templates }}
+      e2e: ${{ steps.plan.outputs.e2e }}
+      audit: ${{ steps.plan.outputs.audit }}
+      build: ${{ steps.plan.outputs.build }}
+    steps:
+      - uses: actions/checkout@v7
+        with: { fetch-depth: 0 }
+      - id: plan
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            node tools/affected.mjs --base "${{ github.event.pull_request.base.sha }}"
+          else
+            node tools/affected.mjs --all
+          fi
+
+  # Static checks, engine unit tests and the production build (made once, reused by e2e and deploy).
   check:
     runs-on: ubuntu-latest
+    needs: plan
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with: { node-version: 22, cache: npm }
       - run: npm ci
-      - run: npm run lint
-      - run: npm run typecheck
-      - run: npm run validate
-      - run: npm test
-      # The production build is made once here and reused by the deploy job.
+      - name: Lint (all)
+        if: needs.plan.outputs.lint == 'all'
+        run: npm run lint
+      - name: Lint (changed files)
+        if: needs.plan.outputs.lint == 'changed'
+        # File names come from the change itself: pass them as data (env + argv), never through the shell.
+        env: { LINT_FILES: '${{ needs.plan.outputs.lintFiles }}' }
+        run: node -e "const r=require('child_process').spawnSync('npx',['eslint','--',...JSON.parse(process.env.LINT_FILES)],{stdio:'inherit'});process.exit(r.status??1)"
+      - name: Typecheck
+        if: needs.plan.outputs.typecheck == 'true'
+        run: npm run typecheck
+      - name: Validate content
+        if: needs.plan.outputs.validate == 'true'
+        run: npm run validate
+      - name: Engine unit and simulation tests
+        if: needs.plan.outputs.unit == 'true'
+        run: npx vitest run tests src
+      - name: Dependency audit
+        if: needs.plan.outputs.audit == 'true'
+        run: npm audit --omit=dev --audit-level=high
       - name: Build
+        if: needs.plan.outputs.build == 'true'
         run: |
           npx vite-node tools/build-content.ts --print > build-id.txt
           npm run build
-      - uses: actions/upload-artifact@v7
+      - if: needs.plan.outputs.build == 'true'
+        uses: actions/upload-artifact@v7
         with:
           name: site
           path: |
@@ -41,10 +85,44 @@ jobs:
             build-id.txt
           retention-days: 7
 
-  # One job per browser, in parallel. Browsers are cached between runs.
+  # One job per game (level template): its own simulation tests (pass bot at tiers 1/4/7, struggle,
+  # masher, determinism) and its browser smoke test in every view it supports.
+  template:
+    name: template (${{ matrix.template }})
+    runs-on: ubuntu-latest
+    needs: plan
+    if: needs.plan.outputs.templates != '[]' && needs.plan.outputs.templates != ''
+    strategy:
+      fail-fast: false
+      matrix:
+        template: ${{ fromJSON(needs.plan.outputs.templates) }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Simulation tests
+        env: { TEMPLATE: '${{ matrix.template }}' }
+        run: npx vitest run "content/templates/$TEMPLATE"
+      - name: Cache Playwright browsers
+        id: pw-cache
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-chromium-${{ hashFiles('package-lock.json') }}
+      - if: steps.pw-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
+      - if: steps.pw-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
+      - name: Browser smoke test
+        run: npx playwright test e2e/templates.spec.ts --project=chromium --trace off
+        env: { CI: '1', TEMPLATES: '${{ matrix.template }}' }
+
+  # Full end-to-end suite, one job per browser in parallel (per-game smoke tests run in `template`).
   e2e:
     runs-on: ubuntu-latest
-    needs: check
+    needs: [plan, check]
+    if: needs.plan.outputs.e2e == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -66,7 +144,7 @@ jobs:
       - name: Install ${{ matrix.browser }} system dependencies (browser restored from cache)
         if: steps.pw-cache.outputs.cache-hit == 'true'
         run: npx playwright install-deps ${{ matrix.browser }}
-      - run: npm run e2e -- --project=${{ matrix.browser }} --trace off
+      - run: npm run e2e -- --project=${{ matrix.browser }} --trace off --grep-invert @template
         env: { CI: '1' }
 
   # Append-only deploy to the gh-pages branch (docs/08 Hosting constraints): every build lives forever
@@ -74,7 +152,7 @@ jobs:
   deploy:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    needs: [check, e2e]
+    needs: [check, template, e2e]
     permissions:
       contents: write
     concurrency: { group: pages-deploy, cancel-in-progress: false }
