@@ -14,6 +14,9 @@ test('dive transition has no visible snap', async ({ page }) => {
   await page.setViewportSize({ width: 480, height: 300 });
   await page.goto('/dev/preview/?template=platformer&letters=fjdk&havoc=0');
   await page.waitForFunction(() => (window as any).__preview?.host);
+  // Without WebGL (Firefox on the CI runners) the world isn't drawn at all, so there is nothing to measure.
+  const webgl = await page.evaluate(() => (window as any).__preview.host.webgl as boolean);
+  test.skip(!webgl, 'no WebGL in this browser: the world (and its transition) is not rendered');
   await page.waitForTimeout(500);
   await page.evaluate(() => {
     (window as any).__preview.stop();
@@ -67,4 +70,6 @@ test('dive transition has no visible snap', async ({ page }) => {
   console.log(`max frame change ${Math.max(...diffs).toFixed(2)}, worst spike ×${worst.toFixed(2)} at frame ${worstAt}`);
   expect(worst, `frame ${worstAt} changes ×${worst.toFixed(2)} more than its neighbours`).toBeLessThan(3);
   expect(Math.max(...diffs)).toBeLessThan(6);
+  // Guard against a vacuous pass: the transition must visibly change the picture.
+  expect(diffs.reduce((x, y) => x + y, 0)).toBeGreaterThan(10);
 });

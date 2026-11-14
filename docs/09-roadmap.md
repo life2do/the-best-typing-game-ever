@@ -42,7 +42,7 @@ Acceptance (full test matrix in [10 §6](10-simulation-and-test-harness.md#6-mil
 | Weakness model + fix-it drill (D9) | ✅ weak keys weighted up in text; one-minute drill offered at most once per level ([01](01-pedagogy.md#weakness-detection)) |
 | `/verify` page: verify + replay with speed controls and a letter-marked seek bar | ✅ |
 | Cross-browser hash test | ✅ Chromium, Firefox and WebKit in CI |
-| Dive transition: no visible snap | ✅ `e2e/diveTransition.spec.ts` (all 3 browsers in CI) |
+| Dive transition: no visible snap | ✅ `e2e/diveTransition.spec.ts` (Chromium and WebKit in CI; skipped in Firefox, which has no WebGL on the CI runners) |
 | "60 fps at medium on a mid-range laptop" | ⏳ needs a check on real hardware (CI only has software WebGL) |
 
 ## Milestone 2 — Breadth & proofs
