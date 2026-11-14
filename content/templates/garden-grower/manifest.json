@@ -1,0 +1,31 @@
+{
+  "id": "template.garden-grower",
+  "kind": "level-template",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "PROMPT.md",
+  "description": "2D garden grower: every correct key waters the next seed in the row; plants sprout and bloom as you type, words grow sunflowers.",
+  "tags": [
+    "2d",
+    "dictated",
+    "calm"
+  ],
+  "genre": "garden",
+  "minLetters": 6,
+  "inputMode": "dictated",
+  "views": [
+    "2d"
+  ],
+  "stages": {
+    "min": 3,
+    "max": 3
+  },
+  "supportsHavocs": [
+    "havoc.gravity-tilt"
+  ],
+  "multiplayer": [],
+  "entry": "sim.ts"
+}
