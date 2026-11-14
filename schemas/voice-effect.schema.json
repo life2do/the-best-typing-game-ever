@@ -31,10 +31,16 @@
     "audioGraph": {
       "type": "object",
       "description": "Future: WASM TTS effect chain"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Emoji shown for the effect (also the fallback when no speech voice exists)."
     }
   },
   "required": [
     "pitch",
-    "rate"
+    "rate",
+    "name",
+    "icon"
   ]
 }

@@ -42,6 +42,8 @@
 - If a language has no system voice, fall back to on-screen text plus an icon, and show a one-time tip on installing voices.
 - Later: an optional built-in speech engine (WebAssembly) for consistent voices and real audio effects.
 
+*Implemented (M2.8):* five voice effects as content (`content/voices/<id>.json`, schema `voice-effect.schema.json`: localised `name`, `icon`, `pitch`, `rate`): 🐿️ Chipmunk (pitch 2, speed 1.3), 🦣 Giant (0.3, 0.8), 🤖 Robot (0.6, 0.9), 😴 Sleepy (0.8, 0.6) and ⚡ Speedy (1.2, 1.8). Each is unlocked by a **collectible ability** (`content/abilities/voice-<id>.json`, `voiceEffect: "voice.<id>@1"`) whose trigger words appear in level text once their letters are learned: `voice`/`squeak`, `giant`, `robot`, `yawn`/`sleepy`, `zoom`/`speedy` (Russian: `голос`/`писк`, `великан`, `робот`, `зевок`, `шустрый`). Typing one quickly shows "🤖 New voice: Robot!" with its icon and says it in that voice; the level keeps the current voice. **Voice style** in Settings (player home and pause menu) lists the normal voice plus the collected effects as icon buttons; picking one previews it and sets the speech pitch and speed for everything spoken. Without a speech voice the effects are still collected and listed by icon and name, with a note that they are saved. A chosen effect that is no longer collected (e.g. an edited export) falls back to the normal voice. `npm run validate` checks that every voice effect is unlocked by a collectible ability.
+
 ## Accessibility (settings → Accessibility)
 
 - **Reduced motion**: havocs use their calm fallbacks; no camera shake; slower transitions; no flashing rhythm frame.

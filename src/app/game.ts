@@ -18,7 +18,7 @@ import { statsScreen } from '@/ui/statsScreen';
 import { computeStats } from '@/stats/analytics';
 import { Hud } from '@/ui/hud';
 import { h, toast } from '@/ui/dom';
-import { crossroadsScreen, drillOfferScreen, introScreen, nagScreen, settingsScreen, pauseScreen, startScreen, wordBookScreen } from '@/ui/screens';
+import { crossroadsScreen, drillOfferScreen, introScreen, nagScreen, settingsScreen, pauseScreen, startScreen, wordBookScreen, type VoiceEffectRows } from '@/ui/screens';
 import { WordArt } from '@/ui/wordArt';
 import { pinPad, profilePicker } from '@/ui/profiles';
 import { adultCheck, parentScreen, sessionOverScreen } from '@/ui/parents';
@@ -26,6 +26,7 @@ import { buildExport, checkPin, parseImport, pinHash } from '@/storage/profileIO
 import { StretchBreak } from '@/ui/stretchBreak';
 import { KeyboardInput } from '@/input/keyboard';
 import { AudioEngine, Voice } from '@/audio/audio';
+import { activeVoiceEffect, effectOfAbility, unlockedVoiceEffects } from '@/audio/voiceEffects';
 import {
   DEFAULT_SETTINGS, allSegments, deleteProfile, fontOf, freshSeed, listProfiles, loadProfileById, loadSegment, migrateProfiles, newProfile, profileSeeds,
   saveProfile, saveSegment, segmentKey, segmentsFor, startNewRun, totalStars, weakKeys,
@@ -189,9 +190,9 @@ export class Game {
     this.setOverlay(
       settingsScreen(p.settings, (s) => {
         p.settings = s;
-        this.applySettings(s);
+        this.applySettings(s, p);
         void saveProfile(p);
-      }, () => this.showStart(p)),
+      }, () => this.showStart(p), this.voiceRows(p)),
     );
   }
 
@@ -253,7 +254,7 @@ export class Game {
       this.sessionExtraMin = 0;
     }
     this.profile = p;
-    this.applySettings(p.settings);
+    this.applySettings(p.settings, p);
     await saveProfile(p);
     this.camp = campaignFor(p.campaign.seed, p.campaign.language);
     // Keys, voice and word pictures follow the campaign's language (docs/04 Language packs).
@@ -328,7 +329,23 @@ export class Game {
     await this.showProfiles();
   }
 
-  private applySettings(s: Settings): void {
+  /** Collected voice effects for the Settings rows; picking one previews it in that voice. */
+  private voiceRows(p: Profile): VoiceEffectRows {
+    const lang = language(p.campaign.language);
+    const code = lang.id.replace(/^lang\./, '');
+    return {
+      effects: unlockedVoiceEffects(p.collected ?? [], code),
+      available: this.voice.available(),
+      onPreview: (id) => {
+        const e = activeVoiceEffect(id, p.collected ?? [], code);
+        this.voice.pitch = e.pitch;
+        this.voice.rate = e.rate;
+        this.voice.speak(tr(lang, 'sayVoice', 'Hello! This is my {name} voice.', { name: e.name }));
+      },
+    };
+  }
+
+  private applySettings(s: Settings, p: Profile | undefined = this.profile): void {
     this.host.reducedMotion = s.reducedMotion;
     this.audio.setVolumes(s.musicVolume, s.sfxVolume);
     this.voice.enabled = s.voice;
@@ -337,6 +354,9 @@ export class Game {
     document.body.classList.toggle('font-dyslexic', font === 'dyslexic');
     document.body.classList.toggle('font-system', font === 'system');
     this.voice.volume = s.voiceVolume ?? 1;
+    const fx = activeVoiceEffect(s.voiceEffect, p?.collected ?? [], p ? language(p.campaign.language).id.replace(/^lang\./, '') : 'en');
+    this.voice.pitch = fx.pitch;
+    this.voice.rate = fx.rate;
     document.body.classList.toggle('high-contrast', s.highContrast);
     document.body.classList.toggle('cb-patterns', s.colorBlindPatterns);
     document.documentElement.style.setProperty('--text-scale', String(s.textScale));
@@ -630,6 +650,7 @@ export class Game {
             this.showStart(this.profile);
           },
           () => void this.exportRun(),
+          this.voiceRows(this.profile),
         ),
       );
   }
@@ -700,8 +721,20 @@ export class Game {
       }
       case 'ability': {
         const ab = abilities.find((a) => a.id === e.id);
-        toast(this.ui, e.quick ? `✨ You found "${e.word}"!` : `"${e.word}" — type it faster next time to keep it!`);
-        if (e.quick) this.voice.speak(e.word, false);
+        const fx = effectOfAbility(e.id);
+        if (fx && e.quick) {
+          // A new voice effect: icon + name on screen (works without a speech voice), then a taste of it.
+          const lang = language(this.camp.language);
+          const name = fx.name[lang.id.replace(/^lang\./, '')] ?? fx.name.en ?? fx.id;
+          toast(this.ui, `${fx.icon} New voice: ${name}! Pick it in Settings.`);
+          const [p0, r0] = [this.voice.pitch, this.voice.rate];
+          [this.voice.pitch, this.voice.rate] = [fx.pitch, fx.rate];
+          this.voice.speak(tr(lang, 'sayNewVoice', 'New voice: {name}!', { name }), false);
+          [this.voice.pitch, this.voice.rate] = [p0, r0];
+        } else {
+          toast(this.ui, e.quick ? `✨ You found "${e.word}"!` : `"${e.word}" — type it faster next time to keep it!`);
+          if (e.quick) this.voice.speak(e.word, false);
+        }
         void ab;
         break;
       }

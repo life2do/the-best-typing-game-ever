@@ -1,0 +1,23 @@
+{
+  "kind": "ability",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "id": "ability.voice-sleepy",
+  "description": "Collectible: typing 'yawn' or 'sleepy' quickly collects the Sleepy voice effect for the speech voice.",
+  "prompt": "A collectible word that unlocks the 'Sleepy' voice effect (A slow, relaxed voice, like someone about to nap.). Trigger words per language must be kid-safe, from the curated vocabulary, and typeable once their letters are learned.",
+  "type": "collectible",
+  "triggerWords": {
+    "en": [
+      "yawn",
+      "sleepy"
+    ],
+    "ru": [
+      "зевок"
+    ]
+  },
+  "rigHook": "celebrate",
+  "voiceEffect": "voice.sleepy@1"
+}

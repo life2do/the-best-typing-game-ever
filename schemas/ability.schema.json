@@ -56,6 +56,10 @@
     },
     "entry": {
       "type": "string"
+    },
+    "voiceEffect": {
+      "$ref": "common.schema.json#/$defs/ref",
+      "description": "Collectible: the voice effect (voice-effect item) this ability unlocks."
     }
   },
   "required": [

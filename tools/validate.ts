@@ -55,12 +55,22 @@ for (const it of items) {
   const m = it.manifest;
   const refs: string[] = [...Object.values(m.refs ?? {}) as string[]];
   if (m.kind === 'ability' && m.powerup) refs.push(m.powerup);
+  if (m.kind === 'ability' && m.voiceEffect) {
+    refs.push(m.voiceEffect);
+    if (m.type !== 'collectible') err(`${m.id}: only collectible abilities can unlock a voice effect`);
+    if (!String(m.voiceEffect).startsWith('voice.')) err(`${m.id}: voiceEffect ${m.voiceEffect} is not a voice effect`);
+  }
   if (m.kind === 'render-style' && m.lite) refs.push(m.lite);
   if (m.kind === 'campaign-rules') {
     for (const s of m.slots) if (s.fixedTemplate) refs.push(s.fixedTemplate);
     for (const d of m.dropTable ?? []) refs.push(d.item);
   }
   for (const r of refs) if (!resolves(r)) err(`${m.id}: unresolved ref ${r}`);
+}
+
+// voice effects: each one must be collectible through some ability (M2.8)
+for (const v of byKind('voice-effect')) {
+  if (!byKind('ability').some((a) => String(a.voiceEffect ?? '').split('@')[0] === v.id)) err(`${v.id}: no collectible ability unlocks this voice effect`);
 }
 
 // rig hooks

@@ -99,6 +99,19 @@ export interface AbilityManifest extends ItemBase {
   quickTypeBudgetMs?: Record<string, number>;
   rigHook?: string;
   powerup?: string;
+  /** collectible: the voice effect it unlocks (`voice.<id>@<version>`) */
+  voiceEffect?: string;
+}
+
+export interface VoiceEffectManifest extends ItemBase {
+  kind: 'voice-effect';
+  name: Record<string, string>;
+  icon: string;
+  /** speech pitch, 0..2 (1 = normal) */
+  pitch: number;
+  /** speech rate, 0.1..10 (1 = normal) */
+  rate: number;
+  voiceHint?: string;
 }
 
 export interface PowerupManifest extends ItemBase {

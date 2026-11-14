@@ -4,6 +4,7 @@
  * This module is Node-safe (no Three.js); renderer modules are discovered in src/render/registry.ts.
  */
 import type {
+  VoiceEffectManifest,
   Illustration, IllustrationManifest,
   AbilityManifest, CampaignRulesManifest, ComplexityScaleManifest, HavocManifest, LanguagePack, LanguagePackManifest,
   LevelTemplateManifest, PaletteManifest, PowerupManifest, RenderStyleManifest,
@@ -19,6 +20,7 @@ export const styles = json<RenderStyleManifest>(import.meta.glob('../../content/
 export const palettes = json<PaletteManifest>(import.meta.glob('../../content/palettes/*.json', { eager: true, import: 'default' }));
 export const havocs = json<HavocManifest>(import.meta.glob('../../content/havocs/*/manifest.json', { eager: true, import: 'default' }));
 export const abilities = json<AbilityManifest>(import.meta.glob('../../content/abilities/*.json', { eager: true, import: 'default' }));
+export const voiceEffects = json<VoiceEffectManifest>(import.meta.glob('../../content/voices/*.json', { eager: true, import: 'default' }));
 export const powerups = json<PowerupManifest>(import.meta.glob('../../content/powerups/*.json', { eager: true, import: 'default' }));
 export const scales = json<ComplexityScaleManifest>(import.meta.glob('../../content/scales/*/manifest.json', { eager: true, import: 'default' }));
 const illustrationManifests = import.meta.glob('../../content/illustrations/*/manifest.json', { eager: true, import: 'default' }) as Record<string, IllustrationManifest>;

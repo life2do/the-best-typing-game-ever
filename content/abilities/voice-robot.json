@@ -1,0 +1,22 @@
+{
+  "kind": "ability",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "id": "ability.voice-robot",
+  "description": "Collectible: typing 'robot' quickly collects the Robot voice effect for the speech voice.",
+  "prompt": "A collectible word that unlocks the 'Robot' voice effect (A flat, steady, low robot voice.). Trigger words per language must be kid-safe, from the curated vocabulary, and typeable once their letters are learned.",
+  "type": "collectible",
+  "triggerWords": {
+    "en": [
+      "robot"
+    ],
+    "ru": [
+      "робот"
+    ]
+  },
+  "rigHook": "celebrate",
+  "voiceEffect": "voice.robot@1"
+}

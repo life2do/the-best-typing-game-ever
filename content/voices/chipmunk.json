@@ -1,0 +1,18 @@
+{
+  "kind": "voice-effect",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "id": "voice.chipmunk",
+  "description": "Collectible voice effect: A tiny, quick, very high voice. Applied to the speech voice (pitch 2, speed 1.3).",
+  "prompt": "A kid-friendly 'Chipmunk' voice preset for the built-in speech voice: A tiny, quick, very high voice. Choose a pitch (0–2) and a speed (0.1–10) that sound clearly different from the normal voice but stay easy to understand, plus one emoji icon shown when no voice is available.",
+  "name": {
+    "en": "Chipmunk",
+    "ru": "Бурундук"
+  },
+  "icon": "🐿️",
+  "pitch": 2,
+  "rate": 1.3
+}

@@ -1,0 +1,18 @@
+{
+  "kind": "voice-effect",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "id": "voice.giant",
+  "description": "Collectible voice effect: A deep, slow, booming voice. Applied to the speech voice (pitch 0.3, speed 0.8).",
+  "prompt": "A kid-friendly 'Giant' voice preset for the built-in speech voice: A deep, slow, booming voice. Choose a pitch (0–2) and a speed (0.1–10) that sound clearly different from the normal voice but stay easy to understand, plus one emoji icon shown when no voice is available.",
+  "name": {
+    "en": "Giant",
+    "ru": "Великан"
+  },
+  "icon": "🦣",
+  "pitch": 0.3,
+  "rate": 0.8
+}

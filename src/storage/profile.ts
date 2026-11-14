@@ -27,6 +27,8 @@ export interface Settings {
   font?: 'legible' | 'dyslexic' | 'system';
   /** Maximum play time per session in minutes, 0 = no limit (parent area). */
   sessionMinutes?: number;
+  /** Chosen collectible voice effect id (M2.8), '' = normal voice. */
+  voiceEffect?: string;
 }
 
 /** The font to use; saves from before M2.7 only had the dyslexicFont switch. */
