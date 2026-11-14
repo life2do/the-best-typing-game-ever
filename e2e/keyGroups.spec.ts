@@ -6,6 +6,11 @@ import { startLevel } from './helpers';
 async function typeExpected(page: Page, n: number, until?: (ch: string) => boolean): Promise<string[]> {
   const typed: string[] = [];
   for (let i = 0; i < n; i++) {
+    // A long run can finish the level; at the crossroads F keeps playing (more stars).
+    if ((await page.evaluate(() => (window as any).__game.sim.state.phase)) === 'crossroads') {
+      await page.keyboard.press('KeyF');
+      await expect.poll(() => page.evaluate(() => (window as any).__game.sim.state.phase)).toBe('play');
+    }
     const { ch, code, shift } = await page.evaluate(() => {
       const g = (window as any).__game;
       const ch = g.sim.expectedChars()[0] as string;
@@ -20,7 +25,9 @@ async function typeExpected(page: Page, n: number, until?: (ch: string) => boole
   return typed;
 }
 
-test('capitals with Shift and editing keys count as correct; the page does not react to them', async ({ page }) => {
+// Level 27's game is picked by the (random) campaign seed; run it as a one-line game and as a targeting game.
+for (const forced of ['template.pulse-runner', 'template.tower-defence'])
+test(`capitals with Shift (${forced.replace('template.', '')}) and editing keys count as correct; the page does not react to them`, async ({ page }) => {
   test.setTimeout(150_000);
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
@@ -30,7 +37,11 @@ test('capitals with Shift and editing keys count as correct; the page does not r
   await expect(page.locator('.intro')).toBeVisible();
 
   // Level 27 (Capitals): the intro names the group; typing capitals with Shift is correct.
-  await page.evaluate(() => (window as any).__game.startLevel(27, false));
+  await page.evaluate((t) => {
+    const g = (window as any).__game;
+    g.camp.levels[26] = { ...g.camp.levels[26], templateId: t, view: t === 'template.tower-defence' ? 'iso' : '2d' };
+    return g.startLevel(27, false);
+  }, forced);
   await expect(page.locator('.intro h2')).toContainText('Level 27: Capitals');
   await startLevel(page);
   const typed = await typeExpected(page, 120, (c) => /[A-Z]/.test(c));
@@ -41,16 +52,26 @@ test('capitals with Shift and editing keys count as correct; the page does not r
   const s27 = await totals();
   expect(s27.errors).toBe(0);
   expect(s27.correct).toBe(typed.length);
-  // A capital typed without Shift is a mistake: type up to the next capital, then press it without Shift.
-  for (let i = 0; i < 200; i++) {
-    const ch = await page.evaluate(() => (window as any).__game.sim.expectedChars()[0] as string);
-    if (/[A-Z]/.test(ch)) break;
-    await typeExpected(page, 1);
+  // A capital typed without Shift is a mistake: type up to a capital, then press it without Shift. Pick a
+  // capital whose lower-case letter is not also a valid next key: in a targeting game it would correctly
+  // start another target instead of counting as a mistake.
+  let code = '';
+  for (let i = 0; i < 300 && !code; i++) {
+    // Typing on can finish the level (180 characters); at the crossroads F keeps playing for more stars.
+    if ((await page.evaluate(() => (window as any).__game.sim.state.phase)) === 'crossroads') {
+      await page.keyboard.press('KeyF');
+      await expect.poll(() => page.evaluate(() => (window as any).__game.sim.state.phase)).toBe('play');
+    }
+    code = await page.evaluate(() => {
+      const g = (window as any).__game;
+      if (g.sim.state.phase !== 'play') return '';
+      const exp = g.sim.expectedChars() as string[];
+      const cap = exp.find((c) => /[A-Z]/.test(c) && !exp.includes(c.toLowerCase()));
+      return cap ? (g.sim.setup.language.codeOf[cap] as string) : '';
+    });
+    if (!code) await typeExpected(page, 1);
   }
-  const code = await page.evaluate(() => {
-    const g = (window as any).__game;
-    return g.sim.setup.language.codeOf[g.sim.expectedChars()[0]] as string;
-  });
+  expect(code, 'a capital to press without Shift').not.toBe('');
   await page.keyboard.press(code);
   await expect.poll(async () => (await totals()).errors).toBe(1);
 
