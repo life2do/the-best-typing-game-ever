@@ -35,7 +35,10 @@ test('capitals with Shift and editing keys count as correct; the page does not r
   await startLevel(page);
   const typed = await typeExpected(page, 120, (c) => /[A-Z]/.test(c));
   expect(typed.some((c) => /[A-Z]/.test(c))).toBe(true);
-  const s27 = await page.evaluate(() => (window as any).__game.sim.state.sm);
+  // Level-wide totals: the per-stage counters (state.sm) reset when a stage ends, and with a random
+  // campaign seed the first capital can come after the first stage.
+  const totals = () => page.evaluate(() => { const s = (window as any).__game.sim.state; return { correct: s.correctTotal as number, errors: s.errorTotal as number }; });
+  const s27 = await totals();
   expect(s27.errors).toBe(0);
   expect(s27.correct).toBe(typed.length);
   // A capital typed without Shift is a mistake: type up to the next capital, then press it without Shift.
@@ -49,7 +52,7 @@ test('capitals with Shift and editing keys count as correct; the page does not r
     return g.sim.setup.language.codeOf[g.sim.expectedChars()[0]] as string;
   });
   await page.keyboard.press(code);
-  await expect.poll(() => page.evaluate(() => (window as any).__game.sim.state.sm.errors)).toBe(1);
+  await expect.poll(async () => (await totals()).errors).toBe(1);
 
   // Level 33 (Editing keys): Enter, Backspace and Tab are typed like letters and don't move focus or navigate.
   await page.evaluate(() => (window as any).__game.startLevel(33, false));
@@ -58,7 +61,7 @@ test('capitals with Shift and editing keys count as correct; the page does not r
   const url = page.url();
   const typed33 = await typeExpected(page, 400, (c) => /[\b\n\t]/.test(c));
   expect(typed33.some((c) => /[\b\n\t]/.test(c))).toBe(true);
-  const s33 = await page.evaluate(() => (window as any).__game.sim.state.sm);
+  const s33 = await totals();
   expect(s33.errors).toBe(0);
   expect(page.url()).toBe(url);
   expect(await page.evaluate(() => document.activeElement === document.body || document.activeElement === null)).toBe(true);

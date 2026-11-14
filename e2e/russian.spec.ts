@@ -23,7 +23,8 @@ test('a Russian player types by key position; the intro and keyboard are Russian
     await page.keyboard.press(code);
     await page.waitForTimeout(60);
   }
-  const s = await page.evaluate(() => (window as any).__game.sim.state.sm);
+  // Level-wide totals (the per-stage counters reset when a stage ends).
+  const s = await page.evaluate(() => { const st = (window as any).__game.sim.state; return { correct: st.correctTotal as number, errors: st.errorTotal as number }; });
   expect(s.correct).toBe(12);
   expect(s.errors).toBe(0);
   const lang = await page.evaluate(() => (window as any).__game.profile.campaign.language);
