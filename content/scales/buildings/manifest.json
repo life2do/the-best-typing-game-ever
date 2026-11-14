@@ -1,0 +1,336 @@
+{
+  "id": "scale.buildings",
+  "kind": "complexity-scale",
+  "version": 1,
+  "license": "CC0-1.0",
+  "authors": [
+    "agent:claude"
+  ],
+  "prompt": "PROMPT.md",
+  "description": "Buildings scale: from a tent to a floating city.",
+  "icon": "🏠",
+  "name": {
+    "en": "Buildings",
+    "ru": "Здания"
+  },
+  "steps": [
+    {
+      "tier": 1,
+      "name": {
+        "en": "tent",
+        "ru": "палатка"
+      },
+      "tts": {
+        "en": "You are a tent!",
+        "ru": "Ты — палатка!"
+      },
+      "model": "procedural:buildings-1",
+      "icon": "⛺"
+    },
+    {
+      "tier": 2,
+      "name": {
+        "en": "hut",
+        "ru": "хижина"
+      },
+      "tts": {
+        "en": "You are a hut!",
+        "ru": "Ты — хижина!"
+      },
+      "model": "procedural:buildings-2",
+      "icon": "🛖"
+    },
+    {
+      "tier": 3,
+      "name": {
+        "en": "house",
+        "ru": "дом"
+      },
+      "tts": {
+        "en": "You are a house!",
+        "ru": "Ты — дом!"
+      },
+      "model": "procedural:buildings-3",
+      "icon": "🏠"
+    },
+    {
+      "tier": 4,
+      "name": {
+        "en": "castle",
+        "ru": "замок"
+      },
+      "tts": {
+        "en": "You are a castle!",
+        "ru": "Ты — замок!"
+      },
+      "model": "procedural:buildings-4",
+      "icon": "🏰"
+    },
+    {
+      "tier": 5,
+      "name": {
+        "en": "skyscraper",
+        "ru": "небоскрёб"
+      },
+      "tts": {
+        "en": "You are a skyscraper!",
+        "ru": "Ты — небоскрёб!"
+      },
+      "model": "procedural:buildings-5",
+      "icon": "🏙️"
+    },
+    {
+      "tier": 6,
+      "name": {
+        "en": "space station",
+        "ru": "космическая станция"
+      },
+      "tts": {
+        "en": "You are a space station!",
+        "ru": "Ты — космическая станция!"
+      },
+      "model": "procedural:buildings-6",
+      "icon": "🛰️"
+    },
+    {
+      "tier": 7,
+      "name": {
+        "en": "floating city",
+        "ru": "летающий город"
+      },
+      "tts": {
+        "en": "You are a floating city!",
+        "ru": "Ты — летающий город!"
+      },
+      "model": "procedural:buildings-7",
+      "icon": "🌆"
+    }
+  ],
+  "rigHooks": {
+    "idle": "procedural:idle-buildings",
+    "move": "procedural:move-buildings",
+    "jump": "procedural:jump-buildings",
+    "land": "procedural:land-buildings",
+    "stumble": "procedural:stumble-buildings",
+    "celebrate": "procedural:celebrate-buildings",
+    "powerup": "procedural:powerup-buildings"
+  },
+  "customization": [
+    {
+      "slot": "primary-color",
+      "kind": "color",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "secondary-color",
+      "kind": "color",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "pattern",
+      "kind": "pattern",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "size",
+      "kind": "size",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "accessory",
+      "kind": "accessory",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "trail",
+      "kind": "trail",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "aura",
+      "kind": "aura",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    },
+    {
+      "slot": "idle-style",
+      "kind": "idle-style",
+      "unlocks": [
+        {
+          "range": [
+            1,
+            3
+          ],
+          "stars": 0
+        },
+        {
+          "range": [
+            4,
+            7
+          ],
+          "stars": 20
+        },
+        {
+          "range": [
+            8,
+            10
+          ],
+          "stars": 60
+        }
+      ]
+    }
+  ]
+}

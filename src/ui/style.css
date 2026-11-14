@@ -113,6 +113,18 @@ body.cb-patterns .kbd .key.known.f-lm, body.cb-patterns .kbd .key.known.f-rm { b
 .pin-key .digit { font-size: 0.8em; opacity: 0.75; }
 .langs { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
 .langs button.sel { background: #3a86ff; box-shadow: 0 0 0 2px var(--gold); }
+/* avatar customisation (docs/07 Avatar) */
+.avatar-screen .card { max-width: 900px; }
+.avatar-top { display: flex; gap: 16px; align-items: center; justify-content: center; }
+.avatar-preview { width: 200px; height: 200px; background: rgba(255, 255, 255, 0.05); border-radius: 18px; }
+.avatar-themes { display: grid; grid-template-columns: repeat(7, 48px); gap: 6px; }
+.avatar-themes .theme { width: 48px; height: 48px; font-size: 1.6em; padding: 0; background: rgba(255, 255, 255, 0.08); }
+.avatar-themes .theme.sel, .avatar-slot .opt.sel { box-shadow: 0 0 0 3px var(--gold); }
+.avatar-slots { display: grid; gap: 6px; margin-top: 14px; text-align: left; }
+.avatar-slot { display: grid; grid-template-columns: 120px 1fr; align-items: center; gap: 8px; }
+.avatar-slot .opts { display: flex; gap: 4px; flex-wrap: wrap; }
+.avatar-slot .opt { min-width: 36px; height: 30px; padding: 0 6px; font-size: 0.72em; background: rgba(255, 255, 255, 0.1); }
+.avatar-slot .opt.locked { opacity: 0.45; cursor: not-allowed; }
 .row-btns.more { margin-top: 12px; }
 button.small { font-size: 0.85em; padding: 6px 12px; }
 .row-btns { display: flex; gap: 12px; justify-content: center; margin-top: 18px; flex-wrap: wrap; }

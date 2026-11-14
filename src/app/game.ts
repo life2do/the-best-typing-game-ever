@@ -12,7 +12,8 @@ import { templateSim } from '@/sim/templates';
 import { palettes, scales, abilities, illustrations, templates } from '@/content/registry';
 import { RenderHost, TRANSITION_MS } from '@/render/host';
 import { templateViews } from '@/render/registry';
-import { AvatarRig } from '@/avatar/procedural';
+import { AvatarRig, clampToUnlocked, normalizeCustomization } from '@/avatar/procedural';
+import { avatarScreen } from '@/ui/avatarScreen';
 import { Hud } from '@/ui/hud';
 import { h, toast } from '@/ui/dom';
 import { crossroadsScreen, drillOfferScreen, introScreen, nagScreen, pauseScreen, startScreen, wordBookScreen } from '@/ui/screens';
@@ -24,7 +25,7 @@ import { KeyboardInput } from '@/input/keyboard';
 import { AudioEngine, Voice } from '@/audio/audio';
 import {
   DEFAULT_SETTINGS, allSegments, deleteProfile, freshSeed, listProfiles, loadProfileById, loadSegment, migrateProfiles, newProfile, profileSeeds,
-  saveProfile, saveSegment, segmentKey, segmentsFor, startNewRun, weakKeys,
+  saveProfile, saveSegment, segmentKey, segmentsFor, startNewRun, totalStars, weakKeys,
   type Profile, type Segment, type Settings,
 } from '@/storage/profile';
 import { levelTargetWpmP, tierAcc } from '@/typing/tiers';
@@ -164,12 +165,28 @@ export class Game {
         if (c.action === 'new') p = startNewRun(p, freshSeed(), c.tier, c.language);
         await this.play(p);
       }, showBook, {
+        onAvatar: () => this.showAvatar(stored),
         onExport: () => void this.exportProfile(stored),
         onPin: () => this.changePin(stored),
         onSwitch: () => void this.showProfiles(),
         onDelete: () => void this.removeProfile(stored),
       }),
     );
+  }
+
+  private showAvatar(p: Profile): void {
+    const screen = avatarScreen({
+      scales, scaleId: p.avatar.scale, tier: p.tier, custom: p.avatar.customization, stars: totalStars(p),
+      onSave: (scaleId, custom) => {
+        p.avatar = { scale: scaleId, customization: custom };
+        void saveProfile(p).then(() => {
+          toast(this.ui, '🎨 Avatar saved');
+          this.showStart(p);
+        });
+      },
+      onClose: () => this.showStart(p),
+    });
+    this.setOverlay(screen.el);
   }
 
   private async play(p: Profile): Promise<void> {
@@ -265,7 +282,8 @@ export class Game {
   // ------------------------------------------------------------------ levels
   private avatar(): AvatarRig {
     const sc = scales.find((s) => s.id === this.profile.avatar.scale) ?? scales[0];
-    return new AvatarRig(sc, this.profile.tier, this.profile.avatar.customization);
+    // Locked values (e.g. from an edited export) fall back to defaults.
+    return new AvatarRig(sc, this.profile.tier, clampToUnlocked(sc, normalizeCustomization(this.profile.avatar.customization), totalStars(this.profile)));
   }
 
   async startLevel(index: number, transition: boolean): Promise<void> {

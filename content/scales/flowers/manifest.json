@@ -9,14 +9,20 @@
   "prompt": "PROMPT.md",
   "description": "Flowers scale: from a seed to a complex bouquet.",
   "icon": "🌸",
+  "name": {
+    "en": "Flowers",
+    "ru": "Цветы"
+  },
   "steps": [
     {
       "tier": 1,
       "name": {
-        "en": "seed"
+        "en": "seed",
+        "ru": "семечко"
       },
       "tts": {
-        "en": "You are a seed!"
+        "en": "You are a seed!",
+        "ru": "Ты — семечко!"
       },
       "model": "procedural:flowers-1",
       "icon": "🌰"
@@ -24,10 +30,12 @@
     {
       "tier": 2,
       "name": {
-        "en": "sprout"
+        "en": "sprout",
+        "ru": "росток"
       },
       "tts": {
-        "en": "You are a sprout!"
+        "en": "You are a sprout!",
+        "ru": "Ты — росток!"
       },
       "model": "procedural:flowers-2",
       "icon": "🌱"
@@ -35,10 +43,12 @@
     {
       "tier": 3,
       "name": {
-        "en": "bud"
+        "en": "bud",
+        "ru": "бутон"
       },
       "tts": {
-        "en": "You are a bud!"
+        "en": "You are a bud!",
+        "ru": "Ты — бутон!"
       },
       "model": "procedural:flowers-3",
       "icon": "🌷"
@@ -46,10 +56,12 @@
     {
       "tier": 4,
       "name": {
-        "en": "flower"
+        "en": "flower",
+        "ru": "цветок"
       },
       "tts": {
-        "en": "You are a flower!"
+        "en": "You are a flower!",
+        "ru": "Ты — цветок!"
       },
       "model": "procedural:flowers-4",
       "icon": "🌸"
@@ -57,10 +69,12 @@
     {
       "tier": 5,
       "name": {
-        "en": "bush"
+        "en": "bush",
+        "ru": "куст"
       },
       "tts": {
-        "en": "You are a bush!"
+        "en": "You are a bush!",
+        "ru": "Ты — куст!"
       },
       "model": "procedural:flowers-5",
       "icon": "🌿"
@@ -68,10 +82,12 @@
     {
       "tier": 6,
       "name": {
-        "en": "garden"
+        "en": "garden",
+        "ru": "сад"
       },
       "tts": {
-        "en": "You are a garden!"
+        "en": "You are a garden!",
+        "ru": "Ты — сад!"
       },
       "model": "procedural:flowers-6",
       "icon": "🏡"
@@ -79,10 +95,12 @@
     {
       "tier": 7,
       "name": {
-        "en": "bouquet"
+        "en": "bouquet",
+        "ru": "букет"
       },
       "tts": {
-        "en": "You are a bouquet!"
+        "en": "You are a bouquet!",
+        "ru": "Ты — букет!"
       },
       "model": "procedural:flowers-7",
       "icon": "💐"

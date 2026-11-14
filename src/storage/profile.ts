@@ -138,6 +138,13 @@ export async function saveProfile(p: Profile): Promise<void> {
   await db.put('settings', CURRENT_KEY, p.profileId);
 }
 
+/** Stars collected across tiers and levels (unlocks avatar options). */
+export function totalStars(p: Profile): number {
+  let n = 0;
+  for (const levels of Object.values(p.starsByTier ?? {})) for (const s of Object.values(levels)) n += s;
+  return n;
+}
+
 /** Seeds of every campaign this profile has played. */
 export const profileSeeds = (p: Profile) => [...new Set([p.campaign.seed, ...(p.pastSeeds ?? [])])];
 
