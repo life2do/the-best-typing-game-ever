@@ -6,7 +6,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { readITXt } from '../src/proof/png';
-import { startLevel } from './helpers';
+import { nextLevelIntro, startLevel } from './helpers';
 
 async function finishLevel(page: Page): Promise<void> {
   const end = Date.now() + 120_000;
@@ -37,7 +37,7 @@ test('artifact: scratch letters, save the PNG with proof, verify it fully and by
   await page.locator('button', { hasText: /^▶ Start$/ }).click();
   await startLevel(page);
   await finishLevel(page);
-  await expect(page.locator('.intro')).toBeVisible();
+  await nextLevelIntro(page);
 
   // The artifact: every learned letter starts under foil; typing a letter scratches it free. (Shown with no
   // level running, as in the game: a running level keeps adding snapshots, which moves the fingerprint on.)

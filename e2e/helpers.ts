@@ -17,3 +17,16 @@ export async function startLevel(page: Page): Promise<void> {
   }
   throw new Error('level did not start after pressing F and J');
 }
+
+/**
+ * After finishing a level: wait for the next level's intro. A fresh level may first offer a fix-it drill for
+ * a key that looked weak (more mistakes, or slower than 1.5× the median — uneven timing on a busy machine
+ * can do that); decline it with J ("Not now") and the intro follows.
+ */
+export async function nextLevelIntro(page: Page): Promise<void> {
+  await expect(page.locator('.intro, .drill-offer').first()).toBeVisible({ timeout: 20_000 });
+  if (await page.locator('.drill-offer').count()) {
+    await page.keyboard.press('KeyJ');
+    await expect(page.locator('.intro')).toBeVisible();
+  }
+}
