@@ -6,7 +6,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { readITXt } from '../src/proof/png';
-import { startLevel } from './helpers';
+import { nextLevelIntro, startLevel } from './helpers';
 
 async function finishLevel(page: Page): Promise<void> {
   const end = Date.now() + 120_000;
@@ -37,7 +37,7 @@ test('artifact: scratch letters, save the PNG with proof, verify it fully and by
   await page.locator('button', { hasText: /^▶ Start$/ }).click();
   await startLevel(page);
   await finishLevel(page);
-  await expect(page.locator('.intro')).toBeVisible();
+  await nextLevelIntro(page);
 
   // The artifact: every learned letter starts under foil; typing a letter scratches it free. (Shown with no
   // level running, as in the game: a running level keeps adding snapshots, which moves the fingerprint on.)
@@ -131,4 +131,30 @@ test('a tampered proof fails the fingerprint check', async ({ page }, info) => {
   await page.goto('/verify/');
   await page.locator('[data-verify="file"]').setInputFiles(p);
   await expect(page.locator('[data-check="chain"]')).toHaveClass(/bad/);
+});
+
+test('scratching frees a letter by the clock, even when the page draws only one frame a second', async ({ page }) => {
+  // CI regression: the scratch used to advance per animation frame (~17 frames), so on a slow software-
+  // rendered page a letter could take longer than the test waited. Frames are slowed to 1 per second here.
+  await page.addInitScript(() => {
+    window.requestAnimationFrame = (cb: FrameRequestCallback) => window.setTimeout(() => cb(performance.now()), 1000);
+  });
+  await page.goto('/');
+  await page.locator('input[aria-label="Your name"]').fill('Sol');
+  await page.locator('.scale button').nth(2).click();
+  await page.locator('button', { hasText: /^▶ Start$/ }).click();
+  await expect(page.locator('.intro')).toBeVisible({ timeout: 30_000 });
+  await page.evaluate(async () => {
+    const g = (window as any).__game;
+    // A finished level 1 so the artifact has letters to scratch.
+    const seg = { ...g.seg, complete: true };
+    const { saveSegment } = await (await import(/* @vite-ignore */ '/src/storage/profile.ts' as string));
+    await saveSegment(seg);
+    await g.showProfiles();
+    await g.showArtifact(g.profile);
+  });
+  await expect(page.locator('.artifact-progress')).toContainText('0 / 2');
+  await page.keyboard.press('KeyF');
+  await page.keyboard.press('KeyJ');
+  await expect(page.locator('.artifact-progress')).toContainText('Every letter is free! (2)', { timeout: 5_000 });
 });

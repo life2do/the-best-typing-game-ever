@@ -97,3 +97,25 @@ key groups before the full campaign, all games and languages before the artifact
 - More havocs, styles and palettes; remix and boss-rush levels; projection shuffle.
 - Optional built-in TTS engine (WebAssembly).
 - Additional language packs as data.
+
+## Improvements track (parked ideas)
+
+Ideas discussed and judged feasible, waiting for a slot. Each notes what was decided so far.
+
+### Colour the next letter by finger
+A setting that colours the letter to press with its finger's colour from the keyboard hint, instead of always gold.
+
+- **Feasibility:** viable.
+  - **Prompt bar:** a small change (the HUD already knows the next character and its finger).
+  - **In-world letters:** about 9 of the 15 games mark the letter to type in gold inside the scene; they would share a `fingerColour(char)` helper (view-only, so replays and proofs are unaffected).
+- **Contrast:** dark text stays readable on every finger colour (purple 4.6 : 1, blue 5.4 : 1, teal 8.7 : 1, orange 9.2 : 1, thumb grey 6.6 : 1).
+- **Must solve: mistake feedback.** Today a mistake turns the letter red, but purple and blue are almost as bright as the error red (contrast 1.04–1.14), so the error state needs a non-colour cue (red outline + shake, or red letter on white).
+- **Other notes:**
+  - give Space (thumb grey) an outline so it stays visible;
+  - apply the colour-blind key patterns to the highlight;
+  - in targeting games keep gold for the chosen word and colour only its next letter;
+  - colour shows the finger, not the hand (both index fingers are orange), consistent with the keyboard hint.
+- **Open decisions:**
+  - scope: prompt bar only, or in-world letters too;
+  - default: off, or fade back to gold with accuracy like the keyboard hint, since it is a crutch the hint deliberately fades;
+  - which mistake cue.

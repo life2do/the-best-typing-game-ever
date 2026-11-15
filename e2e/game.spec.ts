@@ -1,5 +1,5 @@
 /** End-to-end: start → intro → play a level by keyboard → crossroads → next level → verify page. */
-import { startLevel } from './helpers';
+import { nextLevelIntro, startLevel } from './helpers';
 import { test, expect, type Page } from '@playwright/test';
 
 const CODE: Record<string, string> = { f: 'KeyF', j: 'KeyJ', d: 'KeyD', k: 'KeyK', s: 'KeyS', l: 'KeyL', a: 'KeyA', ' ': 'Space', ';': 'Semicolon' };
@@ -37,6 +37,7 @@ test('play level 1, choose the next world, then verify the run', async ({ page }
   await typeUntil(page, 'crossroads', 120_000);
   await expect(page.locator('.crossroads')).toBeVisible();
   await page.keyboard.press('KeyJ');
+  await nextLevelIntro(page);
   await expect(page.locator('.intro .newkey')).toHaveText(['D'], { timeout: 10_000 });
   await page.goto('/verify/');
   await page.locator('.runs button').first().click();
