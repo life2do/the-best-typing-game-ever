@@ -31,6 +31,8 @@
 
 *Debug mode (parent area → Testing):* shows the level label next to the bar (level number · game · palette) and lets a tester skip levels: holding F and J together for 0.3 s opens the crossroads screen — J moves on to the next level, F keeps playing. A skipped level earns nothing (no stars, results or stats) and its segment is deleted, so runs, replays and proofs only contain played levels. Not available in hot-seat parties or fix-it drills. The hold is needed because fast typing often overlaps F and J for a moment.
 
+*Name and speed goal:* the pause menu has a Player section (name, speed goal = tier, with the theme's icon and WPM per step), saved at once. The player home's Continue also saves the name and the chosen speed goal (before, only New run used the goal). A level in progress keeps the goal it started with (its segment's tier, so its replay stays exact); the new goal applies from the next level, which the menu says. Automatic promotions still add to the tier history; manual changes don't.
+
 ## Word art and word book
 
 - While a **real word** (from the curated lists) is typed, its picture is revealed **behind the game world**: the world's sky is transparent and the page paints the background colour, so the picture sits between them.
