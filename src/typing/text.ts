@@ -4,6 +4,7 @@
  * curated real words once enough are typeable, and at most one special (ability) word per stage.
  */
 import type { Rng } from '@/core/rng';
+import { isBlocked, type Blocklist } from './blocklist';
 import { floorDiv } from '@/core/fixed';
 
 export interface WordSpan {
@@ -27,8 +28,7 @@ export interface TextParams {
   length: number;
   words: string[]; // typeable common words
   specials: { word: string; ability: string }[]; // typeable, not yet collected
-  blockWords: string[];
-  blockSubstrings: string[];
+  blocklist: Blocklist;
   /** Key-group characters known so far (capitals, punctuation, digits, editing keys): added by decoration. */
   groupChars?: string[];
 }
@@ -38,12 +38,7 @@ export function typeable(word: string, letters: readonly string[]): boolean {
   return true;
 }
 
-export function isBlocked(w: string, blockWords: readonly string[], blockSubstrings: readonly string[]): boolean {
-  const lw = w.toLowerCase();
-  if (blockWords.includes(lw)) return true;
-  for (const s of blockSubstrings) if (lw.includes(s)) return true;
-  return false;
-}
+export { isBlocked } from './blocklist';
 
 export function generateStageText(rng: Rng, p: TextParams): StageText {
   const all = p.letters.filter((c) => c !== ' ');
@@ -56,7 +51,7 @@ export function generateStageText(rng: Rng, p: TextParams): StageText {
   // New-key share falls from 40% (first stage) to 15% (last stage).
   const last = Math.max(1, p.stageCount - 1);
   const newShare = 400 - floorDiv(250 * Math.min(p.stageIndex, last), last);
-  const words = p.words.filter((w) => !isBlocked(w, p.blockWords, p.blockSubstrings));
+  const words = p.words.filter((w) => !isBlocked(w, p.blocklist));
   const wordShare = words.length >= 3 ? Math.min(700, 200 + words.length * 20) : 0;
   const weights = letters.map((c) => (p.weakKeys.includes(c) ? 2 : 1));
   const newKeys = p.newKeys.filter((c) => c !== ' ' && letters.includes(c));
@@ -82,9 +77,13 @@ export function generateStageText(rng: Rng, p: TextParams): StageText {
       for (let i = 0; i < n; i++) {
         chunk += newKeys.length && rng.chance(newShare) ? rng.pick(newKeys) : rng.weighted(letters, weights);
       }
-      if (isBlocked(chunk, p.blockWords, p.blockSubstrings)) continue;
+      if (isBlocked(chunk, p.blocklist)) continue;
     }
     const pieces = extras.length && !ability ? decorate(rng, chunk, newExtras, oldExtras, extras, newShare) : [chunk];
+    // The only decoration that changes a letter is a capital replacing the first one: check that result too.
+    // (Other decorations only add symbols around or between the letters, which can't make a blocked word.)
+    const swapped = pieces.length === 1 && pieces[0].length === chunk.length && pieces[0].toLowerCase() !== chunk.toLowerCase();
+    if (!ability && swapped && isBlocked(pieces[0], p.blocklist)) continue;
     for (const piece of pieces) {
       const start = len + (chunks.length ? 1 : 0);
       chunks.push(piece);

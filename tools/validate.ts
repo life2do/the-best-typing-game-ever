@@ -6,6 +6,7 @@ import Ajv2020 from 'ajv/dist/2020.js';
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { ROOT, scanContent } from './content';
+import { blockSalt, emptyBlocklist, isBlocked, parseBlocklist } from '../src/typing/blocklist';
 import { canonicalize } from '../src/core/canonical';
 
 const errors: string[] = [];
@@ -98,13 +99,19 @@ for (const it of items.filter((i) => i.manifest.kind === 'language-pack')) {
     if (text.includes('\r')) err(`${m.id}: ${rel} has CR line endings`);
     return text.split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('#'));
   };
-  const block = read(m.blocklist);
-  const blockWords = block.filter((b) => !b.startsWith('~'));
-  const blockSub = block.filter((b) => b.startsWith('~')).map((b) => b.slice(1));
+  // Hashed blocklist (no readable words in the repo): every line must parse.
+  let blocklist = emptyBlocklist(blockSalt(m.id));
+  try {
+    const p = join(dir, m.blocklist);
+    if (!existsSync(p)) err(`${m.id}: missing file ${m.blocklist}`);
+    else blocklist = parseBlocklist(readFileSync(p, 'utf8'), blockSalt(m.id));
+  } catch (e) {
+    err(`${m.id}: ${m.blocklist}: ${(e as Error).message}`);
+  }
   const chars = new Set(Object.values(m.layout).map((k: any) => k.char));
   for (const [tag, rel] of Object.entries(m.words) as [string, string][]) {
     for (const w of read(rel)) {
-      if (blockWords.includes(w) || blockSub.some((s) => w.includes(s))) err(`${m.id}: word "${w}" in ${tag} is blocklisted`);
+      if (isBlocked(w, blocklist)) err(`${m.id}: word "${w}" in ${tag} is blocklisted`);
       for (const ch of w) if (!chars.has(ch)) err(`${m.id}: word "${w}" in ${tag} uses a character not on the layout`);
     }
   }
@@ -119,7 +126,7 @@ for (const it of items.filter((i) => i.manifest.kind === 'language-pack')) {
     for (const w of words) {
       const levels = [...w].map((ch) => (m.order as string[][]).findIndex((keys) => keys.includes(ch)));
       if (levels.some((l) => l < 0)) err(`${ab.id}: trigger word "${w}" not typeable in ${m.id}`);
-      if (blockWords.includes(w) || blockSub.some((s) => w.includes(s))) err(`${ab.id}: trigger word "${w}" is blocklisted`);
+      if (isBlocked(w, blocklist)) err(`${ab.id}: trigger word "${w}" is blocklisted`);
     }
   }
 }

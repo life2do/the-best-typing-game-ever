@@ -569,7 +569,7 @@
     "common": "words/common.txt",
     "easter-egg": "words/easter-egg.txt"
   },
-  "blocklist": "words/blocklist.txt",
+  "blocklist": "words/blocklist.hashes",
   "ui": {
     "pressFJ": "Put your fingers on F and J, then press them together",
     "yourTurn": "Your turn",

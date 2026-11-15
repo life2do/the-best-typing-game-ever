@@ -3,6 +3,7 @@
  * import.meta.glob at build time; adding a folder adds content without editing any registry.
  * This module is Node-safe (no Three.js); renderer modules are discovered in src/render/registry.ts.
  */
+import { blockSalt, parseBlocklist } from '@/typing/blocklist';
 import type {
   VoiceEffectManifest,
   Illustration, IllustrationManifest,
@@ -13,7 +14,7 @@ import type {
 const json = <T>(g: Record<string, unknown>) => Object.values(g) as T[];
 
 const languageManifests = json<LanguagePackManifest>(import.meta.glob('../../content/languages/*/manifest.json', { eager: true, import: 'default' }));
-const languageFiles = import.meta.glob('../../content/languages/*/words/*.txt', { eager: true, query: '?raw', import: 'default' }) as Record<string, string>;
+const languageFiles = import.meta.glob(['../../content/languages/*/words/*.txt', '../../content/languages/*/words/*.hashes'], { eager: true, query: '?raw', import: 'default' }) as Record<string, string>;
 
 export const templates = json<LevelTemplateManifest>(import.meta.glob('../../content/templates/*/manifest.json', { eager: true, import: 'default' }));
 export const styles = json<RenderStyleManifest>(import.meta.glob('../../content/styles/*/manifest.json', { eager: true, import: 'default' }));
@@ -60,7 +61,6 @@ export function loadLanguage(id: string): LanguagePack {
   };
   const wordLists: Record<string, string[]> = {};
   for (const [tag, rel] of Object.entries(m.words)) wordLists[tag] = parseWordList(file(rel));
-  const block = parseWordList(file(m.blocklist));
   const codeOf: Record<string, string> = {};
   const needsShift: Record<string, true> = {};
   for (const [code, k] of Object.entries(m.layout)) if (!(k.char in codeOf)) codeOf[k.char] = code;
@@ -72,8 +72,7 @@ export function loadLanguage(id: string): LanguagePack {
   return {
     ...m,
     wordLists,
-    blockWords: block.filter((w) => !w.startsWith('~')),
-    blockSubstrings: block.filter((w) => w.startsWith('~')).map((w) => w.slice(1)),
+    blocklist: parseBlocklist(file(m.blocklist), blockSalt(m.id)),
     codeOf,
     needsShift,
   };

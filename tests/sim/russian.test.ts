@@ -1,4 +1,5 @@
 /** Russian language pack and campaign (M2.4). */
+import { isBlocked } from '@/typing/blocklist';
 import { describe, expect, it } from 'vitest';
 import { campaignFor, language, levelSetup } from '@/campaign/setup';
 import { templateSim } from '@/sim/templates';
@@ -28,7 +29,7 @@ describe('Russian pack', () => {
   it('has only Russian, blocklist-clean words', () => {
     for (const w of ru.wordLists.common) {
       expect(w).toMatch(/^[а-яё]+$/);
-      for (const b of ru.blockSubstrings) expect(w.includes(b), `${w} contains ${b}`).toBe(false);
+      expect(isBlocked(w, ru.blocklist), w).toBe(false);
     }
     expect(ru.wordLists.common.length).toBeGreaterThan(150);
   });

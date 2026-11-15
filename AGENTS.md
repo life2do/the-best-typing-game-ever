@@ -30,7 +30,7 @@ Same pattern: manifest + code (`style.ts` default-exporting `RenderStyle`, `havo
 
 ### Add a language
 1. `content/languages/<id>/manifest.json`: alphabet, `layout` (physical `code` → char, finger, row), `order` (+ variants), `keyGroups`, UI and TTS strings.
-2. `words/*.txt` per tag (`ability:jump`, `common`, `easter-egg`) and `blocklist.txt`.
+2. `words/*.txt` per tag (`ability:jump`, `common`, `easter-egg`) and `words/blocklist.hashes`: a **hashed** blocklist (no readable words in the repo or the game). Add entries with `npm run blocklist -- add <lang>` (the word is typed without being shown; `--sub` blocks it anywhere inside words; `--category <label>` adds a harmless label); `npm run blocklist -- check <lang>` tests a word.
 3. `content/campaign/<id>.json`: slot constraints for that alphabet length.
 4. Run `npm run validate` (checks every ability has ≥ 1 trigger word typeable by its target slot).
 
@@ -52,6 +52,7 @@ Add the file next to its item plus `<name>.asset.json` (schema: `asset-manifest.
 |---|---|
 | `npm run dev` | dev server |
 | `npm run validate` | schemas, licenses, word blocklist, slot feasibility |
+| `npm run blocklist -- add\|check <lang>` | add a word to / test a word against a language's hashed blocklist (input hidden) |
 | `npm run sim -- --template X --tier 4 --profile pass --seed 1` | headless deterministic run with bot typist (profiles: see docs/10 §5) |
 | `npm test` | unit + simulation tests |
 | `npm run e2e` | Playwright: cross-browser determinism + game flow (`npm run e2e -- --project=chromium --trace off` locally) |

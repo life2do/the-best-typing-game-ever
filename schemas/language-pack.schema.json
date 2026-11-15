@@ -131,7 +131,9 @@
       }
     },
     "blocklist": {
-      "type": "string"
+      "type": "string",
+      "pattern": "\\.hashes$",
+      "description": "Hashed blocklist file (src/typing/blocklist.ts): lines 'w <hash>' (whole word) or 's <length> <hash>' (anywhere inside a word); salted SHA-256 of the NFC lower-case word. Never a plain-text word list."
     },
     "ui": {
       "type": "object",
