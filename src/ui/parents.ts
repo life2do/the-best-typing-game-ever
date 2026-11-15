@@ -54,11 +54,22 @@ export function parentScreen(current: Profile | undefined, players: Profile[], a
       });
       return el;
     };
+    const debugBox = () => {
+      const el = h('input', { type: 'checkbox', 'data-parent': 'debug' }) as HTMLInputElement;
+      el.checked = !!s.debug;
+      el.addEventListener('change', () => {
+        s = { ...s, debug: el.checked };
+        a.onSettings(s);
+      });
+      return el;
+    };
     limits.push(
       h('h3', {}, `Limits for ${current.name || 'this player'}`),
       h('label', {}, 'Stretch break every', sel('breakMinutes', [[10, '10 minutes'], [15, '15 minutes'], [20, '20 minutes'], [30, '30 minutes'], [45, '45 minutes'], [60, '60 minutes'], [100000, 'never']])),
       h('label', {}, 'Break length', sel('breakSeconds', [[60, '1 minute'], [120, '2 minutes'], [180, '3 minutes'], [300, '5 minutes']])),
       h('label', {}, 'Play time per session', sel('sessionMinutes', [[0, 'no limit'], [15, '15 minutes'], [30, '30 minutes'], [45, '45 minutes'], [60, '1 hour'], [90, '1½ hours']])),
+      h('h3', {}, 'Testing'),
+      h('label', {}, 'Debug mode: show the level name; holding F + J together skips the level (no stars, not saved)', debugBox()),
     );
   }
   const list = h('div', { class: 'parent-players' },

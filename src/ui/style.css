@@ -50,10 +50,26 @@ button:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
 body.reduced-motion .rhythm-pulse.bad { animation: none; }
 
 /* top bar */
-.topbar { position: fixed; top: 14px; left: 18px; right: 18px; display: flex; justify-content: space-between; align-items: center; gap: 12px; pointer-events: none !important; font-weight: 700; text-shadow: 0 2px 6px #000; }
-.topbar .stages span { display: inline-block; width: 14px; height: 14px; border-radius: 50%; background: rgba(255, 255, 255, 0.25); margin-right: 6px; }
-.topbar .stages span.done { background: var(--good); }
-.topbar .stages span.now { background: var(--gold); box-shadow: 0 0 10px var(--gold); }
+.topbar { position: fixed; top: 52px; left: 18px; right: 18px; display: flex; justify-content: space-between; align-items: center; gap: 12px; pointer-events: none !important; font-weight: 700; text-shadow: 0 2px 6px #000; }
+/* level progress bar: one section per stage, goal flag, the avatar walking along it */
+.levelbar { position: fixed; top: 12px; left: 18px; right: 18px; display: flex; align-items: center; gap: 14px; pointer-events: none !important; }
+.levelbar-lane { position: relative; flex: 1; height: 30px; }
+.levelbar-track { position: absolute; left: 0; right: 0; top: 18px; height: 10px; }
+.levelbar-sec { position: absolute; top: 0; bottom: 0; border-radius: 6px; background: rgba(255, 255, 255, 0.18); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35); border-right: 3px solid rgba(5, 8, 20, 0.85); box-sizing: border-box; overflow: visible; }
+.levelbar-sec .fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 6px; background: var(--good); }
+.levelbar-sec.repeat .fill { background: #ffb347; }
+.levelbar-sec.bonus { background: rgba(255, 209, 102, 0.18); }
+.levelbar-sec.bonus .fill { background: var(--gold); }
+.levelbar-star { position: absolute; right: -9px; top: -7px; font-size: 18px; line-height: 1; color: rgba(255, 255, 255, 0.35); text-shadow: 0 1px 4px #000; }
+.levelbar-star.pending { color: #fff7d6; animation: breathe 1.6s ease-in-out infinite; }
+.levelbar-star.earned { color: var(--gold); text-shadow: 0 0 8px var(--gold); }
+.levelbar-flag { position: absolute; top: -2px; transform: translateX(-30%); font-size: 18px; filter: grayscale(0.6); }
+.levelbar-flag.reached { filter: drop-shadow(0 0 6px var(--gold)); }
+.levelbar-avatar { position: absolute; top: -4px; left: 0; transform: translateX(-50%); font-size: 22px; line-height: 1; transition: left 0.2s linear; text-shadow: 0 2px 6px #000; }
+body.reduced-motion .levelbar-avatar { transition: none; }
+body.reduced-motion .levelbar-star.pending { animation: none; }
+.levelbar-debug { font: 700 0.85em var(--mono); background: rgba(255, 80, 120, 0.85); color: #fff; padding: 3px 8px; border-radius: 8px; white-space: nowrap; }
+.levelbar-debug.hidden { display: none; }
 .topbar .stars { color: var(--gold); font-size: 1.4em; letter-spacing: 2px; }
 .topbar .powerups span { margin-left: 8px; font-size: 1.3em; }
 .topbar .stats { opacity: 0.85; font-size: 0.9em; }
