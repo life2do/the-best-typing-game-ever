@@ -29,6 +29,8 @@ export interface Settings {
   sessionMinutes?: number;
   /** Chosen collectible voice effect id (M2.8), '' = normal voice. */
   voiceEffect?: string;
+  /** Debug mode (parent area): level label next to the progress bar; F + J together skips the level. */
+  debug?: boolean;
 }
 
 /** The font to use; saves from before M2.7 only had the dyslexicFont switch. */
@@ -180,6 +182,7 @@ export function startNewRun(p: Profile, seed: string, tier: number, language = p
 export const segmentKey = (seed: string, level: number) => `${seed}:${String(level).padStart(3, '0')}`;
 export const loadSegment = (key: string) => db.get<Segment>('segments', key);
 export const saveSegment = (s: Segment) => db.put('segments', s.key, s);
+export const deleteSegment = (key: string) => db.del('segments', key);
 export async function segmentsFor(seed: string): Promise<Segment[]> {
   const all = await db.all<Segment>('segments');
   return all.filter((s) => s.campaignSeed === seed).sort((a, b) => a.level - b.level);

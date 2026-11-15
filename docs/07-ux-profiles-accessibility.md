@@ -25,7 +25,11 @@
 
 - **Rhythm frame** around the screen (typing pulse + steadiness glow), see [02](02-core-gameplay.md).
 - **Keyboard overlay** at the bottom: finger colours, next key highlighted, opacity linked to accuracy. A setting allows "always on" / "auto" / "off (expert)".
-- Minimal corner info: stage dots, stars for this level, active power-up timers.
+- Minimal corner info: the level progress bar (below), stars for this level, active power-up timers.
+
+*Level progress bar:* replaces the stage dots. It spans the top of the screen: one section per stage sized by its length in characters (40 / 60 / 80), a 🏁 goal flag, and the player's avatar icon (their theme's step) walking along it, so the player sees how long the level will last. It behaves like a target indicator: while the star target isn't met it never reaches the flag — a missed last stage adds an orange repeat section before the flag and the bar re-scales. After the flag (gold once reached), "stay for more stars" adds a gold bonus section ending in a shiny star (lit when that round beats the best stars). Model: `src/ui/progress.ts` (`barModel`).
+
+*Debug mode (parent area → Testing):* shows the level label next to the bar (level number · game · palette) and lets a tester skip levels: holding F and J together for 0.3 s opens the crossroads screen — J moves on to the next level, F keeps playing. A skipped level earns nothing (no stars, results or stats) and its segment is deleted, so runs, replays and proofs only contain played levels. Not available in hot-seat parties or fix-it drills. The hold is needed because fast typing often overlaps F and J for a moment.
 
 ## Word art and word book
 

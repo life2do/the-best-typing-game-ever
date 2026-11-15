@@ -18,9 +18,29 @@ export class KeyboardInput {
   private mismatchHandlers: ((typed: string, expected: string) => void)[] = [];
   private mismatchVotes = 0;
   enabled = true;
+  /** Physical keys currently held down, with the time (event timestamp) each went down. */
+  readonly held = new Map<string, number>();
+  private chordHandlers: ((a: string, b: string, overlapMs: number) => void)[] = [];
 
   constructor(private lang: LanguagePack) {
     addEventListener('keydown', (e) => this.onKey(e), { capture: true });
+    addEventListener('keyup', (e) => this.onKeyUp(e), { capture: true });
+    addEventListener('blur', () => this.held.clear());
+  }
+
+  /**
+   * When a held key is released while others are held, reports how long they were all down together,
+   * measured with the events' own timestamps (so a busy page can't shorten or lengthen the hold).
+   */
+  private onKeyUp(e: KeyboardEvent): void {
+    const down = this.held.get(e.code);
+    this.held.delete(e.code);
+    if (down === undefined) return;
+    for (const [other, at] of this.held) for (const h of this.chordHandlers) h(e.code, other, e.timeStamp - Math.max(down, at));
+  }
+
+  onChordRelease(h: (a: string, b: string, overlapMs: number) => void): void {
+    this.chordHandlers.push(h);
   }
 
   setLanguage(lang: LanguagePack): void {
@@ -28,6 +48,7 @@ export class KeyboardInput {
   }
 
   onKey(e: KeyboardEvent): void {
+    if (!this.held.has(e.code)) this.held.set(e.code, e.timeStamp);
     const t = e.target as HTMLElement | null;
     if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;
     if (e.code === 'Escape') {

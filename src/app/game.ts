@@ -28,7 +28,7 @@ import { KeyboardInput } from '@/input/keyboard';
 import { AudioEngine, Voice } from '@/audio/audio';
 import { activeVoiceEffect, effectOfAbility, unlockedVoiceEffects } from '@/audio/voiceEffects';
 import {
-  DEFAULT_SETTINGS, allSegments, deleteProfile, fontOf, freshSeed, listProfiles, loadProfileById, loadSegment, migrateProfiles, newProfile, profileSeeds,
+  DEFAULT_SETTINGS, allSegments, deleteProfile, deleteSegment, fontOf, freshSeed, listProfiles, loadProfileById, loadSegment, migrateProfiles, newProfile, profileSeeds,
   saveProfile, saveSegment, segmentKey, segmentsFor, startNewRun, totalStars, weakKeys,
   type Profile, type Segment, type Settings,
 } from '@/storage/profile';
@@ -116,6 +116,9 @@ export class Game {
     this.wordArt.onComplete = (c) => this.onWordRevealed(c.word, c.golden);
     this.input.onPress((k) => this.onKey(k.code, k.shift));
     this.input.onEscape(() => this.togglePause());
+    this.input.onChordRelease((a, b, ms) => {
+      if (ms >= 300 && [a, b].sort().join() === 'KeyF,KeyJ' && this.debugSkipAllowed()) this.debugSkip();
+    });
     this.input.onLayoutMismatch(() => toast(this.ui, '⌨️ Your keyboard is set to another language. That is OK — we use key positions — but the letters may look different.'));
     document.addEventListener('visibilitychange', () => {
       if (document.hidden && this.screen === 'level' && !this.paused) this.pause('hidden');
@@ -386,6 +389,64 @@ export class Game {
     };
   }
 
+  /**
+   * Debug mode: F and J held down together for 300 ms skip the level. Fast typing often overlaps keys for a
+   * moment (rollover), so only a deliberate hold counts; both keys are still typed as usual.
+   */
+  private debugChord(code: string): void {
+    if (!this.debugSkipAllowed() || (code !== 'KeyF' && code !== 'KeyJ') || !this.input.held.has(code === 'KeyF' ? 'KeyJ' : 'KeyF')) return;
+    // Still holding both after 300 ms: skip without waiting for the release (the release check covers a busy page).
+    const sim = this.sim;
+    setTimeout(() => {
+      const held = this.input.held;
+      if (this.sim === sim && this.debugSkipAllowed() && held.has('KeyF') && held.has('KeyJ') && performance.now() - Math.max(held.get('KeyF')!, held.get('KeyJ')!) >= 300) this.debugSkip();
+    }, 320);
+  }
+
+  private debugSkipAllowed(): boolean {
+    return !!this.profile?.settings.debug && !this.party && !this.drill && this.screen === 'level' && this.sim?.state.phase === 'play' && !this.paused && !this.offer && !this.host.transitioning;
+  }
+
+  /**
+   * Debug skip: the crossroads screen at once. J moves on to the next level without stars or stats, and the
+   * skipped level isn't kept as a run segment (replays and proofs stay honest); F keeps playing this level.
+   */
+  private debugSkip(): void {
+    const index = this.plan.index;
+    const key = this.seg.key;
+    this.paused = true;
+    const el = crossroadsScreen(this.sim!.state.bestStars, language(this.camp.language));
+    el.classList.add('debug-skip');
+    el.querySelector('.card')?.prepend(h('p', { class: 'msg' }, '🛠 Debug skip — J: next level (no stars, this level is not saved) · F: keep playing'));
+    this.offer = {
+      yes: () => {
+        this.offer = null;
+        this.paused = false;
+        this.setOverlay(null);
+      },
+      no: () => {
+        this.offer = null;
+        void (async () => {
+          this.sim = null; // nothing saves this level any more
+          this.paused = false;
+          await deleteSegment(key);
+          this.profile.campaign.level = index + 1;
+          await saveProfile(this.profile);
+          await this.startLevel(index + 1, true);
+        })();
+      },
+    };
+    this.setOverlay(el);
+  }
+
+  /** The progress bar's avatar icon and, in debug mode, the level label (number · game · palette). */
+  private hudExtras(templateId = this.plan.templateId): void {
+    if (!this.hud) return;
+    this.hud.setAvatar(iconOf(this.profile, scales));
+    const label = this.drill ? `drill ${this.drill.key.toUpperCase()}` : `L${this.plan.index}`;
+    this.hud.setDebugLabel(this.profile.settings.debug ? `${label} · ${templateId.replace(/^template\./, '')} · ${this.plan.paletteId.replace(/^palette\./, '')}` : null);
+  }
+
   private applySettings(s: Settings, p: Profile | undefined = this.profile): void {
     this.host.reducedMotion = s.reducedMotion;
     this.audio.setVolumes(s.musicVolume, s.sfxVolume);
@@ -454,6 +515,7 @@ export class Game {
       this.ui.prepend(this.hud.el);
     }
     this.hud.keyboard.setKnown(this.plan.letters); // in play only the next key is highlighted
+    this.hudExtras();
     const palette = palettes.find((p) => p.id === this.plan.paletteId) ?? palettes[0];
     const look = { templateId: this.plan.templateId, view: this.plan.view, styleId: this.plan.styleId, palette, havocIds: this.plan.havocIds, havocMaxP: this.plan.havocMaxP };
     this.host.setLevel(look, this.avatar(), sim, performance.now(), transition);
@@ -574,6 +636,7 @@ export class Game {
     this.hud = new Hud(lang, slot.profile.settings);
     this.ui.prepend(this.hud.el);
     this.hud.keyboard.setKnown(slot.plan.letters);
+    this.hudExtras();
     const palette = palettes.find((p) => p.id === slot.plan.paletteId) ?? palettes[0];
     const look = { templateId: slot.plan.templateId, view: slot.plan.view, styleId: slot.plan.styleId, palette, havocIds: slot.plan.havocIds, havocMaxP: slot.plan.havocMaxP };
     this.host.setLevel(look, this.avatar(), slot.sim, performance.now(), transition);
@@ -772,6 +835,7 @@ export class Game {
     this.stuckShown = true; // practice: no stuck nag inside a drill
     this.hintSpoken = -1;
     this.hud?.keyboard.setKnown(setup.letters);
+    this.hudExtras(setup.templateId);
     const tpl = templates.find((t) => t.id === setup.templateId)!;
     const palette = palettes.find((p) => p.id === this.plan.paletteId) ?? palettes[0];
     this.host.setLevel({ templateId: setup.templateId, view: tpl.views[0], styleId: this.plan.styleId, palette, havocIds: [], havocMaxP: 0 }, this.avatar(), sim, performance.now(), true);
@@ -920,6 +984,7 @@ export class Game {
     if (this.swapPending) return; // the turn passes on in a moment
     if (this.drill && this.sim?.state.phase !== 'play' && this.sim?.state.phase !== 'intro') return; // drill is ending
     if (this.screen !== 'level' || !this.sim || this.paused || this.host.transitioning) return;
+    this.debugChord(code);
     const e: LogEvent = shift ? { k: 'key', t: this.logT(), code, shift: 1 } : { k: 'key', t: this.logT(), code };
     const before = this.sim.state.phase;
     this.record(e);
