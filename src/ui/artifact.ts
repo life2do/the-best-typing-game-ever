@@ -74,18 +74,24 @@ export function artifactScreen(o: ArtifactScreenOptions): { el: HTMLElement; dis
     progress.textContent = n === glyphs.length ? `✨ Every letter is free! (${n})` : `Type each letter to scratch it free: ${n} / ${glyphs.length}`;
   };
   let placed: { x: number; y: number; r: number }[] = [];
+  const timers: ReturnType<typeof setTimeout>[] = [];
   const start = performance.now();
   let raf = 0;
+  /** When each glyph's scratch started (ms); the wipe takes SCRATCH_MS whatever the frame rate. */
+  const scratchStart: Record<number, number> = {};
+  const SCRATCH_MS = 350;
+  const finish = (i: number) => {
+    if (glyphs[i].revealed) return;
+    glyphs[i].revealed = true;
+    delete scratching[i];
+    delete scratchStart[i];
+    paintProgress();
+  };
   const loop = (now: number) => {
     raf = requestAnimationFrame(loop);
-    for (const k of Object.keys(scratching)) {
+    for (const k of Object.keys(scratchStart)) {
       const i = Number(k);
-      scratching[i] = Math.min(1, scratching[i] + 0.06);
-      if (scratching[i] >= 1) {
-        glyphs[i].revealed = true;
-        delete scratching[i];
-        paintProgress();
-      }
+      scratching[i] = Math.min(1, Math.max(0.01, (performance.now() - scratchStart[i]) / SCRATCH_MS));
     }
     if (!ctx) return;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -93,11 +99,16 @@ export function artifactScreen(o: ArtifactScreenOptions): { el: HTMLElement; dis
   };
   raf = requestAnimationFrame(loop);
   const reveal = (i: number) => {
-    if (i < 0 || glyphs[i].revealed || i in scratching) return false;
+    if (i < 0 || glyphs[i].revealed || i in scratchStart) return false;
     if (o.reducedMotion) {
-      glyphs[i].revealed = true;
-      paintProgress();
-    } else scratching[i] = 0.01;
+      finish(i);
+      return true;
+    }
+    // The letter counts as free after SCRATCH_MS by the clock, not after a number of frames: a slow page
+    // (software rendering) can draw only a few frames a second. Frames only animate the wipe.
+    scratching[i] = 0.01;
+    scratchStart[i] = performance.now();
+    timers.push(setTimeout(() => finish(i), SCRATCH_MS));
     return true;
   };
   canvas.addEventListener('pointerdown', (e) => {
@@ -120,7 +131,10 @@ export function artifactScreen(o: ArtifactScreenOptions): { el: HTMLElement; dis
   png.onclick = busy(png, () => o.onSavePng(ident.value as IdentityChoice));
   const proof = h('button', { class: 'secondary', 'data-artifact': 'proof' }, '📜 Save the .proof file') as HTMLButtonElement;
   proof.onclick = busy(proof, () => o.onSaveProof(ident.value as IdentityChoice));
-  const dispose = () => cancelAnimationFrame(raf);
+  const dispose = () => {
+    cancelAnimationFrame(raf);
+    for (const t of timers) clearTimeout(t);
+  };
   const el = h(
     'div',
     { class: 'overlay artifact' },
@@ -133,5 +147,5 @@ export function artifactScreen(o: ArtifactScreenOptions): { el: HTMLElement; dis
       o.name ? h('label', { class: 'artifact-identity' }, 'Name on the proof: ', ident) : '',
       h('div', { class: 'row-btns' }, png, proof, h('a', { href: './verify/' }, h('button', { class: 'secondary' }, '🔍 Verify')), h('button', { class: 'secondary', onclick: () => { dispose(); o.onClose(); } }, 'Back'))),
   );
-  return { el, dispose, scratch: (char: string) => reveal(glyphs.findIndex((g, i) => !g.revealed && !(i in scratching) && g.char === char)) };
+  return { el, dispose, scratch: (char: string) => reveal(glyphs.findIndex((g, i) => !g.revealed && !(i in scratchStart) && g.char === char)) };
 }
