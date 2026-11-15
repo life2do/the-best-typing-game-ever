@@ -1,3 +1,4 @@
+import type { Blocklist } from '@/typing/blocklist';
 /** TypeScript views of the content manifests (schemas/*.schema.json are the source of truth). */
 export type Finger = 'lp' | 'lr' | 'lm' | 'li' | 'lt' | 'rt' | 'ri' | 'rm' | 'rr' | 'rp';
 export type Row = 'number' | 'top' | 'home' | 'bottom' | 'space';
@@ -45,10 +46,10 @@ export interface LanguagePackManifest extends ItemBase {
 export type StretchMove = 'shake' | 'roll' | 'reach' | 'look' | 'wiggle' | 'breathe';
 
 /** Language pack with word lists loaded. */
-export interface LanguagePack extends LanguagePackManifest {
+export interface LanguagePack extends Omit<LanguagePackManifest, 'blocklist'> {
   wordLists: Record<string, string[]>;
-  blockWords: string[];
-  blockSubstrings: string[];
+  /** hashed blocklist (src/typing/blocklist.ts) */
+  blocklist: Blocklist;
   /** char -> physical code (unshifted chars first, then Shift chars such as capitals and `?`) */
   codeOf: Record<string, string>;
   /** chars that need Shift held (capitals, `?`, `!`, `(`…) */

@@ -39,7 +39,7 @@ describe('key-group text', () => {
     const l = camp.levels[level - 1];
     return generateStageText(Rng.fromSeed(seed), {
       letters: l.letters, newKeys: l.newKeys, weakKeys: [], stageIndex: 0, stageCount: 3, length: 400,
-      words: [], specials: [], blockWords: en.blockWords, blockSubstrings: en.blockSubstrings, groupChars: l.groupChars,
+      words: [], specials: [], blocklist: en.blocklist, groupChars: l.groupChars,
     }).text;
   };
   it('uses the new group characters and only known characters', () => {

@@ -338,7 +338,7 @@ export class LevelSim {
     const txt = generateStageText(new Rng(s.rng.text), {
       letters, newKeys: this.setup.newKeys, weakKeys: this.setup.weakKeys, groupChars: this.setup.groupChars ?? [],
       stageIndex: s.stage, stageCount: L.length, length: L[Math.min(s.stage, L.length - 1)],
-      words, specials, blockWords: lang.blockWords, blockSubstrings: lang.blockSubstrings,
+      words, specials, blocklist: lang.blocklist,
     });
     const chunks = txt.text.split(' ');
     const chunkAbilities: string[] = [];

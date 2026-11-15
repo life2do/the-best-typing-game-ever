@@ -212,7 +212,9 @@ export class Game {
       startScreen(this.randomScale(), stored, async (c) => {
         this.audio.unlock();
         let p: Profile = { ...stored, settings: { ...DEFAULT_SETTINGS, ...stored.settings } };
-        if (c.name) p.name = c.name;
+        // The name and the speed goal chosen here are saved (the goal applies from the next level started).
+        p.name = c.name;
+        if (c.action === 'continue') p.tier = c.tier;
         if (c.action === 'new') p = startNewRun(p, freshSeed(), c.tier, c.language);
         await this.play(p);
       }, showBook, {
@@ -1045,6 +1047,17 @@ export class Game {
           },
           () => void this.exportRun(),
           this.voiceRows(this.profile),
+          {
+            name: this.profile.name,
+            tier: this.profile.tier,
+            scale: scales.find((s) => s.id === this.profile.avatar.scale) ?? scales[0],
+            onChange: (name, tier) => {
+              // Saved at once; the level in progress keeps its tier (seg.tier), the next level uses the new one.
+              this.profile.name = name;
+              this.profile.tier = tier;
+              void saveProfile(this.profile);
+            },
+          },
         ),
       );
   }

@@ -339,3 +339,11 @@ body.reduced-motion .hands * { animation: none !important; }
 .artifact .fingerprint { font-family: var(--mono); font-size: 0.85em; opacity: 0.75; }
 .artifact-identity { display: block; margin: 6px 0; }
 .verify-proof { margin: 6px 0; }
+
+/* pause menu: player name and speed goal */
+.settings .scale.compact { display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; max-width: 440px; }
+.settings .scale.compact button { width: auto; min-width: 56px; padding: 4px 6px; display: flex; flex-direction: column; align-items: center; font-size: 0.8em; }
+.settings .scale.compact .art { font-size: 1.5em; line-height: 1.1; }
+.settings h3 { margin: 14px 0 4px; text-align: left; font-size: 1em; opacity: 0.8; }
+.msg.small { font-size: 0.85em; min-height: 1.2em; }
+.pause .card, .settings-screen .card { max-height: 94vh; overflow-y: auto; }

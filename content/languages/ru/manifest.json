@@ -601,7 +601,7 @@
     "common": "words/common.txt",
     "easter-egg": "words/easter-egg.txt"
   },
-  "blocklist": "words/blocklist.txt",
+  "blocklist": "words/blocklist.hashes",
   "ui": {
     "pressFJ": "Поставь пальцы на А и О и нажми их вместе",
     "yourTurn": "Твой ход",

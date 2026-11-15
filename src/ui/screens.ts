@@ -263,7 +263,45 @@ function voiceEffectRow(v: VoiceEffectRows, chosen: string, pick: (id: string) =
   return h('div', { class: 'setting-row' }, h('span', {}, 'Voice style'), wrap);
 }
 
-export function pauseScreen(settings: Settings, onChange: (s: Settings) => void, onResume: () => void, onQuit: () => void, onExport: () => void, voices?: VoiceEffectRows): HTMLElement {
+/** The player's name and speed goal, changed from the pause menu. */
+export interface PlayerRows {
+  name: string;
+  tier: number;
+  scale: ComplexityScaleManifest;
+  onChange: (name: string, tier: number) => void;
+}
+
+/**
+ * Name and speed goal (tier) rows for the pause menu. Saved at once; a new goal applies from the next level
+ * (the level being played keeps the goal it started with, so its replay stays exact).
+ */
+function playerRows(p: PlayerRows): HTMLElement[] {
+  let tier = p.tier;
+  const name = h('input', { type: 'text', maxlength: 24, value: p.name, placeholder: 'Your name (optional)', 'aria-label': 'Your name', 'data-player': 'name' }) as HTMLInputElement;
+  name.addEventListener('input', () => p.onChange(name.value.trim(), tier));
+  const note = h('p', { class: 'msg small', 'data-player': 'note' });
+  const steps = h('div', { class: 'scale compact', role: 'radiogroup', 'aria-label': 'Speed goal' });
+  const paint = () => {
+    steps.replaceChildren(
+      ...p.scale.steps.map((s) =>
+        h('button', {
+          type: 'button', class: s.tier === tier ? 'sel' : '', role: 'radio', 'aria-checked': s.tier === tier ? 'true' : 'false', 'data-tier': s.tier,
+          style: { '--i': String(s.tier) }, title: `${s.name.en} · ${TIER_WPM[s.tier - 1]} wpm`,
+          onclick: () => {
+            tier = s.tier;
+            p.onChange(name.value.trim(), tier);
+            paint();
+          },
+        }, h('span', { class: 'art' }, s.icon ?? p.scale.icon ?? '★'), h('span', { class: 'st' }, `${TIER_WPM[s.tier - 1]} wpm`)),
+      ),
+    );
+    note.textContent = tier !== p.tier ? 'The new speed goal starts with the next level.' : '';
+  };
+  paint();
+  return [h('h3', {}, 'Player'), h('label', {}, 'Name', name), h('div', { class: 'setting-row' }, h('span', {}, 'Speed goal'), steps), note];
+}
+
+export function pauseScreen(settings: Settings, onChange: (s: Settings) => void, onResume: () => void, onQuit: () => void, onExport: () => void, voices?: VoiceEffectRows, player?: PlayerRows): HTMLElement {
   return h(
     'div',
     { class: 'overlay pause' },
@@ -271,6 +309,8 @@ export function pauseScreen(settings: Settings, onChange: (s: Settings) => void,
       'div',
       { class: 'card settings' },
       h('h2', {}, '⏸ Paused'),
+      ...(player ? playerRows(player) : []),
+      player ? h('h3', {}, 'Settings') : '',
       ...settingsRows(settings, onChange, voices),
       h('div', { class: 'row-btns' }, h('button', { onclick: onResume }, 'Resume (Esc)'), h('button', { class: 'secondary', onclick: onExport }, 'Save my run'), h('button', { class: 'secondary', onclick: onQuit }, 'Main menu')),
     ),
